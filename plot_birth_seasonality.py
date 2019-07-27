@@ -24,40 +24,39 @@ def load_extinction_times():
 
 
 def plot_median(df, CI=0.5):
-    row = dict(enumerate(range(3), 1))
-    column = dict(acute=0, chronic=1)
+    row = dict(acute=0, chronic=1)
+    column = dict(enumerate(range(3), 1))
     levels = [CI / 2, 1 - CI / 2]
     with seaborn.axes_style('darkgrid'):
-        fig, axes = pyplot.subplots(3, 2, sharex='col', sharey='row')
+        fig, axes = pyplot.subplots(len(row), len(column),
+                                    sharex='col', sharey='row')
         for ((model, SAT), group) in df.groupby(['model', 'SAT']):
-            i, j = row[SAT], column[model]
+            i, j = row[model], column[SAT]
             ax = axes[i, j]
             by = 'birth_seasonal_coefficient_of_variation'
             times = group.groupby(by).time
             median = times.median()
-            ax.plot(median, median.index,
+            ax.plot(median.index, median,
                     color=plot_common.SAT_colors[SAT])
             CI_ = times.quantile(levels).unstack()
-            ax.fill_betweenx(CI_.index, CI_[levels[0]], CI_[levels[1]],
-                             color=plot_common.SAT_colors[SAT],
-                             alpha=0.5)
+            ax.fill_between(CI_.index, CI_[levels[0]], CI_[levels[1]],
+                            color=plot_common.SAT_colors[SAT],
+                            alpha=0.5)
             if ax.is_first_row():
-                ax.set_title(f'{model.capitalize()} model',
-                             fontdict=dict(fontsize='medium'))
+                ax.set_title(f'SAT {SAT}', fontsize='medium')
             else:
                 ax.set_title('')
             if ax.is_last_row():
-                ax.set_xlim(left=0)
-                ax.set_xlabel('extinction time (y)')
+                if j == 1:
+                    ax.set_xlabel('Birth seasonal\ncoefficient of variation')
             else:
                 ax.set_xlabel('')
             if ax.is_first_col():
-                if i == 1:
-                    ylabel = 'Birth seasonal\ncoefficient of\nvariation'
-                else:
-                    ylabel = '\n\n'
-                ax.set_ylabel(f'SAT {SAT}\n{ylabel}')
-        fig.suptitle('')
+                ax.set_ylabel(
+                    f'{model.capitalize()} model\n\nextinction time (y)')
+        for ax in axes[:, -1]:
+            ax.set_ylim(bottom=0)
+        fig.align_labels()
         fig.tight_layout()
 
 
@@ -118,19 +117,21 @@ def _get_cmap(color):
 
 
 def plot_kde_2d(df):
-    persistence_time_max = dict(acute=0.5, chronic=5)
+    persistence_time_max = dict(acute=0.5, chronic=10)
     bscovs = (df.index
                 .get_level_values('birth_seasonal_coefficient_of_variation')
                 .unique()
                 .sort_values())
     bscov_baseline = bscovs[len(bscovs) // 2]
-    fig, axes = pyplot.subplots(3, 2 + 1, sharex='col', sharey='row',
-                                gridspec_kw=dict(width_ratios=(1, 1, 0.5)))
-    for (j, (model, group_model)) in enumerate(df.groupby('model')):
+    fig, axes = pyplot.subplots(2 + 1, 3, sharex='col', sharey='row',
+                                gridspec_kw=dict(height_ratios=(1, 1, 0.5)))
+    ylabelpad = 0
+    for (i, (model, group_model)) in enumerate(df.groupby('model')):
         persistence_time = numpy.linspace(0, persistence_time_max[model], 301)
-        for (i, (SAT, group_SAT)) in enumerate(group_model.groupby('SAT')):
+        for (j, (SAT, group_SAT)) in enumerate(group_model.groupby('SAT')):
             ax = axes[i, j]
-            density = numpy.zeros((len(bscovs), len(persistence_time)))
+            density = numpy.zeros((len(persistence_time),
+                                   len(bscovs)))
             proportion_observed = numpy.zeros_like(bscovs, dtype=float)
             for (k, (b, g)) in enumerate(group_SAT.groupby(
                     'birth_seasonal_coefficient_of_variation')):
@@ -140,53 +141,61 @@ def plot_kde_2d(df):
                 if proportion_observed[k] > 0:
                     kde = statsmodels.nonparametric.api.KDEUnivariate(ser)
                     kde.fit(cut=0)
-                    density[k] = kde.evaluate(persistence_time)
+                    density[:, k] = kde.evaluate(persistence_time)
                 else:
-                    density[k] = 0
+                    density[:, k] = 0
             cmap = _get_cmap(plot_common.SAT_colors[SAT])
             # Use raw `density` for color,
             # but plot `density * proportion_observed`.
             norm = colors.Normalize(vmin=0, vmax=numpy.max(density))
-            ax.imshow(density * proportion_observed[:, None],
+            ax.imshow(density * proportion_observed,
                       cmap=cmap, norm=norm, interpolation='bilinear',
-                      extent=(min(persistence_time), max(persistence_time),
-                              min(bscovs), max(bscovs)),
+                      extent=(min(bscovs), max(bscovs),
+                              min(persistence_time), max(persistence_time)),
                       aspect='auto', origin='lower', clip_on=False)
             ax.autoscale(tight=True)
             if model == 'chronic':
-                ax_po = axes[i, -1]
-                ax_po.plot(1 - proportion_observed, bscovs,
+                ax_po = axes[-1, j]
+                ax_po.plot(bscovs, 1 - proportion_observed,
                            color=plot_common.SAT_colors[SAT],
                            clip_on=False, zorder=3)
                 ax_po.autoscale(tight=True)
-                if ax.is_last_row():
-                    ax_po.set_xlabel('persisting 10 y')
-                    ax_po.xaxis.set_major_formatter(
+                if ax.is_first_col():
+                    ax_po.set_ylabel('persisting\n10 y',
+                                     labelpad=ylabelpad)
+                    ax_po.yaxis.set_major_formatter(
                         plot_common.PercentFormatter())
-                    ax_po.xaxis.set_minor_locator(
+                    ax_po.yaxis.set_minor_locator(
                         ticker.AutoMinorLocator(2))
+                ax_po.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
+                if j == 1:
+                    ax_po.set_xlabel(
+                        'birth seasonal\ncoefficient of variation')
             if ax.is_last_row():
                 ax.set_xlabel('extinction time (y)')
                 ax.xaxis.set_major_locator(
-                    ticker.MultipleLocator(max(persistence_time) / 5))
+                ticker.MultipleLocator(max(persistence_time) / 5))
                 ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
             if ax.is_first_col():
-                ax.set_ylabel('birth seasonal\ncoefficient of\nvariation')
-                ax.annotate(f'SAT {SAT}',
-                            (-0.65, 0.5), xycoords='axes fraction',
-                            rotation=90, verticalalignment='center')
+                ax.set_ylabel('extinction\ntime (y)',
+                              labelpad=ylabelpad)
+                ax.yaxis.set_major_locator(
+                    ticker.MultipleLocator(max(persistence_time) / 5))
+                ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
     for ax in fig.axes:
-        ax.axhline(bscov_baseline,
+        ax.axvline(bscov_baseline,
                    color='black', linestyle='dotted', alpha=0.7)
         for sp in ('top', 'right'):
             ax.spines[sp].set_visible(False)
-    title_y = 0.975
-    fig.text(0.31, title_y, 'Acute model',
-             horizontalalignment='center')
-    fig.text(0.73, title_y, 'Chronic model',
-             horizontalalignment='center')
-    fig.tight_layout()
+    fig.align_labels()
+    title_x = 0
+    fig.text(title_x, 0.88, 'Acute model',
+             rotation=90)
+    fig.text(title_x, 0.43, 'Chronic model',
+             rotation=90)
+    fig.tight_layout(pad=0, rect=(0.03, 0, 1, 1))
     fig.savefig('plot_birth_seasonality.pdf')
+    fig.savefig('plot_birth_seasonality.png', dpi=300)
 
 
 if __name__ == '__main__':
