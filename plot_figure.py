@@ -9,7 +9,6 @@ from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
 import seaborn
-import statsmodels
 import pandas
 
 import plot_common
