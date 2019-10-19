@@ -12,7 +12,10 @@ import plot_common
 import run_common
 
 
-filename = f'run_start_times_SATs.h5'
+# All files are relative to this source file.
+_path = os.path.dirname(__file__)
+
+filename = os.path.join(_path, 'run_start_times_SATs.h5')
 
 
 def get_downsampled():
@@ -38,7 +41,8 @@ def _build_infected(filename_out):
 
 
 def get_infected(model='acute'):
-    filename_infected = f'plot_start_times_SATs_infected.h5'
+    filename_infected = os.path.join(_path,
+                                     'plot_start_times_SATs_infected.h5')
     try:
         infected = h5.load(filename_infected)
     except FileNotFoundError:
@@ -103,7 +107,8 @@ def _build_extinction_time(filename_out):
 
 
 def get_extinction_time(model='acute'):
-    filename_et = f'plot_start_times_SATs_extinction_time.h5'
+    filename_et = os.path.join(_path,
+                               'plot_start_times_SATs_extinction_time.h5')
     try:
         extinction_time = h5.load(filename_et)
     except FileNotFoundError:
@@ -157,7 +162,8 @@ def _build_time_to_peak(filename_out):
 
 
 def get_time_to_peak(model='acute'):
-    filename_ttp = f'plot_start_times_SATs_time_to_peak.h5'
+    filename_ttp = os.path.join(_path,
+                                'plot_start_times_SATs_time_to_peak.h5')
     try:
         extinction_time = h5.load(filename_ttp)
     except FileNotFoundError:
@@ -211,7 +217,8 @@ def _build_total_infected(filename_out):
 
 
 def get_total_infected(model='acute'):
-    filename_ti = f'plot_start_times_SATs_total_infected.h5'
+    filename_ti = os.path.join(_path,
+                               'plot_start_times_SATs_total_infected.h5')
     try:
         total_infected = h5.load(filename_ti)
     except FileNotFoundError:
