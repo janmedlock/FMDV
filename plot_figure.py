@@ -134,6 +134,7 @@ def plot(infected, extinction_time):
                                height_ratios=height_ratios,
                                width_ratios=width_ratios)
         axes = numpy.empty((nrows, ncols), dtype=object)
+        axes[0, 0] = None  # Make sharex & sharey work for axes[0, 0].
         for row in range(nrows):
             for col in range(ncols):
                 # Columns share the x scale.
@@ -177,5 +178,10 @@ def plot(infected, extinction_time):
 
 if __name__ == '__main__':
     infected, extinction_time = load()
+    # For some reason, the columns are out of order.
+    infected.index = infected.index.reorder_levels(
+        ['model', 'SAT', 'start_time', 'run', 'time (y)'])
+    extinction_time.index = extinction_time.index.reorder_levels(
+        ['model', 'SAT', 'start_time', 'run'])
     plot(infected, extinction_time)
     pyplot.show()
