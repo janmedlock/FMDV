@@ -43,7 +43,7 @@ def plot_median(df, CI=0.5):
                             color=plot_common.SAT_colors[SAT],
                             alpha=0.5)
             if ax.is_first_row():
-                ax.set_title(f'SAT {SAT}', fontsize='medium')
+                ax.set_title(f'SAT{SAT}', fontsize='medium')
             else:
                 ax.set_title('')
             if ax.is_last_row():
@@ -103,8 +103,8 @@ def plot_kde(df):
                 ax.set_xlim(left=0)
                 ax.set_xlabel('extinction time (y)')
             if ax.is_first_col():
-                ylabel = 'density' if i == 1 else ''
-                ax.set_ylabel(f'SAT {SAT}\n{ylabel}')
+                ylabel = '\ndensity' if i == 1 else ''
+                ax.set_ylabel(f'SAT{SAT}{ylabel}')
         leg = fig.legend(loc='center left', bbox_to_anchor=(0.8, 0.5),
                          title='Birth seasonal\ncoefficient of\nvariation')
         fig.tight_layout(rect=(0, 0, 0.82, 1))
@@ -171,6 +171,8 @@ def plot_kde_2d(df):
                 if j == 1:
                     ax_po.set_xlabel(
                         'birth seasonal\ncoefficient of variation')
+            if ax.is_first_row():
+                ax.set_title(f'SAT{SAT}')
             if ax.is_last_row():
                 ax.set_xlabel('extinction time (y)')
                 ax.xaxis.set_major_locator(
@@ -189,9 +191,9 @@ def plot_kde_2d(df):
             ax.spines[sp].set_visible(False)
     fig.align_labels()
     title_x = 0
-    fig.text(title_x, 0.88, 'Acute model',
+    fig.text(title_x, 0.72, 'Acute model',
              rotation=90)
-    fig.text(title_x, 0.43, 'Chronic model',
+    fig.text(title_x, 0.25, 'Chronic model',
              rotation=90)
     fig.tight_layout(pad=0, rect=(0.03, 0, 1, 1))
     fig.savefig('plot_birth_seasonality.pdf')
