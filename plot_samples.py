@@ -229,7 +229,7 @@ def plot_sensitivity(df, rank=True, errorbars=False):
                            for x in ix]
                 ax.set_yticklabels(ylabels, horizontalalignment='center')
                 ax.set_xlabel(xlabel)
-                ax.set_title(f'SAT {SAT}')
+                ax.set_title(f'SAT{SAT}')
                 ax.grid(False, axis='y', which='both')
             seaborn.despine(fig, top=True, bottom=False, left=True, right=True)
             fig.tight_layout()

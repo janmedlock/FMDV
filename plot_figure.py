@@ -79,7 +79,7 @@ def plot_infected(ax, infected, model, SAT):
     # Shared y-axis between models.
     if ax.is_first_col():
         ax.set_ylabel('Number\ninfected')
-        ax.annotate(f'SAT {SAT}', (-0.35, 0.2),
+        ax.annotate(f'SAT{SAT}', (-0.35, 0.1),
                     xycoords='axes fraction',
                     rotation=90, fontsize=rc['axes.titlesize'])
     else:
@@ -103,7 +103,7 @@ def plot_extinction_time(ax, extinction_time, model, SAT):
         bbox = dict(boxstyle=f'rarrow, pad={pad}',
                     facecolor=color, linewidth=0)
         ax.annotate('{:g}%'.format(not_extinct * 100),
-                    (0.95, 0.8), xycoords='axes fraction',
+                    (0.92, 0.8), xycoords='axes fraction',
                     bbox=bbox, color='white',
                     verticalalignment='bottom',
                     horizontalalignment='right')
@@ -172,7 +172,14 @@ def plot(infected, extinction_time):
                 axes[row, col].set_xlim(left=0)
                 axes[row, col].set_ylim(bottom=0)
         seaborn.despine(fig=fig, top=True, right=True, bottom=False, left=False)
-        fig.align_labels()
+        # fig.align_labels()
+        # For some reason, aligning the rows and columns works better
+        # than aligning all axes.
+        fig.align_xlabels(axes[-1, :])
+        for (i, SAT) in enumerate(SATs):
+            row_i = 2 * i
+            row_e = 2 * i + 1
+            fig.align_ylabels(axes[[row_i, row_e], 0])
         fig.savefig('plot_figure.pdf')
 
 
