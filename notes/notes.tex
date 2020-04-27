@@ -14,7 +14,6 @@
 
 \usepackage[babel=true]{microtype}
 
-
 \usepackage{amsmath}
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\mat}[1]{\mathbf{#1}}
@@ -912,8 +911,11 @@ and
 Solve with root finder and $E, I, R > 0$.
 
 
-\bibliography{journal_abbreviations,math_epi}
-\bibliographystyle{jpmbib}
+% Generate the .bbl file.
+% \bibliography{journal_abbreviations,math_epi}
+% \bibliographystyle{jpmbib}
+% Use the generated file.
+\input{\jobname.bbl}
 
 
 \end{document}
