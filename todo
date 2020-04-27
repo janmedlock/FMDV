@@ -1,3 +1,6 @@
+* Get git repo in shape to publish.
+** notes/notes.tex doesn't have the bibliography.
+
 * Touch up parameter names in plot_samples.plot_sensitivity().
 
 * Edit manuscript and methods.
