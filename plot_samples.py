@@ -176,37 +176,51 @@ def plot_sensitivity(df, rank=True, errorbars=False):
     params = df.columns.drop([outcome, 'extinction_observed'])
     n_samples = len(samples)
     colors = Colors()
-    rc = {'xtick.labelsize': 8,
-          'ytick.labelsize': 6,
-          'axes.labelsize': 9,
-          'axes.titlesize': 10,
-          'figure.titlesize': 11}
-    with seaborn.axes_style('whitegrid'), pyplot.rc_context(rc), \
-         backend_pdf.PdfPages('plot_samples_sensitivity.pdf') as pdf:
+    width = 390 / 72.27
+    height = 0.8 * width
+    rc = {'figure.figsize': (width, height),
+          'xtick.labelsize': 7,
+          'ytick.labelsize': 5,
+          'axes.labelsize': 8,
+          'axes.titlesize': 9,
+          'figure.titlesize': 10}
+    with seaborn.axes_style('whitegrid'), pyplot.rc_context(rc):
         for model in models:
-            fig, axes = pyplot.subplots(1, len(SATs), sharex='row')
-            for (SAT, ax) in zip(SATs, axes):
+            rho = pandas.DataFrame(index=params, columns=SATs, dtype=float)
+            if errorbars:
+                columns = pandas.MultiIndex.from_product((SATs,
+                                                          ('lower', 'upper')))
+                rho_CI = pandas.DataFrame(index=params, columns=columns,
+                                          dtype=float)
+            for SAT in SATs:
                 p = df.loc[(model, SAT, slice(None)), params]
                 p = p.dropna(axis='columns', how='all')
                 o = df.loc[(model, SAT, slice(None)), outcome]
                 if rank:
-                    rho = stats.prcc(p, o)
+                    rho[SAT] = stats.prcc(p, o)
                     xlabel = 'PRCC'
                     if errorbars:
-                        rho_CI = stats.prcc_CI(rho, n_samples)
+                        rho_CI[SAT] = stats.prcc_CI(rho[SAT], n_samples)
                 else:
-                    rho = stats.pcc(p, o)
+                    rho[SAT] = stats.pcc(p, o)
                     xlabel = 'PCC'
                     if errorbars:
-                        rho_CI = stats.pcc_CI(rho, n_samples)
-                ix = rho.abs().sort_values().index
-                x = rho[ix]
-                c = [colors[z] for z in ix[::-1]][::-1]
+                        rho_CI[SAT] = stats.pcc_CI(rho[SAT], n_samples)
+            rho.dropna(axis='index', how='all', inplace=True)
+            if errorbars:
+                rho_CI.dropna(axis='index', how='all', inplace=True)
+            order = rho.abs().mean(axis='columns').sort_values().index
+            xabsmax = rho.abs().max().max()
+            fig, axes = pyplot.subplots(1, len(SATs),
+                                        sharex='row', sharey='row')
+            for (SAT, ax) in zip(SATs, axes):
+                x = rho.loc[order, SAT]
+                c = [colors[z] for z in order[::-1]][::-1]
                 if errorbars:
-                    rho_err = pandas.DataFrame(
-                        {'lower': rho - rho_CI['lower'],
-                         'upper': rho_CI['upper'] - rho}).T
-                    xerr = rho_err[ix].values
+                    rho_err = pandas.DataFrame({
+                        'lower': rho[SAT] - rho_CI[(SAT, 'lower')],
+                        'upper': rho_CI[(SAT, 'upper')] - rho[SAT]}).T
+                    xerr = rho_err[order].values
                     kwds = dict(xerr=xerr,
                                 error_kw=dict(ecolor='black',
                                               elinewidth=1.5,
@@ -221,19 +235,22 @@ def plot_sensitivity(df, rank=True, errorbars=False):
                         **kwds)
                 ax.xaxis.set_major_formatter(
                     ticker.StrMethodFormatter('{x:g}'))
+                ax.set_xlim(- xabsmax, xabsmax)
                 # ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(n=2))
-                ax.tick_params(axis='y', pad=35)
-                ax.set_yticks(y)
-                ax.set_ylim(- 0.5, len(x) - 0.5)
-                ylabels = [param_transforms.get(x, x).replace('_', '\n')
-                           for x in ix]
-                ax.set_yticklabels(ylabels, horizontalalignment='center')
                 ax.set_xlabel(xlabel)
                 ax.set_title(f'SAT{SAT}')
                 ax.grid(False, axis='y', which='both')
+                if ax.is_first_col():
+                    ax.tick_params(axis='y', pad=35)
+                    ax.set_yticks(y)
+                    ax.set_ylim(- 0.5, len(x) - 0.5)
+                    ylabels = [param_transforms.get(x, x).replace('_', '\n')
+                               for x in order]
+                    ax.set_yticklabels(ylabels, horizontalalignment='center')
             seaborn.despine(fig, top=True, bottom=False, left=True, right=True)
             fig.tight_layout()
-            pdf.savefig(fig)
+            fig.savefig(f'plot_samples_sensitivity_{model}.pgf')
+            fig.savefig(f'plot_samples_sensitivity_{model}.pdf')
 
 
 if __name__ == '__main__':
