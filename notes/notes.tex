@@ -24,8 +24,9 @@
 
 \usepackage{units}
 \usepackage{tikz}
-\usepackage{natbib}
-\usepackage{hypernat}
+
+\usepackage[style=nature, autocite=superscript, sortcites=true]{biblatex}
+\addbibresource{notes.bib}
 
 
 \title{Supplementary Material for\\
@@ -95,7 +96,7 @@ The distributions are detailed below.  (See also \autoref{fig:distributions}.)
 \end{figure}
 
 
-The simulations follow a Gillespie algorithm \citep{gillespie_1977}.
+The simulations follow a Gillespie algorithm \autocite{gillespie_1977}.
 For each buffalo, a list of events and the times they occur is stored.
 The next event over the whole population is found and the population
 is updated.  The hazards for infection depend on the number of
@@ -107,8 +108,8 @@ to these events are not updated.  This process was repeated from $t =
 infectious, and chronic) buffalo.
 
 When sampling from simple distributions, standard algorithms were used
-\citep{scipy}.  For complex distributions, the event times were
-sampled using the inverse transform method \citep{rubinstein_1981}.
+\autocite{scipy}.  For complex distributions, the event times were
+sampled using the inverse transform method \autocite{rubinstein_1981}.
 
 The variables $t$ and $a$ denote time and age, respectively, and are
 both in units of years.
@@ -401,9 +402,9 @@ The mean rate of female births $B(t)$ follows the Lotka equation
   \end{split}
 \end{equation}
 where $n_0(a)$ is the density of age $a$ females at time $t = 0$
-\citetext{\citealp[Chapter VI, Section 29 on
-  pp.~159--161]{harris_1963};
-  \citealp[Chapter 20 on pp.~353--364]{kot_01}}.
+% Chapter VI, Section 29 on pp.~159--161 of harris_1963.
+% Chapter 20 on pp.~353--364 of kot_01.
+\autocite{harris_1963, kot_01}.
 % For large $t$, the contribution of the initial cohort---the second
 % integral in \eqref{lotka}---becomes negligible, so
 % \begin{equation}
@@ -459,7 +460,7 @@ Foerster partial differential equation (PDE)
 Because the birth hazard, $h_{\text{birth}}(t, a)$,
 is periodic with period $T = \unit[1]{y}$,
 we found the stable age structure and the asymptotic population growth
-rate using Floquet theory \citep{parker_1992}.
+rate using Floquet theory \autocite{parker_1992}.
 Floquet theory requires the fundamental solution $\Phi(t, a, a')$ for
 McKendrick--von Foerster equation \eqref{PDE}, which, for each $a'$,
 satisfies the same PDE and birth integral as
@@ -481,7 +482,7 @@ $n(t, a)$, but with an initial condition localized to age $a'$:
 where $\delta(x)$ is the Dirac delta.
 To solve this numerically, we used the
 Crank--Nicolson method on characteristics and the composite trapezoid
-rule for the birth integral \citep{milner_1992}.  Given the time
+rule for the birth integral \autocite{milner_1992}.  Given the time
 step $\Delta t$,
 let $a_i = i \Delta t$
 and $a'_j = j \Delta t$
@@ -618,8 +619,8 @@ Halving the age step to $\Delta a = 0.005$
 gave a relative error for $\mu$ of $7 \times 10^{-4}$
 and doubling the maximum age to $a_{\text{max}} = 70$
 gave a relative error of $5 \times 10^{-6}$.
-These computations were done in Python \citep{python} using the
-NumPy \citep{numpy} and SciPy \citep{scipy} libraries.
+These computations were done in Python \autocite{python} using the
+NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 
 
 \section{Initial conditions scratch}
@@ -908,8 +909,7 @@ and
 Solve with root finder and $E, I, R > 0$.
 
 
-\bibliography{notes}
-\bibliographystyle{jpmbib}
+\printbibliography
 
 
 \end{document}
