@@ -625,20 +625,51 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 
 \begin{figure}
   \centering
+  \includegraphics{../plot_population_sizes}
+  \caption{The sensitivity of extinction time to buffalo population
+    size.
+    For each model and each SAT, the model was simulated for 1000 runs
+    at population sizes 100, 200, 300, 400, 500, 600, 700, 800, 900,
+    1000 (baseline, dotted vertical lines), 2000, 3000, 4000, and
+    5000.
+    The other parameters were fixed at their baseline values.
+    The top and middle rows of graphs show the distribution of
+    FMDV extinction times for the model with only acute transmission
+    and the model with both acute and chronic transmission,
+    respectively.
+    The bottom row shows the proportion of simulations where FMDV
+    persisted in the buffalo population for the whole simulated
+    10-year period for the chronic model.}
+\end{figure}
+
+\begin{figure}
+  \centering
   \includegraphics{../plot_birth_seasonality}
-  \caption{BLAHBLAHBLAH}
+  \caption{The sensitivity of extinction time to birth seasonality.
+    For each model and each SAT, the model was simulated for
+    1000 runs at 0, 0.5, 1 (baseline, dotted vertical lines), 1.5, and
+    2 times the baseline birth seasonal coefficient of variation of
+    0.613.
+    The other parameters were fixed at their baseline values.
+    The top and middle rows of graphs show the distribution of
+    FMDV extinction times for the model with only acute transmission
+    and the model with both acute and chronic transmission,
+    respectively.
+    The bottom row shows the proportion of simulations where FMDV
+    persisted in the buffalo population for the whole simulated
+    10-year period for the chronic model.}
 \end{figure}
 
 \begin{figure}
   \centering
   \input{../plot_samples_sensitivity_acute.pgf}
   \caption{The sensitivity of extinction time to the parameters, for
-    the model with only acute transmission. For each SAT, the model
-    was simulated with each of 20,000 samples from the posterior
-    distributions of the parameters (Fig.~2; Tables S2, S3). The
-    sensitivity is measured by the partial rank correlation
-    coefficient (PRCC) of the simulated extinction time to the
-    parameter values \autocite{blower_1994}.}
+    the model with only acute transmission.  The graphs show, for each
+    SAT, the sensitivity, measured by the partial rank correlation
+    coefficient (PRCC) \autocite{blower_1994}, of FMDV extinction time
+    to model parameters.
+    The model was simulated with each of 20,000 samples from the
+    posterior distributions of the parameters (Fig.~2; Tables S2, S3).}
 \end{figure}
 
 
