@@ -8,8 +8,9 @@ from matplotlib import gridspec
 from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
-import seaborn
 import pandas
+import seaborn
+import statsmodels.nonparametric.api
 
 import plot_common
 import plot_start_times_SATs
@@ -26,7 +27,7 @@ rc = {}
 total_width = 183 / 25.4  # inches
 fig_width = total_width - diagram_width
 fig_height = 6  # inches
-rc['figure.figsize'] = [fig_width, fig_height]
+rc['figure.figsize'] = (fig_width, fig_height)
 # Sans-serif, preferably Helvetica or Arial.
 rc['font.family'] = 'sans-serif'
 rc['font.sans-serif'] = 'DejaVu Sans'
@@ -90,12 +91,30 @@ def plot_infected(ax, infected, model, SAT):
         ax.set_title(f'{model.capitalize()} model', loc='center')
 
 
+def kdeplot(endog, ax=None, shade=False, cut=0, **kwds):
+    if ax is None:
+        ax = pyplot.gca()
+    endog = endog.dropna()
+    if len(endog) > 0:
+        kde = statsmodels.nonparametric.api.KDEUnivariate(endog)
+        kde.fit(cut=cut)
+        x = numpy.linspace(kde.support.min(), kde.support.max(), 301)
+        y = kde.evaluate(x)
+        line, = ax.plot(x, y, **kwds)
+        if shade:
+            shade_kws = dict(
+                facecolor = kwds.get('facecolor', line.get_color()),
+                alpha=kwds.get('alpha', 0.25),
+                clip_on=kwds.get('clip_on', True),
+                zorder=kwds.get('zorder', 1))
+            ax.fill_between(x, 0, y, **shade_kws)
+    return ax
+
+
 def plot_extinction_time(ax, extinction_time, model, SAT):
     e = extinction_time.loc[(model, SAT)]
     color = plot_common.SAT_colors[SAT]
-    if len(e.dropna()) > 0:
-        seaborn.kdeplot(e.dropna(), ax=ax, color=color,
-                        shade=True, legend=False, cut=0)
+    kdeplot(e.dropna(), ax=ax, color=color, shade=True)
     not_extinct = len(e[e.isnull()]) / len(e)
     if not_extinct > 0:
         # 0.6 -> 0.3, 1 -> 1.
@@ -185,10 +204,5 @@ def plot(infected, extinction_time):
 
 if __name__ == '__main__':
     infected, extinction_time = load()
-    # For some reason, the columns are out of order.
-    infected.index = infected.index.reorder_levels(
-        ['model', 'SAT', 'start_time', 'run', 'time (y)'])
-    extinction_time.index = extinction_time.index.reorder_levels(
-        ['model', 'SAT', 'start_time', 'run'])
     plot(infected, extinction_time)
     pyplot.show()
