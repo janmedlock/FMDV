@@ -21,27 +21,24 @@
 \DeclareMathOperator{\diag}{diag}
 \newcommand{\md}{\mathrm{d}}
 \newcommand{\me}{\mathrm{e}}
-\newcommand{\mT}{\mathrm{T}}
 
 \usepackage{units}
 \usepackage{tikz}
 \usepackage{natbib}
 \usepackage{hypernat}
 
-\allowdisplaybreaks[1]
 
 \title{Supplementary Material for\\
-  \emph{Interactions between chronic diseases: asymmetric outcomes of
-    co-infection at individual and population scales} \\
+  \emph{Endemic dynamics of foot-and-mouth disease viruses in their
+    reservoir, African buffalo} \\
   Appendix 3: Model development and analysis}
 
 \author{Anna Jolles \and Erin Gorsich \and Simon Gubbins
-  \and Brianna Beechler \and Peter Buss \and Bryan Charleston
-  \and Nick Juleff \and Lin-Mari deKlerk-Lorist \and Francois Maree
+  \and Brianna Beechler \and Peter Buss \and Nick Juleff
+  \and Lin-Mari deKlerk-Lorist \and Francois Maree
   \and Eva Perez-Martin \and OL van Schalkwyk \and Katherine Scott
-  \and Jan Medlock}
+  \and Jan Medlock \and Bryan Charleston}
 
-\newcommand{\comment}[1]{\textbf{[#1]}}
 
 \begin{document}
 
@@ -195,11 +192,11 @@ with
     & \text{if $c_{\text{v}} \geq \frac{1}{\sqrt{3}}$},
   \end{cases}
 \end{equation}
-and $\{x\}$ is the fractional part of $x$
+where $\{x\}$ is the fractional part of $x$
 (\autoref{fig:birth_hazard}).  The magnitude of the seasonal variation
 is captured by the coefficient of variation $c_{\text{v}}$.  The time of year
-of the peak birth hazard is $\tau$.  The annual mean $\mu$ was chosen
-so that the population achieves the mean growth rate $r = 0$.  (See
+of the peak birth hazard is $\tau$.  The annual mean $\mu$ was determined
+so that the population has asymptotic growth rate $r = 0$.  (See
 \autoref{stable_age_structure}.)
 
 \begin{figure}
@@ -911,11 +908,8 @@ and
 Solve with root finder and $E, I, R > 0$.
 
 
-% Generate the .bbl file.
-% \bibliography{journal_abbreviations,math_epi}
-% \bibliographystyle{jpmbib}
-% Use the generated file.
-\input{\jobname.bbl}
+\bibliography{notes}
+\bibliographystyle{jpmbib}
 
 
 \end{document}

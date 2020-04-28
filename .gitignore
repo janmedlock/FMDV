@@ -1,5 +1,6 @@
 .auto/
 *.aux
+*.bbl
 *.bcf
 *.blg
 *.fdb_latexmk
