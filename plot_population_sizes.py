@@ -33,7 +33,8 @@ def plot_survival(df):
         for (p, g) in group.groupby('population_size'):
             survival = stats.get_survival(g, 'time', 'observed')
             ax.step(survival.index, survival,
-                    where='post', label=f'population size {p}')
+                    where='post',
+                    label=f'population size {p}')
 
 
 def plot_kde(df):
@@ -86,82 +87,90 @@ def plot_kde_2d(df):
                           .unique()
                           .sort_values())
     population_size_baseline = 1000
-    fig, axes = pyplot.subplots(2 + 1, 3, sharex='col', sharey='row',
-                                gridspec_kw=dict(height_ratios=(1, 1, 0.5)))
-    ylabelpad = 0
-    for (i, (model, group_model)) in enumerate(df.groupby('model')):
-        persistence_time = numpy.linspace(0, persistence_time_max[model], 301)
-        for (j, (SAT, group_SAT)) in enumerate(group_model.groupby('SAT')):
-            ax = axes[i, j]
-            density = numpy.zeros((len(persistence_time),
-                                   len(population_sizes)))
-            proportion_observed = numpy.zeros_like(population_sizes,
-                                                   dtype=float)
-            for (k, (p, g)) in enumerate(group_SAT.groupby('population_size')):
-                ser = g.time[g.observed]
-                nruns = len(g)
-                proportion_observed[k] = len(ser) / nruns
-                if proportion_observed[k] > 0:
-                    kde = statsmodels.nonparametric.api.KDEUnivariate(ser)
-                    kde.fit(cut=0)
-                    density[:, k] = kde.evaluate(persistence_time)
-                else:
-                    density[:, k] = 0
-            cmap = _get_cmap(plot_common.SAT_colors[SAT])
-            # Use raw `density` for color,
-            # but plot `density * proportion_observed`.
-            norm = colors.Normalize(vmin=0, vmax=numpy.max(density))
-            ax.imshow(density * proportion_observed,
-                      cmap=cmap, norm=norm, interpolation='bilinear',
-                      extent=(min(population_sizes), max(population_sizes),
-                              min(persistence_time), max(persistence_time)),
-                      aspect='auto', origin='lower', clip_on=False)
-            ax.autoscale(tight=True)
-            if model == 'chronic':
-                ax_po = axes[-1, j]
-                ax_po.plot(population_sizes, 1 - proportion_observed,
-                           color=plot_common.SAT_colors[SAT],
-                           clip_on=False, zorder=3)
-                ax_po.autoscale(tight=True)
-                if ax.is_first_col():
-                    ax_po.set_ylabel('persisting\n10 y',
-                                     labelpad=ylabelpad)
-                    ax_po.yaxis.set_major_formatter(
-                        plot_common.PercentFormatter())
-                    ax_po.yaxis.set_minor_locator(
-                        ticker.AutoMinorLocator(2))
-                ax_po.set_xscale('log')
-                ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
-                ax_po.xaxis.set_minor_formatter(ticker.LogFormatter())
-                if j == 1:
-                    ax_po.set_xlabel('population size')
-            if ax.is_first_row():
-                ax.set_title(f'SAT{SAT}')
-            if ax.is_last_row():
-                ax.set_xlabel('extinction time (y)')
-                ax.xaxis.set_major_locator(
-                ticker.MultipleLocator(max(persistence_time) / 5))
-                ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
-            if ax.is_first_col():
-                ax.set_ylabel('extinction\ntime (y)',
-                              labelpad=ylabelpad)
-                ax.yaxis.set_major_locator(
+    rc = {'figure.figsize': (5, 4),
+          'xtick.labelsize': 'small',
+          'ytick.labelsize': 'small',
+          'axes.labelsize': 'small',
+          'axes.titlesize': 'medium'}
+    with pyplot.rc_context(rc):
+        fig, axes = pyplot.subplots(2 + 1, 3, sharex='col', sharey='row',
+                                    gridspec_kw=dict(height_ratios=(1, 1, 0.5)))
+        ylabelpad = 0
+        for (i, (model, group_model)) in enumerate(df.groupby('model')):
+            persistence_time = numpy.linspace(0, persistence_time_max[model],
+                                              301)
+            for (j, (SAT, group_SAT)) in enumerate(group_model.groupby('SAT')):
+                ax = axes[i, j]
+                density = numpy.zeros((len(persistence_time),
+                                       len(population_sizes)))
+                proportion_observed = numpy.zeros_like(population_sizes,
+                                                       dtype=float)
+                for (k, (p, g)) in enumerate(group_SAT.groupby(
+                        'population_size')):
+                    ser = g.time[g.observed]
+                    nruns = len(g)
+                    proportion_observed[k] = len(ser) / nruns
+                    if proportion_observed[k] > 0:
+                        kde = statsmodels.nonparametric.api.KDEUnivariate(ser)
+                        kde.fit(cut=0)
+                        density[:, k] = kde.evaluate(persistence_time)
+                    else:
+                        density[:, k] = 0
+                cmap = _get_cmap(plot_common.SAT_colors[SAT])
+                # Use raw `density` for color,
+                # but plot `density * proportion_observed`.
+                norm = colors.Normalize(vmin=0, vmax=numpy.max(density))
+                ax.imshow(density * proportion_observed,
+                          cmap=cmap, norm=norm, interpolation='bilinear',
+                          extent=(min(population_sizes), max(population_sizes),
+                                  min(persistence_time), max(persistence_time)),
+                          aspect='auto', origin='lower', clip_on=False)
+                ax.autoscale(tight=True)
+                if model == 'chronic':
+                    ax_po = axes[-1, j]
+                    ax_po.plot(population_sizes, 1 - proportion_observed,
+                               color=plot_common.SAT_colors[SAT],
+                               clip_on=False, zorder=3)
+                    ax_po.autoscale(tight=True)
+                    if ax.is_first_col():
+                        ax_po.set_ylabel('persisting\n10 y',
+                                         labelpad=ylabelpad)
+                        ax_po.yaxis.set_major_formatter(
+                            plot_common.PercentFormatter())
+                        ax_po.yaxis.set_minor_locator(
+                            ticker.AutoMinorLocator(2))
+                    ax_po.set_xscale('log')
+                    ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
+                    ax_po.xaxis.set_minor_formatter(ticker.LogFormatter())
+                    if j == 1:
+                        ax_po.set_xlabel('population size')
+                if ax.is_first_row():
+                    ax.set_title(f'SAT{SAT}')
+                if ax.is_last_row():
+                    ax.set_xlabel('extinction time (y)')
+                    ax.xaxis.set_major_locator(
                     ticker.MultipleLocator(max(persistence_time) / 5))
-                ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
-    for ax in fig.axes:
-        ax.axvline(population_size_baseline,
-                   color='black', linestyle='dotted', alpha=0.7)
-        for sp in ('top', 'right'):
-            ax.spines[sp].set_visible(False)
-    fig.align_labels()
-    title_x = 0
-    fig.text(title_x, 0.72, 'Acute model',
-             rotation=90)
-    fig.text(title_x, 0.25, 'Chronic model',
-             rotation=90)
-    fig.tight_layout(pad=0, rect=(0.03, 0, 1, 1))
-    fig.savefig('plot_population_sizes.pdf')
-    fig.savefig('plot_population_sizes.png', dpi=300)
+                    ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
+                if ax.is_first_col():
+                    ax.set_ylabel('extinction\ntime (y)',
+                                  labelpad=ylabelpad)
+                    ax.yaxis.set_major_locator(
+                        ticker.MultipleLocator(max(persistence_time) / 5))
+                    ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
+        for ax in fig.axes:
+            ax.axvline(population_size_baseline,
+                       color='black', linestyle='dotted', alpha=0.7)
+            for sp in ('top', 'right'):
+                ax.spines[sp].set_visible(False)
+        fig.align_labels()
+        title_x = 0.01
+        fig.text(title_x, 0.72, 'Acute model',
+                 rotation=90, size='small')
+        fig.text(title_x, 0.25, 'Chronic model',
+                 rotation=90, size='small')
+        fig.tight_layout(pad=0, rect=(0.03, 0, 1, 1))
+        fig.savefig('plot_population_sizes.pdf')
+        fig.savefig('plot_population_sizes.png', dpi=300)
 
 
 if __name__ == '__main__':
