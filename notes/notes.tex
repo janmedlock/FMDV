@@ -5,6 +5,7 @@
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{csquotes}
 
 \usepackage{lmodern}
 
@@ -18,7 +19,6 @@
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\mat}[1]{\mathbf{#1}}
 \DeclareMathOperator{\Prob}{Prob}
-\DeclareMathOperator{\diag}{diag}
 \newcommand{\md}{\mathrm{d}}
 \newcommand{\me}{\mathrm{e}}
 
@@ -369,6 +369,7 @@ sex of each buffalo was randomly selected with probability
 $p_{\text{female}}$ of being female.
 % The simulations were started at $t = 0$ with $2$ initial infections
 % in randomly chosen members of the population.
+\cite{hedger_1972}
 
 \begin{figure}
   \centering
@@ -624,13 +625,13 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{../plot_birth_seasonality}
+  \includegraphics{../plot_birth_seasonality}
   \caption{BLAHBLAHBLAH}
 \end{figure}
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{../plot_samples_sensitivity_acute}
+  \input{../plot_samples_sensitivity_acute.pgf}
   \caption{The sensitivity of extinction time to the parameters, for
     the model with acute and chronic transmission. For each SAT, the
     model was simulated with each of 20,000 samples from the posterior
