@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from matplotlib import pyplot, ticker
+from matplotlib import gridspec, pyplot, ticker
 from matplotlib.backends import backend_pdf
 import numpy
 import pandas
@@ -10,6 +10,13 @@ import h5
 import herd
 import herd.samples
 import stats
+
+
+# Nature
+rc = {}
+# Sans-serif, preferably Helvetica or Arial.
+rc['font.family'] = 'sans-serif'
+rc['font.sans-serif'] = 'DejaVu Sans'
 
 
 def _get_extinction(infected):
@@ -170,7 +177,9 @@ param_transforms = {
 
 def plot_sensitivity(df, rank=True, errorbars=False):
     outcome = 'extinction_time'
-    models = df.index.get_level_values('model').unique()
+    # models = df.index.get_level_values('model').unique()
+    # Do chronic mdoel first to get the same colors as in Figure 4.
+    models = ('chronic', 'acute')
     SATs = df.index.get_level_values('SAT').unique()
     samples = df.index.get_level_values('sample').unique()
     params = df.columns.drop([outcome, 'extinction_observed'])
@@ -178,50 +187,65 @@ def plot_sensitivity(df, rank=True, errorbars=False):
     colors = Colors()
     width = 390 / 72.27
     height = 0.8 * width
-    rc = {'figure.figsize': (width, height),
-          'xtick.labelsize': 7,
-          'ytick.labelsize': 5,
-          'axes.labelsize': 8,
-          'axes.titlesize': 9,
-          'figure.titlesize': 10}
-    with seaborn.axes_style('whitegrid'), pyplot.rc_context(rc):
-        for model in models:
-            rho = pandas.DataFrame(index=params, columns=SATs, dtype=float)
-            if errorbars:
-                columns = pandas.MultiIndex.from_product((SATs,
-                                                          ('lower', 'upper')))
-                rho_CI = pandas.DataFrame(index=params, columns=columns,
-                                          dtype=float)
-            for SAT in SATs:
-                p = df.loc[(model, SAT, slice(None)), params]
-                p = p.dropna(axis='columns', how='all')
-                o = df.loc[(model, SAT, slice(None)), outcome]
-                if rank:
-                    rho[SAT] = stats.prcc(p, o)
-                    xlabel = 'PRCC'
-                    if errorbars:
-                        rho_CI[SAT] = stats.prcc_CI(rho[SAT], n_samples)
-                else:
-                    rho[SAT] = stats.pcc(p, o)
-                    xlabel = 'PCC'
-                    if errorbars:
-                        rho_CI[SAT] = stats.pcc_CI(rho[SAT], n_samples)
-            rho.dropna(axis='index', how='all', inplace=True)
-            if errorbars:
-                rho_CI.dropna(axis='index', how='all', inplace=True)
-            order = rho.abs().mean(axis='columns').sort_values().index
-            xabsmax = rho.abs().max().max()
-            fig, axes = pyplot.subplots(1, len(SATs),
-                                        sharex='row', sharey='row')
-            for (SAT, ax) in zip(SATs, axes):
-                x = rho.loc[order, SAT]
-                c = [colors[z] for z in order[::-1]][::-1]
+    rc_ = rc.copy()
+    rc_['figure.figsize'] = (width, height)
+    rc_['xtick.labelsize'] = 7
+    rc_['ytick.labelsize'] = 7
+    rc_['axes.labelsize'] = 8
+    rc_['axes.titlesize'] = 9
+    for model in models:
+        rho = pandas.DataFrame(index=params, columns=SATs, dtype=float)
+        if errorbars:
+            columns = pandas.MultiIndex.from_product((SATs,
+                                                      ('lower', 'upper')))
+            rho_CI = pandas.DataFrame(index=params, columns=columns,
+                                      dtype=float)
+        for SAT in SATs:
+            p = df.loc[(model, SAT, slice(None)), params]
+            p = p.dropna(axis='columns', how='all')
+            o = df.loc[(model, SAT, slice(None)), outcome]
+            if rank:
+                rho[SAT] = stats.prcc(p, o)
+                xlabel = 'PRCC'
+                if errorbars:
+                    rho_CI[SAT] = stats.prcc_CI(rho[SAT], n_samples)
+            else:
+                rho[SAT] = stats.pcc(p, o)
+                xlabel = 'PCC'
+                if errorbars:
+                    rho_CI[SAT] = stats.pcc_CI(rho[SAT], n_samples)
+        rho.dropna(axis='index', how='all', inplace=True)
+        if errorbars:
+            rho_CI.dropna(axis='index', how='all', inplace=True)
+        # Sort rows on mean absolute values.
+        order = rho.abs().mean(axis='columns').sort_values().index
+        rho = rho.loc[order]
+        if errorbars:
+            rho_CI = rho_CI.loc[order]
+        xabsmax = rho.abs().max().max()
+        y = range(len(rho))
+        ylabels = [param_transforms.get(p, p)
+                                   .capitalize()
+                                   .replace('_', ' ')
+                   for p in rho.index]
+        ncols = len(SATs)
+        with pyplot.rc_context(rc_):
+            fig = pyplot.figure(constrained_layout=True)
+            gs = gridspec.GridSpec(1, ncols, figure=fig)
+            axes = numpy.empty(ncols, dtype=object)
+            axes[0] = None  # Make sharey work for axes[0].
+            for col in range(ncols):
+                # Share the y scale.
+                sharey = axes[0]
+                axes[col] = fig.add_subplot(gs[0, col],
+                                            sharey=sharey)
+            for ((SAT, rho_SAT), ax) in zip(rho.items(), axes):
+                colors_ = [colors[z] for z in order[::-1]][::-1]
                 if errorbars:
                     rho_err = pandas.DataFrame({
                         'lower': rho[SAT] - rho_CI[(SAT, 'lower')],
                         'upper': rho_CI[(SAT, 'upper')] - rho[SAT]}).T
-                    xerr = rho_err[order].values
-                    kwds = dict(xerr=xerr,
+                    kwds = dict(xerr=rho_err.values,
                                 error_kw=dict(ecolor='black',
                                               elinewidth=1.5,
                                               capthick=1.5,
@@ -229,27 +253,25 @@ def plot_sensitivity(df, rank=True, errorbars=False):
                                               alpha=0.6))
                 else:
                     kwds = dict()
-                y = range(len(x))
-                ax.barh(y, x, height=1, left=0,
-                        align='center', color=c, edgecolor=c,
+                ax.barh(y, rho_SAT, height=1, left=0,
+                        align='center', color=colors_, edgecolor=colors_,
                         **kwds)
-                ax.xaxis.set_major_formatter(
-                    ticker.StrMethodFormatter('{x:g}'))
-                ax.set_xlim(- xabsmax, xabsmax)
-                # ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(n=2))
                 ax.set_xlabel(xlabel)
+                ax.set_xlim(- xabsmax, xabsmax)
+                ax.set_ylim(- 0.5, len(rho) - 0.5)
+                ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(n=2))
+                ax.yaxis.set_tick_params(which='both', left=False, right=False,
+                                         pad=85)
                 ax.set_title(f'SAT{SAT}')
-                ax.grid(False, axis='y', which='both')
                 if ax.is_first_col():
-                    ax.tick_params(axis='y', pad=35)
                     ax.set_yticks(y)
-                    ax.set_ylim(- 0.5, len(x) - 0.5)
-                    ylabels = [param_transforms.get(x, x).replace('_', '\n')
-                               for x in order]
-                    ax.set_yticklabels(ylabels, horizontalalignment='center')
-            seaborn.despine(fig, top=True, bottom=False, left=True, right=True)
-            fig.tight_layout()
-            fig.savefig(f'samples_sensitivity_{model}.pgf')
+                    ax.set_yticklabels(ylabels, horizontalalignment='left')
+                else:
+                    ax.yaxis.set_tick_params(which='both',
+                                             labelleft=False, labelright=False)
+                    ax.yaxis.offsetText.set_visible(False)
+                for sp in ('top', 'left', 'right'):
+                    ax.spines[sp].set_visible(False)
             fig.savefig(f'samples_sensitivity_{model}.pdf')
 
 

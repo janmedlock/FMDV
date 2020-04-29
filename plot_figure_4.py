@@ -128,8 +128,8 @@ def plot_sensitivity_samples(axes):
     xabsmax = rho.abs().max().max()
     y = range(len(rho))
     ylabels = [plot_samples.param_transforms.get(p, p)
-                           .capitalize()
-                           .replace('_', ' ')
+                                            .capitalize()
+                                            .replace('_', ' ')
                for p in rho.index]
     for ((SAT, rho_SAT), ax) in zip(rho.items(), axes):
         ax.barh(y, rho_SAT, height=1, left=0,
