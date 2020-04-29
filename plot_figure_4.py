@@ -192,4 +192,4 @@ def plot():
 
 if __name__ == '__main__':
     fig = plot()
-    # pyplot.show()
+    pyplot.show()
