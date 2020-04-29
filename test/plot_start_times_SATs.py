@@ -1,15 +1,18 @@
 #!/usr/bin/python3
 
 import os.path
+import sys
 
 from matplotlib import pyplot
 import numpy
 import pandas
 import seaborn
 
+sys.path.append('..')
 import h5
 import plot_common
 import run_common
+sys.path.pop()
 
 
 # All files are relative to this source file.
@@ -18,35 +21,13 @@ _path = os.path.dirname(__file__)
 filename = os.path.join(_path, 'run_start_times_SATs.h5')
 
 
-def get_downsampled():
-    t_max = 10 + 11 / 12
-    base, ext = os.path.splitext(filename)
-    filename_ds = base + '_downsampled' + ext
-    if not os.path.exists(filename_ds):
-        plot_common.build_downsampled(filename, t_max=t_max)
-    return h5.HDFStore(filename_ds, mode='r')
-
-
-def _build_infected(filename_out):
-    store = get_downsampled()
-    where = 'start_time=0'
-    columns = ['exposed', 'infectious', 'chronic']
-    infected = []
-    for chunk in store.select(where=where, columns=columns, iterator=True):
-        infected.append(chunk.sum(axis='columns'))
-    infected = pandas.concat(infected, copy=False)
-    infected.name = 'infected'
-    h5.dump(infected, filename_out, mode='w',
-            min_itemsize=run_common._min_itemsize)
-
-
 def get_infected(model='acute'):
     filename_infected = os.path.join(_path,
                                      'plot_start_times_SATs_infected.h5')
     try:
         infected = h5.load(filename_infected)
     except FileNotFoundError:
-        _build_infected(filename_infected)
+        plot_common._build_infected(filename, filename_infected)
         infected = h5.load(filename_infected)
     return infected.loc[model]
 
@@ -80,39 +61,13 @@ def plot_infected(model='acute'):
     pyplot.savefig(f'plot_start_times_SATs_infected_{model}.pdf')
 
 
-def _build_extinction_time_group(infected):
-    if infected.iloc[-1] == 0:
-        t = infected.index.get_level_values(plot_common.t_name)
-        return t.max() - t.min()
-    else:
-        return numpy.nan
-
-
-def _build_extinction_time(filename_out):
-    with h5.HDFStore(filename, mode='r') as store:
-        by = [n for n in store.get_index_names() if n != plot_common.t_name]
-        # Only the first start time.
-        where = 'start_time=0'
-        # Only the infected columns.
-        columns = ['exposed', 'infectious', 'chronic']
-        ser = {}
-        for (ix, group) in store.groupby(by, where=where, columns=columns):
-            infected = group.sum(axis='columns')
-            ser[ix] = _build_extinction_time_group(infected)
-    ser = pandas.Series(ser, name='extinction time (days)')
-    ser.rename_axis(by, inplace=True)
-    ser *= 365
-    h5.dump(ser, filename_out, mode='w',
-            min_itemsize=run_common._min_itemsize)
-
-
 def get_extinction_time(model='acute'):
     filename_et = os.path.join(_path,
                                'plot_start_times_SATs_extinction_time.h5')
     try:
         extinction_time = h5.load(filename_et)
     except FileNotFoundError:
-        _build_extinction_time(filename_et)
+        plot_common._build_extinction_time(filename, filename_et)
         extinction_time = h5.load(filename_et)
     return extinction_time.loc[model]
 

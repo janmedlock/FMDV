@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import itertools
+import sys
 import time
 
 from joblib import delayed, Parallel
@@ -8,8 +9,10 @@ from matplotlib import pyplot
 import pandas
 import seaborn
 
+sys.path.append('..')
 import herd
 import run_common
+sys.path.pop()
 
 
 def get_mean(data):

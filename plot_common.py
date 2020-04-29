@@ -9,6 +9,11 @@ import h5
 import run_common
 
 
+# All files are relative to this source file.
+_path = os.path.dirname(__file__)
+
+filename = os.path.join(_path, 'run.h5')
+
 t_name = 'time (y)'
 
 
@@ -37,6 +42,72 @@ def build_downsample(filename_in, t_min=0, t_max=10, t_step=1/365):
                           min_itemsize=run_common._min_itemsize)
         store_out.create_table_index()
         store_out.repack()
+
+
+def get_downsampled(filename):
+    t_max = 10 + 11 / 12
+    base, ext = os.path.splitext(filename)
+    filename_ds = base + '_downsampled' + ext
+    if not os.path.exists(filename_ds):
+        build_downsampled(filename, t_max=t_max)
+    return h5.HDFStore(filename_ds, mode='r')
+
+
+def _build_infected(filename, filename_out):
+    store = get_downsampled(filename)
+    columns = ['exposed', 'infectious', 'chronic']
+    infected = []
+    for chunk in store.select(columns=columns, iterator=True):
+        infected.append(chunk.sum(axis='columns'))
+    infected = pandas.concat(infected, copy=False)
+    infected.name = 'infected'
+    h5.dump(infected, filename_out, mode='w',
+            min_itemsize=run_common._min_itemsize)
+
+
+def get_infected(model='acute'):
+    filename_infected = os.path.join(_path, 'plot_common_infected.h5')
+    try:
+        infected = h5.load(filename_infected)
+    except OSError:
+        _build_infected(filename, filename_infected)
+        infected = h5.load(filename_infected)
+    return infected.loc[model]
+
+
+def _build_extinction_time_group(infected):
+    if infected.iloc[-1] == 0:
+        t = infected.index.get_level_values(t_name)
+        return t.max() - t.min()
+    else:
+        return numpy.nan
+
+
+def _build_extinction_time(filename, filename_out):
+    with h5.HDFStore(filename, mode='r') as store:
+        by = [n for n in store.get_index_names() if n != t_name]
+        # Only the infected columns.
+        columns = ['exposed', 'infectious', 'chronic']
+        ser = {}
+        for (ix, group) in store.groupby(by, columns=columns):
+            infected = group.sum(axis='columns')
+            ser[ix] = _build_extinction_time_group(infected)
+    ser = pandas.Series(ser, name='extinction time (days)')
+    ser.rename_axis(by, inplace=True)
+    ser *= 365
+    h5.dump(ser, filename_out, mode='w',
+            min_itemsize=run_common._min_itemsize)
+
+
+def get_extinction_time(model='acute'):
+    filename_et = os.path.join(_path,
+                               'plot_common_extinction_time.h5')
+    try:
+        extinction_time = h5.load(filename_et)
+    except OSError:
+        _build_extinction_time(filename, filename_et)
+        extinction_time = h5.load(filename_et)
+    return extinction_time.loc[model]
 
 
 def set_violins_linewidth(ax, lw):

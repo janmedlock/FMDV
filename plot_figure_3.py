@@ -1,19 +1,17 @@
 #!/usr/bin/python3
 #
 # TODO
-# * Label alignment.
 # * Check width of figure with diagram.
 
-from matplotlib import gridspec
-from matplotlib import pyplot
-from matplotlib import ticker
+import subprocess
+
+from matplotlib import gridspec, pyplot, ticker
 import numpy
 import pandas
 import seaborn
 import statsmodels.nonparametric.api
 
 import plot_common
-import plot_start_times_SATs
 import run_common
 
 
@@ -45,10 +43,10 @@ def load():
     infected = []
     extinction_time = []
     for model in ('acute', 'chronic'):
-        i = plot_start_times_SATs.get_infected(model=model)
+        i = plot_common.get_infected(model=model)
         run_common._prepend_index_levels(i, model=model)
         infected.append(i)
-        e = plot_start_times_SATs.get_extinction_time(model=model)
+        e = plot_common.get_extinction_time(model=model)
         run_common._prepend_index_levels(e, model=model)
         extinction_time.append(e)
     infected = pandas.concat(infected)
@@ -57,12 +55,8 @@ def load():
 
 
 def plot_infected(ax, infected, model, SAT):
-    nruns = 1000
-    ix = (model, SAT, slice(None), slice(0, nruns))
-    # Remove all indices except 'run' and 'time'.
-    to_drop = infected.index.names[:-2]
     # .unstack('run') puts 'run' on columns, time on rows.
-    i = infected.loc[ix].unstack('run').reset_index(to_drop, drop=True)
+    i = infected.loc[(model, SAT)].unstack('run')
     # Start time at 0.
     t = i.index - i.index.min()
     ax.plot(365 * t, i, color=plot_common.SAT_colors[SAT],
@@ -174,8 +168,7 @@ def plot(infected, extinction_time):
         # Shade time region from acute-model column
         # in chronic-model column.
         col_chronic = numpy.where(models == 'chronic')[0][0]
-        ix = ('acute', )
-        e_acute = extinction_time.loc[('acute', )]
+        e_acute = extinction_time.loc['acute']
         assert e_acute.notnull().all()
         e_acute_mask = e_acute.max()
         color = pyplot.rcParams['grid.color']
@@ -199,10 +192,17 @@ def plot(infected, extinction_time):
             row_i = 2 * i
             row_e = 2 * i + 1
             fig.align_ylabels(axes[[row_i, row_e], 0])
-        fig.savefig('plot_figure.pdf')
+        fig.savefig('figure_3_no_diagram.pdf')
+
+
+def build():
+    subprocess.check_call(['pdflatex', '--synctex=15', 'figure_3.tex'])
+    subprocess.check_call(['pdftocairo', '-png', '-r', '300', '-singlefile',
+                           'figure_3.pdf'])
 
 
 if __name__ == '__main__':
     infected, extinction_time = load()
     plot(infected, extinction_time)
+    build()
     pyplot.show()

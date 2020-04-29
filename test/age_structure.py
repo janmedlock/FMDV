@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 import sys
-sys.path.append('..')
 
 from joblib import delayed, Parallel
 from matplotlib import pyplot
 import numpy
 from scipy.integrate import quad
 
+sys.path.append('..')
 from herd import Parameters
 import herd.age_structure
 import herd.mortality
 from herd.utility import arange
+sys.path.pop()
+
 
 start_times = numpy.linspace(0, 1, 4, endpoint=False)
 ages = arange(0, 25, 0.01, endpoint=True)

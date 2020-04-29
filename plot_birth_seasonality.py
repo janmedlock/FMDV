@@ -203,8 +203,8 @@ def plot_kde_2d(df):
         fig.text(title_x, 0.25, 'Chronic model',
                  rotation=90, size='small')
         fig.tight_layout(pad=0, rect=(0.03, 0, 1, 1))
-        fig.savefig('plot_birth_seasonality.pdf')
-        fig.savefig('plot_birth_seasonality.png', dpi=300)
+        fig.savefig('birth_seasonality.pdf')
+        fig.savefig('birth_seasonality.png', dpi=300)
 
 
 if __name__ == '__main__':

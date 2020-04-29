@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import numpy
 import functools
+
+import numpy
 from matplotlib import pyplot
 import mpl_toolkits.mplot3d
 

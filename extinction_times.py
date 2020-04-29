@@ -50,7 +50,7 @@ def number_infected(x):
     return (E + I)
 
 
-def find_extinction_times(parameters, tmax, nruns, *args, **kwds):
+def find(parameters, tmax, nruns, *args, **kwds):
     data = run_common.run_many(parameters, tmax, nruns, *args, **kwds)
     (T, X) = zip(*(zip(*d) for d in data))
     extinction_times = [t[-1] if (number_infected(x[-1]) == 0) else None
@@ -68,7 +68,7 @@ def proportion_ge_x(D, x):
     return float(len(numpy.compress(numpy.asarray(D) >= x, D))) / float(len(D))
 
 
-def find_stats(extinction_times):
+def get_stats(extinction_times):
     mystats = {}
     mystats['median'] = numpy.median(extinction_times)
     mystats['mean'] = numpy.mean(extinction_times)
@@ -78,32 +78,3 @@ def find_stats(extinction_times):
     mystats['proportion >= 1'] = proportion_ge_x(extinction_times, 1)
     mystats['proportion >= 10'] = proportion_ge_x(extinction_times, 10)
     return mystats
-
-
-def show_stats(mystats):
-    print('stats: {'
-          + ',\n        '.join(['{} = {}'.format(k, v)
-                                for (k, v) in mystats.items()])
-          + '}')
-
-
-if __name__ == '__main__':
-    import herd
-
-    SAT = 1
-    model = 'chronic'
-
-    p = herd.Parameters(model=model, SAT=SAT)
-
-    p.population_size = 100
-    p.infection_duration = 21 / 365
-    p.birth_seasonal_coefficient_of_variation = 1
-
-    nruns = 10000
-    tmax = 10
-    debug = False
-
-    extinction_times = find_extinction_times(p, tmax, nruns, debug = debug)
-
-    mystats = find_stats(extinction_times)
-    show_stats(mystats)

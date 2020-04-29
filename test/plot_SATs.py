@@ -2,16 +2,18 @@
 
 import csv
 import itertools
+import sys
 
-from matplotlib import patches
-from matplotlib import pyplot
-from matplotlib import ticker
+from matplotlib import patches, pyplot, ticker
 import numpy
 import pandas
 import seaborn
 from scipy import integrate
 
+sys.path.append('..')
 import h5
+sys.path.pop()
+
 
 seaborn.set_context('talk')
 

@@ -1,20 +1,20 @@
 #!/usr/bin/python3
 import subprocess
+import sys
 from time import perf_counter, process_time
 
 from matplotlib import pyplot
 import numpy
 from scipy.integrate import quad
 
-import sys
-sys.path.append('..')
-
 # Rebuild the 'monodromy' module, if necessary.
 subprocess.run(['make'], cwd='../herd/floquet', check=True)
 
+sys.path.append('..')
 from herd import mortality, Parameters
 from herd.floquet import floquet
 from herd.utility import arange
+sys.path.pop()
 
 
 def find_stable_age_structure(parameters, fast=False):

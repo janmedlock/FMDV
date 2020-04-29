@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 import sys
-sys.path.append('..')
 
 from matplotlib import pyplot
 import numpy
 
+sys.path.append('..')
 from herd import Parameters, RandomVariables
+sys.path.pop()
 
 
 model = 'chronic'

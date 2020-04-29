@@ -158,8 +158,8 @@ def plot():
         fig.align_labels(axes_samples)
         fig.align_labels(axes_population_sizes)
         fig.tight_layout(pad=0.5)
-        fig.savefig('plot_sensitivity.pdf')
-        fig.savefig('plot_sensitivity.png', dpi=300)
+        fig.savefig('figure_4.pdf')
+        fig.savefig('figure_4.png', dpi=300)
     return fig
 
 

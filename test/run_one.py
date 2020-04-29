@@ -1,12 +1,15 @@
 #!/usr/bin/python3
 
+import sys
 import time
-
-import herd
-import run_common
 
 from matplotlib import pyplot
 import seaborn
+
+sys.path.append('..')
+import herd
+import run_common
+sys.path.pop()
 
 
 def make_plot(data, show=True):

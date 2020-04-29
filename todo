@@ -1,13 +1,4 @@
-* Get git repo in shape to publish.
-
-* Clean up notes/notes.tex.
-** Initial conditions.
-   Hedger RS. Foot-and-mouth disease and the African buffalo (Syncerus
-   caffer). Journal of comparative pathology. 1972 Jan 1;82(1):19-28.
-
 * Touch up parameter names in plot_samples.plot_sensitivity().
-
-* Edit manuscript and methods.
 
 * Generate good initial condtions by solving PDEs.
 

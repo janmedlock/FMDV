@@ -88,7 +88,7 @@ def plot_times(df):
         # a = numpy.ceil(numpy.log10(1 / len(df)) - 1)
         # ax.set_ylim(10 ** a, 1)
         ax.legend()
-        fig.savefig('plot_samples_times.pdf')
+        fig.savefig('samples_times.pdf')
 
 
 def plot_parameters(df, rank=True, marker='.', s=1, alpha=0.6):
@@ -100,7 +100,7 @@ def plot_parameters(df, rank=True, marker='.', s=1, alpha=0.6):
     colors = seaborn.color_palette('tab20', 20)
     # Put dark colors first, then light.
     colors = colors[0::2] + colors[1::2]
-    with backend_pdf.PdfPages('plot_samples_parameters.pdf') as pdf:
+    with backend_pdf.PdfPages('samples_parameters.pdf') as pdf:
         for model in models:
             for SAT in SATs:
                 X = df.loc[(model, SAT, slice(None)), params]
@@ -249,13 +249,13 @@ def plot_sensitivity(df, rank=True, errorbars=False):
                     ax.set_yticklabels(ylabels, horizontalalignment='center')
             seaborn.despine(fig, top=True, bottom=False, left=True, right=True)
             fig.tight_layout()
-            fig.savefig(f'plot_samples_sensitivity_{model}.pgf')
-            fig.savefig(f'plot_samples_sensitivity_{model}.pdf')
+            fig.savefig(f'samples_sensitivity_{model}.pgf')
+            fig.savefig(f'samples_sensitivity_{model}.pdf')
 
 
 if __name__ == '__main__':
     df = load_extinction_times()
-    plot_times(df)
+    # plot_times(df)
     # plot_parameters(df)
     plot_sensitivity(df)
     pyplot.show()

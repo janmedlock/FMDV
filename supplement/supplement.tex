@@ -26,7 +26,7 @@
 \usepackage{tikz}
 
 \usepackage[style=nature, autocite=superscript, sortcites=true]{biblatex}
-\addbibresource{notes.bib}
+\addbibresource{supplement.bib}
 
 
 \title{Supplementary Material for\\
@@ -88,7 +88,7 @@ The distributions are detailed below.  (See also \autoref{fig:distributions}.)
 
 \begin{figure}
   \centering
-  \input{diagram.tex}
+  \input{../diagram/diagram.tex}
   \caption{Model diagram.  The dashed box and arrows show the state
     and transitions present in the chronic model but not the acute
     model.}
@@ -361,24 +361,27 @@ exponential random variable with mean
 $\mu_{\text{chronic recovery}}$.
 
 
+\begin{figure}
+  \centering
+  \input{distributions.pgf}
+  \caption{Hazards and survivals for the model events.}
+  \label{fig:distributions}
+\end{figure}
+
+
 \section{Initial conditions}
 
 A sample of size $N$ from the stable age structure was used to
 initialize the population.  (See \autoref{stable_age_structure}.)  The
 sex of each buffalo was randomly selected with probability
 $p_{\text{female}}$ of being female.
-% The simulations were started at $t = 0$ with $2$ initial infections
-% in randomly chosen members of the population.
+
+The simulations were started at $t = 0$ with $2$ initial infections
+in randomly chosen members of the population.
+
 \cite{hedger_1972}
 
-\begin{figure}
-  \centering
-  \input{distributions.pgf}
-  \caption{Hazards and survivals for the model events.
-    \textbf{Others: transmission rate, chronic transmission rate,
-      chronicity, stable age distribution.}}
-  \label{fig:distributions}
-\end{figure}
+\cite{medlock_2020}
 
 
 \section{Stable age structure}
@@ -402,8 +405,8 @@ The mean rate of female births $B(t)$ follows the Lotka equation
   \end{split}
 \end{equation}
 where $n_0(a)$ is the density of age $a$ females at time $t = 0$
-% Chapter VI, Section 29 on pp.~159--161 of harris_1963.
-% Chapter 20 on pp.~353--364 of kot_01.
+% Chapter VI, Section 29 on pp.~159--161 of harris_1963
+% Chapter 20 on pp.~353--364 of kot_01
 \autocite{harris_1963, kot_01}.
 % For large $t$, the contribution of the initial cohort---the second
 % integral in \eqref{lotka}---becomes negligible, so
@@ -625,7 +628,21 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 
 \begin{figure}
   \centering
-  \includegraphics{../plot_population_sizes}
+  % \input{stable_age_distribution.pgf}
+  \caption{TODO: Write caption. Reference this figure in the text.}
+  \label{fig:stable_age_distribution}
+\end{figure}
+
+
+\printbibliography
+
+
+\clearpage
+\section*{Supplemental Results Figures}
+
+\begin{figure}
+  \centering
+  \includegraphics{../population_sizes}
   \caption{The sensitivity of extinction time to buffalo population
     size.
     For each model and each SAT, the model was simulated for 1000 runs
@@ -644,7 +661,7 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 
 \begin{figure}
   \centering
-  \includegraphics{../plot_birth_seasonality}
+  \includegraphics{../birth_seasonality}
   \caption{The sensitivity of extinction time to birth seasonality.
     For each model and each SAT, the model was simulated for
     1000 runs at 0, 0.5, 1 (baseline, dotted vertical lines), 1.5, and
@@ -662,7 +679,7 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 
 \begin{figure}
   \centering
-  \input{../plot_samples_sensitivity_acute.pgf}
+  \input{../samples_sensitivity_acute.pgf}
   \caption{The sensitivity of extinction time to the parameters, for
     the model with only acute transmission.  The graphs show, for each
     SAT, the sensitivity, measured by the partial rank correlation
@@ -671,9 +688,6 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
     The model was simulated with each of 20,000 samples from the
     posterior distributions of the parameters (Fig.~2; Tables S2, S3).}
 \end{figure}
-
-
-\printbibliography
 
 
 \end{document}

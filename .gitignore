@@ -17,4 +17,5 @@
 __pycache__/
 _cache/
 /herd/floquet/monodromy*.so
-/Erin/
+/manuscript/
+/orphans/

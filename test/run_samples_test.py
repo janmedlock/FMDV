@@ -1,13 +1,16 @@
 #!/usr/bin/python3
 
 import os.path
+import sys
 
+sys.path.append('..')
 import herd
 import run_samples
+sys.path.pop()
 
 
 def get_path_and_logging_prefix(model, SAT):
-    path = os.path.join(run_samples._path, model, str(SAT))
+    path = os.path.join('..', run_samples._path, model, str(SAT))
     logging_prefix = f'model {model}, SAT {SAT}, '
     return (path, logging_prefix)
 

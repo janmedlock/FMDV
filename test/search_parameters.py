@@ -4,9 +4,11 @@ import sys
 import os.path
 import csv
 
+sys.path.append('..')
 import herd
 from herd import birth
 import extinction_times
+sys.path.pop()
 
 
 def search_parameter(parameter_name, values, parameters, tmax, nruns,
