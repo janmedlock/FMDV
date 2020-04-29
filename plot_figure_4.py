@@ -41,7 +41,7 @@ def _get_density(endog, times):
         return numpy.zeros_like(times)
 
 
-def plot_population_sizes_(axes):
+def plot_sensitivity_population_sizes(axes):
     df = load_population_sizes()
     population_sizes = (df.index
                           .get_level_values('population_size')
@@ -76,20 +76,20 @@ def plot_population_sizes_(axes):
                                  labelbottom=False, labeltop=False)
         ax.xaxis.offsetText.set_visible(False)
         if ax.is_first_col():
-            ax.set_ylabel('extinction\ntime (y)', labelpad=ylabelpad)
+            ax.set_ylabel('Extinction\ntime (y)', labelpad=ylabelpad)
             ax.yaxis.set_major_locator(
                 ticker.MultipleLocator(max(persistence_time) / 5))
             ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         ax_po.plot(population_sizes, 1 - proportion_observed,
                    color=plot_common.SAT_colors[SAT],
                    clip_on=False, zorder=3)
-        ax_po.set_xlabel('population size')
+        ax_po.set_xlabel('Population size')
         ax_po.set_xscale('log')
         ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
         ax_po.yaxis.set_major_formatter(plot_common.PercentFormatter())
         ax_po.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         if ax_po.is_first_col():
-            ax_po.set_ylabel('persisting\n10 y', labelpad=ylabelpad)
+            ax_po.set_ylabel('Persisting\n10 y', labelpad=ylabelpad)
         for ax_ in {ax, ax_po}:
             ax_.axvline(population_size_baseline,
                         color='black', linestyle='dotted', alpha=0.7)
@@ -108,7 +108,7 @@ def _get_prcc(df, params, outcome):
                       df[outcome])
 
 
-def plot_samples_(axes):
+def plot_sensitivity_samples(axes):
     df = load_samples()
     outcome = 'extinction_time'
     SATs = df.index.get_level_values('SAT').unique()
@@ -122,7 +122,9 @@ def plot_samples_(axes):
     rho = rho.loc[order]
     xabsmax = rho.abs().max().max()
     y = range(len(rho))
-    ylabels = [plot_samples.param_transforms.get(p, p).replace('_', ' ')
+    ylabels = [plot_samples.param_transforms.get(p, p)
+                           .capitalize()
+                           .replace('_', ' ')
                for p in rho.index]
     ylabelpad = 30
     for ((SAT, rho_SAT), ax) in zip(rho.items(), axes):
@@ -151,8 +153,8 @@ def plot():
             gridspec_kw=dict(height_ratios=height_ratios))
         axes_samples = axes[0]
         axes_population_sizes = axes[1:]
-        plot_samples_(axes_samples)
-        plot_population_sizes_(axes_population_sizes)
+        plot_sensitivity_samples(axes_samples)
+        plot_sensitivity_population_sizes(axes_population_sizes)
         for (SAT, ax) in zip(SATs, axes[0]):
             ax.set_title(f'SAT{SAT}')
         fig.align_labels(axes_samples)
