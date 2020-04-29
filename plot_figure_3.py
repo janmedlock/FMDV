@@ -7,7 +7,6 @@ import subprocess
 
 from matplotlib import gridspec, pyplot, ticker
 import numpy
-import pandas
 import seaborn
 import statsmodels.nonparametric.api
 
@@ -40,17 +39,14 @@ rc['xtick.labelsize'] = rc['ytick.labelsize'] = 5
 
 
 def load():
-    infected = []
-    extinction_time = []
-    for model in ('acute', 'chronic'):
-        i = plot_common.get_infected(model=model)
-        run_common._prepend_index_levels(i, model=model)
-        infected.append(i)
-        e = plot_common.get_extinction_time(model=model)
-        run_common._prepend_index_levels(e, model=model)
-        extinction_time.append(e)
-    infected = pandas.concat(infected)
-    extinction_time = pandas.concat(extinction_time)
+    infected = plot_common.get_infected()
+    extinction_time = plot_common.get_extinction_time()
+    # Convert from years to days.
+    i = infected.index.names.index('time (y)')
+    times = infected.index.levels[i] * 365
+    infected.index.set_levels(times, level='time (y)', inplace=True)
+    infected.rename_axis(index={'time (y)': 'time (d)'}, inplace=True)
+    extinction_time *= 365
     return (infected, extinction_time)
 
 
@@ -59,11 +55,11 @@ def plot_infected(ax, infected, model, SAT):
     i = infected.loc[(model, SAT)].unstack('run')
     # Start time at 0.
     t = i.index - i.index.min()
-    ax.plot(365 * t, i, color=plot_common.SAT_colors[SAT],
+    ax.plot(t, i, color=plot_common.SAT_colors[SAT],
             alpha=0.15, linewidth=0.5, drawstyle='steps-pre')
     # `i.fillna(0)` gives mean including those that
     # have gone extinct.
-    ax.plot(365 * t, i.fillna(0).mean(axis='columns'), color='black',
+    ax.plot(t, i.fillna(0).mean(axis='columns'), color='black',
             alpha=1)
     # Tighten y-axis limits.
     ax.margins(y=0)
@@ -110,13 +106,15 @@ def plot_extinction_time(ax, extinction_time, model, SAT):
     color = plot_common.SAT_colors[SAT]
     kdeplot(e.dropna(), ax=ax, color=color, shade=True)
     not_extinct = len(e[e.isnull()]) / len(e)
+    arrow_loc = {'chronic': {1: (0.92, 0.65),
+                             3: (0.96, 0.8)}}
     if not_extinct > 0:
         # 0.6 -> 0.3, 1 -> 1.
         pad = (1 - 0.3) / (1 - 0.6) * (not_extinct - 0.6) + 0.3
         bbox = dict(boxstyle=f'rarrow, pad={pad}',
                     facecolor=color, linewidth=0)
         ax.annotate('{:g}%'.format(not_extinct * 100),
-                    (0.92, 0.8), xycoords='axes fraction',
+                    arrow_loc[model][SAT], xycoords='axes fraction',
                     bbox=bbox, color='white',
                     verticalalignment='bottom',
                     horizontalalignment='right')
@@ -170,21 +168,21 @@ def plot(infected, extinction_time):
         col_chronic = numpy.where(models == 'chronic')[0][0]
         e_acute = extinction_time.loc['acute']
         assert e_acute.notnull().all()
-        e_acute_mask = e_acute.max()
+        e_acute_mask = e_acute.max(level='SAT')
         color = pyplot.rcParams['grid.color']
         for (i, SAT) in enumerate(SATs):
             for row in range(2 * i, 2 * i + 2):
-                _, margin = axes[row, col_chronic].margins()
-                axes[row, col_chronic].axvspan(0, e_acute_mask * (1 + margin),
-                                               color=color, alpha=0.5,
-                                               linewidth=0)
+                ax = axes[row, col_chronic]
+                ax.axvspan(0, e_acute_mask[SAT],
+                           color=color, alpha=0.5, linewidth=0)
         # I get weird results if I set these limits individually.
-        for row in range(nrows):
-            for col in range(ncols):
-                axes[row, col].set_xlim(left=0)
-                axes[row, col].set_ylim(bottom=0)
+        for (i, SAT) in enumerate(SATs):
+            for (col, model) in enumerate(models):
+                for row in (2 * i, 2 * i + 1):
+                    ax = axes[row, col]
+                    ax.set_xlim(left=0)
+                    ax.set_ylim(bottom=0)
         seaborn.despine(fig=fig, top=True, right=True, bottom=False, left=False)
-        # fig.align_labels()
         # For some reason, aligning the rows and columns works better
         # than aligning all axes.
         fig.align_xlabels(axes[-1, :])
@@ -196,7 +194,8 @@ def plot(infected, extinction_time):
 
 
 def build():
-    subprocess.check_call(['pdflatex', '--synctex=15', 'figure_3.tex'])
+    subprocess.check_call(['latexmk', '-pdf', 'figure_3'])
+    subprocess.check_call(['latexmk', '-c', 'figure_3'])
     subprocess.check_call(['pdftocairo', '-png', '-r', '300', '-singlefile',
                            'figure_3.pdf'])
 
