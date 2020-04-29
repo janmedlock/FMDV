@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from matplotlib import gridspec, pyplot, ticker
+from matplotlib import pyplot, ticker
 from matplotlib.backends import backend_pdf
 import numpy
 import pandas
@@ -231,7 +231,7 @@ def plot_sensitivity(df, rank=True, errorbars=False):
         ncols = len(SATs)
         with pyplot.rc_context(rc_):
             fig = pyplot.figure(constrained_layout=True)
-            gs = gridspec.GridSpec(1, ncols, figure=fig)
+            gs = fig.add_gridspec(1, ncols)
             axes = numpy.empty(ncols, dtype=object)
             axes[0] = None  # Make sharey work for axes[0].
             for col in range(ncols):

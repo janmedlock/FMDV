@@ -5,7 +5,7 @@
 
 import subprocess
 
-from matplotlib import gridspec, pyplot, ticker
+from matplotlib import pyplot, ticker
 import numpy
 import seaborn
 import statsmodels.nonparametric.api
@@ -141,9 +141,9 @@ def plot(infected, extinction_time):
     width_ratios = (1, 1)
     with seaborn.axes_style('whitegrid'), pyplot.rc_context(rc=rc):
         fig = pyplot.figure(constrained_layout=True)
-        gs = gridspec.GridSpec(nrows, ncols, figure=fig,
-                               height_ratios=height_ratios,
-                               width_ratios=width_ratios)
+        gs = fig.add_gridspec(nrows, ncols,
+                              height_ratios=height_ratios,
+                              width_ratios=width_ratios)
         axes = numpy.empty((nrows, ncols), dtype=object)
         axes[0, 0] = None  # Make sharex & sharey work for axes[0, 0].
         for row in range(nrows):

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from matplotlib import colors, gridspec, pyplot, ticker
+from matplotlib import colors, pyplot, ticker
 import numpy
 
 import plot_common
@@ -66,18 +66,17 @@ def plot_sensitivity_population_sizes(axes):
         ax.xaxis.set_tick_params(which='both',
                                  labelbottom=False, labeltop=False)
         ax.xaxis.offsetText.set_visible(False)
+        ax.yaxis.set_major_locator(
+            ticker.MultipleLocator(max(persistence_time) / 5))
+        ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         if ax.is_first_col():
             ax.set_ylabel('Extinction time (y)', labelpad=ylabelpad)
-            ax.yaxis.set_major_locator(
-                ticker.MultipleLocator(max(persistence_time) / 5))
-            ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         ax_po.plot(population_sizes, 1 - proportion_observed,
                    color=plot_common.SAT_colors[SAT],
                    clip_on=False, zorder=3)
-        ax_po.set_xlabel('Population size', labelpad=1.5)
         ax_po.set_xscale('log')
+        ax_po.set_xlabel('Population size', labelpad=1.5)
         ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
-        ax_po.xaxis.set_minor_formatter(ticker.LogFormatter())
         ax_po.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
         ax_po.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         if ax_po.is_first_col():
@@ -149,8 +148,8 @@ def plot():
     ncols = len(SATs)
     with pyplot.rc_context(rc):
         fig = pyplot.figure(constrained_layout=True)
-        gs = gridspec.GridSpec(nrows, ncols, figure=fig,
-                               height_ratios=height_ratios)
+        gs = fig.add_gridspec(nrows, ncols,
+                              height_ratios=height_ratios)
         axes = numpy.empty((nrows, ncols), dtype=object)
         axes[0, 0] = None  # Make sharex & sharey work for axes[0, 0].
         for row in range(nrows):
