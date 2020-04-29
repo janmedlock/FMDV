@@ -2,7 +2,6 @@
 
 from matplotlib import colors, gridspec, pyplot, ticker
 import numpy
-import statsmodels.nonparametric.api
 
 import plot_common
 import plot_population_sizes
@@ -31,16 +30,6 @@ def load_population_sizes():
     return df.loc['chronic']
 
 
-def _get_density(endog, times):
-    # Avoid errors if endog is empty.
-    if len(endog) > 0:
-        kde = statsmodels.nonparametric.api.KDEUnivariate(endog)
-        kde.fit(cut=0)
-        return kde.evaluate(times)
-    else:
-        return numpy.zeros_like(times)
-
-
 def plot_sensitivity_population_sizes(axes):
     df = load_population_sizes()
     population_sizes = (df.index
@@ -61,8 +50,8 @@ def plot_sensitivity_population_sizes(axes):
             ser = g.time[g.observed]
             nruns = len(g)
             proportion_observed[k] = len(ser) / nruns
-            density[:, k] = _get_density(ser, persistence_time)
-        cmap = plot_population_sizes._get_cmap(plot_common.SAT_colors[SAT])
+            density[:, k] = plot_common.get_density(ser, persistence_time)
+        cmap = plot_common.get_cmap_SAT(SAT)
         # Use raw `density` for color,
         # but plot `density * proportion_observed`.
         norm = colors.Normalize(vmin=0, vmax=numpy.max(density))

@@ -1,9 +1,11 @@
 import os.path
 
 import matplotlib.collections
+import matplotlib.colors
 import matplotlib.ticker
 import numpy
 import pandas
+import statsmodels.nonparametric.api
 
 import h5
 import run_common
@@ -115,6 +117,16 @@ def set_violins_linewidth(ax, lw):
             col.set_linewidth(0)
 
 
+def get_density(endog, times):
+    # Avoid errors if endog is empty.
+    if len(endog) > 0:
+        kde = statsmodels.nonparametric.api.KDEUnivariate(endog)
+        kde.fit(cut=0)
+        return kde.evaluate(times)
+    else:
+        return numpy.zeros_like(times)
+
+
 class PercentFormatter(matplotlib.ticker.Formatter):
     def __call__(self, x, pos=None):
         return '{:g}%'.format(100 * x)
@@ -126,3 +138,9 @@ SAT_colors = {
     2: '#ef3b2c',
     3: '#807dba'
 }
+
+
+def get_cmap_SAT(SAT):
+    '''White to `SAT_colors[SAT]`.'''
+    return matplotlib.colors.LinearSegmentedColormap.from_list(
+        'name', ['white', SAT_colors[SAT]])
