@@ -65,14 +65,14 @@ def _build_infected(filename, filename_out):
             min_itemsize=run_common._min_itemsize)
 
 
-def get_infected(model='acute'):
+def get_infected():
     filename_infected = os.path.join(_path, 'plot_common_infected.h5')
     try:
         infected = h5.load(filename_infected)
     except OSError:
         _build_infected(filename, filename_infected)
         infected = h5.load(filename_infected)
-    return infected.loc[model]
+    return infected
 
 
 def _build_extinction_time_group(infected):
@@ -94,12 +94,11 @@ def _build_extinction_time(filename, filename_out):
             ser[ix] = _build_extinction_time_group(infected)
     ser = pandas.Series(ser, name='extinction time (days)')
     ser.rename_axis(by, inplace=True)
-    ser *= 365
     h5.dump(ser, filename_out, mode='w',
             min_itemsize=run_common._min_itemsize)
 
 
-def get_extinction_time(model='acute'):
+def get_extinction_time():
     filename_et = os.path.join(_path,
                                'plot_common_extinction_time.h5')
     try:
@@ -107,7 +106,7 @@ def get_extinction_time(model='acute'):
     except OSError:
         _build_extinction_time(filename, filename_et)
         extinction_time = h5.load(filename_et)
-    return extinction_time.loc[model]
+    return extinction_time
 
 
 def set_violins_linewidth(ax, lw):
