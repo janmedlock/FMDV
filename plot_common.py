@@ -127,11 +127,6 @@ def get_density(endog, times):
         return numpy.zeros_like(times)
 
 
-class PercentFormatter(matplotlib.ticker.Formatter):
-    def __call__(self, x, pos=None):
-        return '{:g}%'.format(100 * x)
-
-
 # Erin's colors.
 SAT_colors = {
     1: '#2271b5',

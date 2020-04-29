@@ -46,7 +46,8 @@ def plot_sensitivity_population_sizes(axes):
                                len(population_sizes)))
         proportion_observed = numpy.zeros_like(population_sizes,
                                                dtype=float)
-        for (k, (p, g)) in enumerate(group_SAT.groupby('population_size')):
+        grouper = group_SAT.groupby('population_size')
+        for (k, (p, g)) in enumerate(grouper):
             ser = g.time[g.observed]
             nruns = len(g)
             proportion_observed[k] = len(ser) / nruns
@@ -76,7 +77,8 @@ def plot_sensitivity_population_sizes(axes):
         ax_po.set_xlabel('Population size', labelpad=1.5)
         ax_po.set_xscale('log')
         ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
-        ax_po.yaxis.set_major_formatter(plot_common.PercentFormatter())
+        ax_po.xaxis.set_minor_formatter(ticker.LogFormatter())
+        ax_po.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
         ax_po.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         if ax_po.is_first_col():
             ax_po.set_ylabel('Persisting 10 y', labelpad=ylabelpad)
