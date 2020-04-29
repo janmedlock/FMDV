@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from matplotlib import colors, pyplot, ticker
+from matplotlib import colors, gridspec, pyplot, ticker
 import numpy
 import statsmodels.nonparametric.api
 
@@ -72,28 +72,33 @@ def plot_sensitivity_population_sizes(axes):
                           min(persistence_time), max(persistence_time)),
                   aspect='auto', origin='lower', clip_on=False)
         ax.set_xscale('log')
+        # ax shares the xaxis with ax_po.
         ax.xaxis.set_tick_params(which='both',
                                  labelbottom=False, labeltop=False)
         ax.xaxis.offsetText.set_visible(False)
         if ax.is_first_col():
-            ax.set_ylabel('Extinction\ntime (y)', labelpad=ylabelpad)
+            ax.set_ylabel('Extinction time (y)', labelpad=ylabelpad)
             ax.yaxis.set_major_locator(
                 ticker.MultipleLocator(max(persistence_time) / 5))
             ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         ax_po.plot(population_sizes, 1 - proportion_observed,
                    color=plot_common.SAT_colors[SAT],
                    clip_on=False, zorder=3)
-        ax_po.set_xlabel('Population size')
+        ax_po.set_xlabel('Population size', labelpad=1.5)
         ax_po.set_xscale('log')
         ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
         ax_po.yaxis.set_major_formatter(plot_common.PercentFormatter())
         ax_po.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         if ax_po.is_first_col():
-            ax_po.set_ylabel('Persisting\n10 y', labelpad=ylabelpad)
+            ax_po.set_ylabel('Persisting 10 y', labelpad=ylabelpad)
         for ax_ in {ax, ax_po}:
             ax_.axvline(population_size_baseline,
                         color='black', linestyle='dotted', alpha=0.7)
             ax_.autoscale(tight=True)
+            if not ax_.is_first_col():
+                ax_.yaxis.set_tick_params(which='both',
+                                          labelleft=False, labelright=False)
+                ax_.yaxis.offsetText.set_visible(False)
             for sp in ('top', 'right'):
                 ax_.spines[sp].set_visible(False)
 
@@ -126,7 +131,6 @@ def plot_sensitivity_samples(axes):
                            .capitalize()
                            .replace('_', ' ')
                for p in rho.index]
-    ylabelpad = 30
     for ((SAT, rho_SAT), ax) in zip(rho.items(), axes):
         ax.barh(y, rho_SAT, height=1, left=0,
                 align='center', color=colors_, edgecolor=colors_)
@@ -135,31 +139,52 @@ def plot_sensitivity_samples(axes):
         ax.set_ylim(- 0.5, len(rho) - 0.5)
         ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(n=2))
         ax.yaxis.set_tick_params(which='both', left=False, right=False,
-                                 pad=ylabelpad)
+                                 pad=22)
         if ax.is_first_col():
             ax.set_yticks(y)
             ax.set_yticklabels(ylabels, horizontalalignment='left')
+        else:
+            ax.yaxis.set_tick_params(which='both',
+                                     labelleft=False, labelright=False)
+            ax.yaxis.offsetText.set_visible(False)
         for sp in ('top', 'left', 'right'):
             ax.spines[sp].set_visible(False)
 
 
-
 def plot():
-    height_ratios = (1, 0.5, 0.25)
     SATs = (1, 2, 3)
+    height_ratios = (0.5, 0.25, 1)
+    nrows = len(height_ratios)
+    ncols = len(SATs)
     with pyplot.rc_context(rc):
-        fig, axes = pyplot.subplots(
-            3, len(SATs), sharey='row',
-            gridspec_kw=dict(height_ratios=height_ratios))
-        axes_samples = axes[0]
-        axes_population_sizes = axes[1:]
-        plot_sensitivity_samples(axes_samples)
+        fig = pyplot.figure(constrained_layout=True)
+        gs = gridspec.GridSpec(nrows, ncols, figure=fig,
+                               height_ratios=height_ratios)
+        axes = numpy.empty((nrows, ncols), dtype=object)
+        axes[0, 0] = None  # Make sharex & sharey work for axes[0, 0].
+        for row in range(nrows):
+            for col in range(ncols):
+                # The population size plots share the x scale.
+                # The sample plots do *not* share the x scale.
+                sharex = axes[0, col] if (row < 2) else None
+                # Rows share the y scale.
+                sharey = axes[row, 0]
+                axes[row, col] = fig.add_subplot(gs[row, col],
+                                                 sharex=sharex,
+                                                 sharey=sharey)
+        axes_population_sizes = axes[:-1]
+        axes_samples = axes[-1]
         plot_sensitivity_population_sizes(axes_population_sizes)
+        plot_sensitivity_samples(axes_samples)
         for (SAT, ax) in zip(SATs, axes[0]):
             ax.set_title(f'SAT{SAT}')
-        fig.align_labels(axes_samples)
-        fig.align_labels(axes_population_sizes)
-        fig.tight_layout(pad=0.5)
+        fig.align_ylabels(axes_population_sizes)
+        label_x = 0
+        label_kws = dict(fontsize=8,
+                         horizontalalignment='left',
+                         verticalalignment='top')
+        fig.text(label_x, 1, '(a)', **label_kws)
+        fig.text(label_x, 0.535, '(b)', **label_kws)
         fig.savefig('figure_4.pdf')
         fig.savefig('figure_4.png', dpi=300)
     return fig
@@ -167,4 +192,4 @@ def plot():
 
 if __name__ == '__main__':
     fig = plot()
-    pyplot.show()
+    # pyplot.show()
