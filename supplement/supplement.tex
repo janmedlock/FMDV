@@ -28,11 +28,19 @@
 \usepackage[style=nature, autocite=superscript, sortcites=true]{biblatex}
 \addbibresource{supplement.bib}
 
+% Set up numbering.
+\newcounter{chapter}
+\setcounter{chapter}{3}
+\newcommand{\appendixlabel}{S}
+\renewcommand{\thesection}{\appendixlabel\thechapter.\arabic{section}}
+\renewcommand{\thefigure}{\appendixlabel\thechapter.\arabic{figure}}
+\renewcommand{\thetable}{\appendixlabel\thechapter.\arabic{table}}
+\renewcommand{\theequation}{\appendixlabel\thechapter.\arabic{equation}}
 
-\title{Supplementary Material for\\
-  \emph{Endemic dynamics of foot-and-mouth disease viruses in their
-    reservoir, African buffalo} \\
-  Appendix 3: Model development and analysis}
+
+\title{\emph{Endemic dynamics of foot-and-mouth disease viruses in
+    their reservoir, African buffalo} \\
+  Appendix \appendixlabel: Model development and analysis}
 
 \author{Anna Jolles \and Erin Gorsich \and Simon Gubbins
   \and Brianna Beechler \and Peter Buss \and Nick Juleff
@@ -637,8 +645,16 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 \printbibliography
 
 
-\clearpage
+\newpage
+\appendix
 \section*{Supplemental Results Figures}
+% These figure numbers will start after the previous appendix.
+% I.e. if the previous was Appendix S3, these will be Figure S4,
+% Figure S5, ...
+\setcounter{figure}{\value{chapter}}
+\renewcommand{\thefigure}{\appendixlabel\arabic{figure}}
+\renewcommand{\HyperDestNameFilter}[1]{chapter-#1}
+
 
 \begin{figure}
   \centering

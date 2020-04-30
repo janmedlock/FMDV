@@ -11,6 +11,17 @@ import h5
 import run_common
 
 
+# Nature.
+rc = {}
+# Widths: 89mm, 183mm, 120mm, 136mm.
+# Sans-serif, preferably Helvetica or Arial.
+rc['font.family'] = 'sans-serif'
+rc['font.sans-serif'] = 'DejaVu Sans'
+# Fonts between 5pt and 7pt.
+# Separate panels in multi-part figures should be labelled with 8
+# pt bold, upright (not italic) a, b, c...
+
+
 # All files are relative to this source file.
 _path = os.path.dirname(__file__)
 

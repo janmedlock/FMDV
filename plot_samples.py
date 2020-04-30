@@ -12,13 +12,6 @@ import herd.samples
 import stats
 
 
-# Nature
-rc = {}
-# Sans-serif, preferably Helvetica or Arial.
-rc['font.family'] = 'sans-serif'
-rc['font.sans-serif'] = 'DejaVu Sans'
-
-
 def _get_extinction(infected):
     t = infected.index.get_level_values('time (y)')
     time = t.max() - t.min()
@@ -187,12 +180,11 @@ def plot_sensitivity(df, rank=True, errorbars=False):
     colors = Colors()
     width = 390 / 72.27
     height = 0.8 * width
-    rc_ = rc.copy()
-    rc_['figure.figsize'] = (width, height)
-    rc_['xtick.labelsize'] = 7
-    rc_['ytick.labelsize'] = 7
-    rc_['axes.labelsize'] = 8
-    rc_['axes.titlesize'] = 9
+    rc = plot_common.rc.copy()
+    rc['figure.figsize'] = (width, height)
+    rc['xtick.labelsize'] = rc['ytick.labelsize'] = 7
+    rc['axes.labelsize'] = 8
+    rc['axes.titlesize'] = 9
     for model in models:
         rho = pandas.DataFrame(index=params, columns=SATs, dtype=float)
         if errorbars:

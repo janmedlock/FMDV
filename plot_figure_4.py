@@ -10,14 +10,10 @@ import stats
 
 
 # Nature
-rc = {}
-# Widths: 89mm, 183mm, 120mm, 136mm.
+rc = plot_common.rc.copy()
 width = 183 / 25.4  # convert mm to in
 height = 6
 rc['figure.figsize'] = (width, height)
-# Sans-serif, preferably Helvetica or Arial.
-rc['font.family'] = 'sans-serif'
-rc['font.sans-serif'] = 'DejaVu Sans'
 # Between 5pt and 7pt.
 rc['font.size'] = 6
 rc['axes.titlesize'] = 8

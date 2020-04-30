@@ -11,13 +11,6 @@ import plot_common
 import stats
 
 
-# Nature
-rc = {}
-# Sans-serif, preferably Helvetica or Arial.
-rc['font.family'] = 'sans-serif'
-rc['font.sans-serif'] = 'DejaVu Sans'
-
-
 def load_extinction_times():
     filename = 'plot_birth_seasonality.h5'
     try:
@@ -126,17 +119,16 @@ def plot_kde_2d(df):
     bscov_baseline = bscovs[len(bscovs) // 2]
     width = 390 / 72.27
     height = 0.8 * width
-    rc_ = rc.copy()
-    rc_['figure.figsize'] = (width, height)
-    rc_['xtick.labelsize'] = 7
-    rc_['ytick.labelsize'] = 7
-    rc_['axes.labelsize'] = 8
-    rc_['axes.titlesize'] = 9
+    rc = plot_common.rc.copy()
+    rc['figure.figsize'] = (width, height)
+    rc['xtick.labelsize'] = rc['ytick.labelsize'] = 7
+    rc['axes.labelsize'] = 8
+    rc['axes.titlesize'] = 9
     nrows = 2 + 1
     ncols = 3
     height_ratios = (1, 1, 0.5)
     w_pad = 8 / 72
-    with pyplot.rc_context(rc_):
+    with pyplot.rc_context(rc):
         fig = pyplot.figure(constrained_layout=True)
         fig.set_constrained_layout_pads(w_pad=w_pad)
         gs = fig.add_gridspec(nrows, ncols,

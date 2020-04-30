@@ -14,28 +14,21 @@ import plot_common
 import run_common
 
 
-# From `pdfinfo notes/diagram_standalone.pdf'.
-diagram_width = 184.763 / 72  # inches
-diagram_height = 279.456 / 72  # inches
 
 # Nature.
-rc = {}
-# Widths: 89mm, 183mm, 120mm, 136mm.
+rc = plot_common.rc.copy()
 total_width = 183 / 25.4  # inches
+# From `pdfinfo diagram/diagram_standalone.pdf'.
+diagram_width = 184.763 / 72  # inches
+diagram_height = 279.456 / 72  # inches
 fig_width = total_width - diagram_width
 fig_height = 6  # inches
 rc['figure.figsize'] = (fig_width, fig_height)
-# Sans-serif, preferably Helvetica or Arial.
-rc['font.family'] = 'sans-serif'
-rc['font.sans-serif'] = 'DejaVu Sans'
 # Between 5pt and 7pt.
 rc['font.size'] = 6
 rc['axes.titlesize'] = 7
 rc['axes.labelsize'] = 6
 rc['xtick.labelsize'] = rc['ytick.labelsize'] = 5
-# Separate panels in multi-part figures should be labelled with 8
-# pt bold, upright (not italic) a, b, c...
-# I'm gonna try to avoid this.
 
 
 def load():
