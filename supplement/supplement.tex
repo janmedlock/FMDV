@@ -206,7 +206,7 @@ where $\{x\}$ is the fractional part of $x$
 is captured by the coefficient of variation $c_{\text{v}}$.  The time of year
 of the peak birth hazard is $\tau$.  The annual mean $\mu$ was determined
 so that the population has asymptotic growth rate $r = 0$.  (See
-\autoref{stable_age_structure}.)
+\autoref{stable_age_distribution}.)
 
 \begin{figure}
   \centering
@@ -379,9 +379,9 @@ $\mu_{\text{chronic recovery}}$.
 
 \section{Initial conditions}
 
-A sample of size $N$ from the stable age structure was used to
-initialize the population.  (See \autoref{stable_age_structure}.)  The
-sex of each buffalo was randomly selected with probability
+A sample of size $N$ from the stable age distribution was used to
+initialize the population.  (See \autoref{stable_age_distribution}.)
+The sex of each buffalo was randomly selected with probability
 $p_{\text{female}}$ of being female.
 
 The simulations were started at $t = 0$ with $2$ initial infections
@@ -392,8 +392,8 @@ in randomly chosen members of the population.
 \cite{medlock_2020}
 
 
-\section{Stable age structure}
-\label{stable_age_structure}
+\section{Stable age distribution}
+\label{stable_age_distribution}
 
 The mean rate of female births $B(t)$ follows the Lotka equation
 \begin{equation}
@@ -470,7 +470,7 @@ Foerster partial differential equation (PDE)
 
 Because the birth hazard, $h_{\text{birth}}(t, a)$,
 is periodic with period $T = \unit[1]{y}$,
-we found the stable age structure and the asymptotic population growth
+we found the stable age distribution and the asymptotic population growth
 rate using Floquet theory \autocite{parker_1992}.
 Floquet theory requires the fundamental solution $\Phi(t, a, a')$ for
 McKendrick--von Foerster equation \eqref{PDE}, which, for each $a'$,
@@ -610,14 +610,14 @@ as $K \to \infty$,
 where $\rho_0$ is the dominant eigenvalue, i.e. the eigenvalue with
 largest magnitude, of $\mat{\Psi}$;
 the corresponding right eigenvector $\vec{w}_0$ is the stable age
-structure; and
+distribution; and
 \begin{equation}
   r = \frac{1}{T} \log \rho_0
 \end{equation}
 is the asymptotic population growth rate.
 
 We numerically computed the population growth rate and stable age
-structure by using age and time steps $\Delta t = 0.01$,
+distribution by using age and time steps $\Delta t = 0.01$,
 maximum age $a_{\text{max}} = 35$
 (probability of survival
 $S_{\text{mortality}}(35) \approx 10^{-5}$),
