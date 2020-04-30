@@ -1,4 +1,5 @@
-\begin{tikzpicture}[compartment/.style = {rectangle, draw}, font=\fontsize{5pt}{6}\selectfont]
+\begin{tikzpicture}[compartment/.style={rectangle, draw},
+                    font=\fontsize{5pt}{6}\selectfont]
   % Compartments.
   \node at (0, 8.5) [compartment, align=center, name=MaternalImmunity] {Maternal\\immunity};
   \node at (0, 6.5) [compartment, name=Susceptible] {Susceptible};
@@ -12,16 +13,16 @@
 
   % Infection-related processes.
   \draw [->] (MaternalImmunity)
-             to node [rotate=-90, below] {waning}
+             to node [rotate=90, above] {waning}
              (Susceptible);
   \draw [->] (Susceptible)
-             to node [rotate=-90, below] {infection}
+             to node [rotate=90, above] {infection}
              (Exposed);
   \draw [->] (Exposed)
-             to node [rotate=-90, below] {progression}
+             to node [rotate=90, above] {progression}
              (Infectious);
   \draw [  ] (Infectious)
-             to node [rotate=-90, below, yshift=-1pt] {recovery}
+             to node [rotate=90, above, yshift=-1pt] {recovery}
              (recovery);
   \draw [->, dashed] (recovery)
              to node [sloped, above, yshift=-2pt] {chronicity}
