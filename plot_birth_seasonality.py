@@ -11,6 +11,13 @@ import plot_common
 import stats
 
 
+# Nature
+rc = {}
+# Sans-serif, preferably Helvetica or Arial.
+rc['font.family'] = 'sans-serif'
+rc['font.sans-serif'] = 'DejaVu Sans'
+
+
 def load_extinction_times():
     filename = 'plot_birth_seasonality.h5'
     try:
@@ -110,12 +117,6 @@ def plot_kde(df):
         fig.tight_layout(rect=(0, 0, 0.82, 1))
 
 
-def _get_cmap(color):
-    '''White to `color`.'''
-    return colors.LinearSegmentedColormap.from_list('name',
-                                                    ['white', color])
-
-
 def plot_kde_2d(df):
     persistence_time_max = dict(acute=0.5, chronic=10)
     bscovs = (df.index
@@ -123,15 +124,34 @@ def plot_kde_2d(df):
                 .unique()
                 .sort_values())
     bscov_baseline = bscovs[len(bscovs) // 2]
-    rc = {'figure.figsize': (5, 4),
-          'xtick.labelsize': 'small',
-          'ytick.labelsize': 'small',
-          'axes.labelsize': 'small',
-          'axes.titlesize': 'medium'}
-    with pyplot.rc_context(rc):
-        fig, axes = pyplot.subplots(2 + 1, 3, sharex='col', sharey='row',
-                                    gridspec_kw=dict(height_ratios=(1, 1, 0.5)))
-        ylabelpad = 0
+    width = 390 / 72.27
+    height = 0.8 * width
+    rc_ = rc.copy()
+    rc_['figure.figsize'] = (width, height)
+    rc_['xtick.labelsize'] = 7
+    rc_['ytick.labelsize'] = 7
+    rc_['axes.labelsize'] = 8
+    rc_['axes.titlesize'] = 9
+    nrows = 2 + 1
+    ncols = 3
+    height_ratios = (1, 1, 0.5)
+    w_pad = 8 / 72
+    with pyplot.rc_context(rc_):
+        fig = pyplot.figure(constrained_layout=True)
+        fig.set_constrained_layout_pads(w_pad=w_pad)
+        gs = fig.add_gridspec(nrows, ncols,
+                              height_ratios=height_ratios)
+        axes = numpy.empty((nrows, ncols), dtype=object)
+        axes[0, 0] = None  # Make sharex & sharey work for axes[0, 0].
+        for row in range(nrows):
+            for col in range(ncols):
+                # Columns share the x scale.
+                sharex = axes[0, col]
+                # Rows share the y scale.
+                sharey = axes[row, 0]
+                axes[row, col] = fig.add_subplot(gs[row, col],
+                                                 sharex=sharex,
+                                                 sharey=sharey)
         for (i, (model, group_model)) in enumerate(df.groupby('model')):
             persistence_time = numpy.linspace(0, persistence_time_max[model],
                                               301)
@@ -140,18 +160,15 @@ def plot_kde_2d(df):
                 density = numpy.zeros((len(persistence_time),
                                        len(bscovs)))
                 proportion_observed = numpy.zeros_like(bscovs, dtype=float)
-                for (k, (b, g)) in enumerate(group_SAT.groupby(
-                        'birth_seasonal_coefficient_of_variation')):
+                grouper = group_SAT.groupby(
+                    'birth_seasonal_coefficient_of_variation')
+                for (k, (b, g)) in enumerate(grouper):
                     ser = g.time[g.observed]
                     nruns = len(g)
                     proportion_observed[k] = len(ser) / nruns
-                    if proportion_observed[k] > 0:
-                        kde = statsmodels.nonparametric.api.KDEUnivariate(ser)
-                        kde.fit(cut=0)
-                        density[:, k] = kde.evaluate(persistence_time)
-                    else:
-                        density[:, k] = 0
-                cmap = _get_cmap(plot_common.SAT_colors[SAT])
+                    density[:, k] = plot_common.get_density(ser,
+                                                            persistence_time)
+                cmap = plot_common.get_cmap_SAT(SAT)
                 # Use raw `density` for color,
                 # but plot `density * proportion_observed`.
                 norm = colors.Normalize(vmin=0, vmax=numpy.max(density))
@@ -160,51 +177,50 @@ def plot_kde_2d(df):
                           extent=(min(bscovs), max(bscovs),
                                   min(persistence_time), max(persistence_time)),
                           aspect='auto', origin='lower', clip_on=False)
-                ax.autoscale(tight=True)
+                # ax shares the xaxis with ax_po.
+                ax.xaxis.set_tick_params(which='both',
+                                         labelbottom=False, labeltop=False)
+                ax.xaxis.offsetText.set_visible(False)
+                ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
+                ax.yaxis.set_major_locator(
+                    ticker.MultipleLocator(max(persistence_time) / 5))
+                ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
+                if ax.is_first_col():
+                    ax.set_ylabel('Extinction time (y)')
+                if ax.is_first_row():
+                    ax.set_title(f'SAT{SAT}')
                 if model == 'chronic':
                     ax_po = axes[-1, j]
                     ax_po.plot(bscovs, 1 - proportion_observed,
                                color=plot_common.SAT_colors[SAT],
                                clip_on=False, zorder=3)
-                    ax_po.autoscale(tight=True)
-                    if ax.is_first_col():
-                        ax_po.set_ylabel('persisting\n10 y',
-                                         labelpad=ylabelpad)
-                        ax_po.yaxis.set_major_formatter(
-                            plot_common.PercentFormatter())
-                        ax_po.yaxis.set_minor_locator(
-                            ticker.AutoMinorLocator(2))
+                    ax_po.set_xlabel(
+                        'Birth seasonal\ncoefficient of variation')
                     ax_po.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
-                    if j == 1:
-                        ax_po.set_xlabel(
-                            'birth seasonal\ncoefficient of variation')
-                if ax.is_first_row():
-                    ax.set_title(f'SAT{SAT}')
-                if ax.is_last_row():
-                    ax.set_xlabel('extinction time (y)')
-                    ax.xaxis.set_major_locator(
-                    ticker.MultipleLocator(max(persistence_time) / 5))
-                    ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
-                if ax.is_first_col():
-                    ax.set_ylabel('extinction\ntime (y)',
-                                  labelpad=ylabelpad)
-                    ax.yaxis.set_major_locator(
-                        ticker.MultipleLocator(max(persistence_time) / 5))
-                    ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
+                    ax_po.yaxis.set_major_formatter(
+                        ticker.PercentFormatter(xmax=1))
+                    ax_po.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
+                    if ax_po.is_first_col():
+                        ax_po.set_ylabel('Persisting 10 y')
         for ax in fig.axes:
             ax.axvline(bscov_baseline,
                        color='black', linestyle='dotted', alpha=0.7)
+            ax.autoscale(tight=True)
+            if not ax.is_first_col():
+                ax.yaxis.set_tick_params(which='both',
+                                         labelleft=False, labelright=False)
+                ax.yaxis.offsetText.set_visible(False)
             for sp in ('top', 'right'):
                 ax.spines[sp].set_visible(False)
-        fig.align_labels()
-        title_x = 0.01
-        fig.text(title_x, 0.72, 'Acute model',
-                 rotation=90, size='small')
-        fig.text(title_x, 0.25, 'Chronic model',
-                 rotation=90, size='small')
-        fig.tight_layout(pad=0, rect=(0.03, 0, 1, 1))
+        fig.align_ylabels()
+        label_x = 0
+        label_kws = dict(fontsize=8,
+                         rotation=90,
+                         horizontalalignment='left',
+                         verticalalignment='center')
+        fig.text(label_x, 0.79, 'Acute model', **label_kws)
+        fig.text(label_x, 0.31, 'Chronic model', **label_kws)
         fig.savefig('birth_seasonality.pdf')
-        fig.savefig('birth_seasonality.png', dpi=300)
 
 
 if __name__ == '__main__':

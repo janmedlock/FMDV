@@ -259,7 +259,7 @@ def plot_sensitivity(df, rank=True, errorbars=False):
                 ax.set_xlabel(xlabel)
                 ax.set_xlim(- xabsmax, xabsmax)
                 ax.set_ylim(- 0.5, len(rho) - 0.5)
-                ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(n=2))
+                ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
                 ax.yaxis.set_tick_params(which='both', left=False, right=False,
                                          pad=85)
                 ax.set_title(f'SAT{SAT}')
