@@ -166,7 +166,10 @@ def plot():
             ax.set_title(f'SAT{SAT}')
         fig.align_ylabels(axes_population_sizes)
         label_x = 0
+        # Separate panels in multi-part figures should be labelled with 8
+        # pt bold, upright (not italic) a, b, c...
         label_kws = dict(fontsize=8,
+                         fontweight='bold',
                          horizontalalignment='left',
                          verticalalignment='top')
         fig.text(label_x, 1, '(a)', **label_kws)

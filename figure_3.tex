@@ -7,11 +7,15 @@
 \setlength{\unitlength}{1in}
 
 \begin{picture}(7.92, 6)
+  \sffamily
   \put(-0.3, 0.2){\scalebox{1.4}{\input{diagram/diagram}}}
-  \put(-0.05, 5.8){\textsf{(a)}}
   \put(3.3, 0){\includegraphics{figure_3_no_diagram}}
-  \put(3.75, 5.8){\textsf{(b)}}
-  \put(5.825, 5.8){\textsf{(c)}}
+  % Separate panels in multi-part figures should be labelled with 8
+  % pt bold, upright (not italic) a, b, c...
+  \bfseries \footnotesize
+  \put(-0.05, 5.9){(a)}
+  \put(3.75, 5.9){(b)}
+  \put(5.83, 5.9){(c)}
 \end{picture}
 
 \end{document}

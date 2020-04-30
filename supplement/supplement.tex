@@ -21,6 +21,7 @@
 \DeclareMathOperator{\Prob}{Prob}
 \newcommand{\md}{\mathrm{d}}
 \newcommand{\me}{\mathrm{e}}
+\usepackage{sansmath}  % To use sans serif in math in figures.
 
 \usepackage{units}
 \usepackage{tikz}
@@ -96,7 +97,7 @@ The distributions are detailed below.  (See also \autoref{fig:distributions}.)
 
 \begin{figure}
   \centering
-  \input{../diagram/diagram.tex}
+  \textsf{\input{../diagram/diagram.tex}}
   \caption{Model diagram.  The dashed box and arrows show the state
     and transitions present in the chronic model but not the acute
     model.}
@@ -210,7 +211,9 @@ so that the population has asymptotic growth rate $r = 0$.  (See
 
 \begin{figure}
   \centering
-  \input{birth_hazard.pgf}
+  \begin{sansmath}
+    \input{birth_hazard.pgf}
+  \end{sansmath}
   \caption{Model birth hazards for ages 4 years and older.}
   \label{fig:birth_hazard}
 \end{figure}
@@ -371,7 +374,9 @@ $\mu_{\text{chronic recovery}}$.
 
 \begin{figure}
   \centering
-  \input{distributions.pgf}
+  \begin{sansmath}
+    \input{distributions.pgf}
+  \end{sansmath}
   \caption{Hazards and survivals for the model events.}
   \label{fig:distributions}
 \end{figure}
@@ -636,7 +641,9 @@ NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
 
 \begin{figure}
   \centering
-  \input{stable_age_distribution.pgf}
+  \begin{sansmath}
+    \input{stable_age_distribution.pgf}
+  \end{sansmath}
   \caption{TODO: Write caption.
     This is on 01 July and the birth peak is 01 January.
     Reference this figure in the text.}
