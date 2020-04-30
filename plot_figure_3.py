@@ -1,7 +1,9 @@
 #!/usr/bin/python3
-#
-# TODO
-# * Check width of figure with diagram.
+'''This script builds 'figure_3.pdf' and 'figure_3.png' by plotting
+ simulation data into 'figure_3_nodiagram.pdf' with `plot()`, then
+ combining that with 'diagram/diagram.tex' through 'figure_3.tex'
+in `build()`.'''
+
 
 import subprocess
 
@@ -18,10 +20,12 @@ import run_common
 # Nature.
 rc = plot_common.rc.copy()
 total_width = 183 / 25.4  # inches
-# From `pdfinfo diagram/diagram_standalone.pdf'.
-diagram_width = 184.763 / 72  # inches
-diagram_height = 279.456 / 72  # inches
+# 184.983 pts is from `pdfinfo diagram/diagram_standalone.pdf'.
+# 1.4 is the scaling in figure_3.tex.
+diagram_width = 184.983 * 1.4 / 72  # inches
 fig_width = total_width - diagram_width
+# There's whitespace left...
+fig_width *= 1.13
 fig_height = 6  # inches
 rc['figure.figsize'] = (fig_width, fig_height)
 # Between 5pt and 7pt.
@@ -43,9 +47,12 @@ def load():
     return (infected, extinction_time)
 
 
-def plot_infected(ax, infected, model, SAT):
+def plot_infected(ax, infected, model, SAT, draft=False):
     # .unstack('run') puts 'run' on columns, time on rows.
     i = infected.loc[(model, SAT)].unstack('run')
+    if draft:
+        # Only plot the first 100 runs for speed.
+        i = i.iloc[:, :100]
     # Start time at 0.
     t = i.index - i.index.min()
     ax.plot(t, i, color=plot_common.SAT_colors[SAT],
@@ -63,7 +70,7 @@ def plot_infected(ax, infected, model, SAT):
     # Shared y-axis between models.
     if ax.is_first_col():
         ax.set_ylabel('Number\ninfected')
-        ax.annotate(f'SAT{SAT}', (-0.35, 0.1),
+        ax.annotate(f'SAT{SAT}', (-0.35, 0.05),
                     xycoords='axes fraction',
                     rotation=90, fontsize=rc['axes.titlesize'])
     else:
@@ -125,7 +132,7 @@ def plot_extinction_time(ax, extinction_time, model, SAT):
         ax.set_ylabel('Extinction\ntime')
 
 
-def plot(infected, extinction_time):
+def plot(infected, extinction_time, draft=False):
     SATs = infected.index.get_level_values('SAT').unique()
     models = infected.index.get_level_values('model').unique()
     nrows = len(SATs) * 2
@@ -153,7 +160,8 @@ def plot(infected, extinction_time):
             for (col, model) in enumerate(models):
                 row_i = 2 * i
                 row_e = 2 * i + 1
-                plot_infected(axes[row_i, col], infected, model, SAT)
+                plot_infected(axes[row_i, col], infected, model, SAT,
+                              draft=draft)
                 plot_extinction_time(axes[row_e, col], extinction_time,
                                      model, SAT)
         # Shade time region from acute-model column
@@ -186,15 +194,21 @@ def plot(infected, extinction_time):
         fig.savefig('figure_3_no_diagram.pdf')
 
 
-def build():
+def build(draft=False):
+    # Build PDF super-figure.
     subprocess.check_call(['latexmk', '-pdf', 'figure_3'])
-    subprocess.check_call(['latexmk', '-c', 'figure_3'])
-    subprocess.check_call(['pdftocairo', '-png', '-r', '300', '-singlefile',
-                           'figure_3.pdf'])
+    if not draft:
+        # Clean up build files.
+        subprocess.check_call(['latexmk', '-c', 'figure_3'])
+        # Convert PDF to 300dpi PNG.
+        subprocess.check_call(['pdftocairo', '-png', '-r', '300',
+                               '-singlefile', 'figure_3.pdf'])
 
 
 if __name__ == '__main__':
+    draft = False
     infected, extinction_time = load()
-    plot(infected, extinction_time)
-    build()
-    pyplot.show()
+    plot(infected, extinction_time, draft=draft)
+    build(draft=draft)
+    if not draft:
+        pyplot.show()
