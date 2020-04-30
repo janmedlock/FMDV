@@ -1,5 +1,3 @@
-* Touch up parameter names in plot_samples.plot_sensitivity().
-
 * Generate good initial condtions by solving PDEs.
 
 * Figure out what to do with all the untracked files in /orphans/.

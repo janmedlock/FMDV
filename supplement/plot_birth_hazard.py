@@ -1,12 +1,14 @@
 #!/usr/bin/python3
-import numpy
-from matplotlib import lines, pyplot, ticker
-import seaborn
-
 import sys
+
+from matplotlib import lines, pyplot, ticker
+import numpy
+
 sys.path.append('..')
 from herd import Parameters
-from herd import birth
+import herd.birth
+import plot_common
+sys.path.pop()
 
 
 tau = 1 / 4
@@ -21,15 +23,17 @@ colors = 'C3', 'C9'
 
 width = 390 / 72.27
 height = 0.6 * width
-rc = {'figure.figsize': (width, height),
-      'legend.frameon': False}
+rc = plot_common.rc.copy()
+rc['figure.figsize'] = (width, height)
+rc['legend.frameon'] = False
 with pyplot.rc_context(rc=rc):
-    fig, axes = pyplot.subplots()
+    fig = pyplot.figure(constrained_layout=True)
+    axes = fig.add_subplot()
     yticks = [0, mu]
     yticklabels = [r'$0$', r'$\mu$']
     for (CV, color) in zip(CVs, colors):
         parameters.birth_seasonal_coefficient_of_variation = CV
-        birthRV = birth.gen(parameters, _scaling=mu)
+        birthRV = herd.birth.gen(parameters, _scaling=mu)
         sign = '<' if (CV < 1 / numpy.sqrt(3)) else '>'
         label = r'$c_{{\mathrm{{v}}}} {} 1 / \sqrt{{3}}$'.format(sign)
         axes.plot(t, birthRV.hazard(t, 4), color=color, label=label,
@@ -68,6 +72,5 @@ with pyplot.rc_context(rc=rc):
     for l in ('top', 'right'):
         axes.spines[l].set_visible(False)
         axes.autoscale(tight=True)
-    fig.tight_layout()
     fig.savefig('birth_hazard.pgf')
     pyplot.show()

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
+import sys
+
 import numpy
 from matplotlib import lines, pyplot, ticker
-import seaborn
 
-import sys
 sys.path.append('..')
 from herd import Parameters, RandomVariables
 import plot_common
@@ -38,17 +38,28 @@ def get_RV(RVs, name):
 
 width = 390 / 72.27
 height = 0.6 * width
-rc = {'figure.figsize': (width, height),
-      'font.size': 7,
-      'axes.titlesize': 'large',
-      'legend.frameon': False}
+rc = plot_common.rc.copy()
+rc['figure.figsize'] = (width, height)
+rc['font.size'] = 7
+rc['axes.titlesize'] = 'large'
 ncols = 6
 nrows = 2
 with pyplot.rc_context(rc=rc):
-    fig, axes = pyplot.subplots(nrows, ncols, sharex='col')
-    fig.align_labels()
-    axes_hazards = axes[0, :]
-    axes_survivals = axes[1, :]
+    fig = pyplot.figure(constrained_layout=True)
+    # Add a dummy row to make space for the legend.
+    height_ratios = (1, 1, 0.13)
+    gs = fig.add_gridspec(nrows + 1, ncols,
+                          height_ratios=height_ratios)
+    axes = numpy.empty((nrows, ncols), dtype=object)
+    axes[0, 0] = None  # Make sharex & sharey work for axes[0, 0].
+    for row in range(nrows):
+        for col in range(ncols):
+            # Columns share the x scale.
+            sharex = axes[0, col]
+            axes[row, col] = fig.add_subplot(gs[row, col],
+                                             sharex=sharex)
+    axes_hazards = axes[0]
+    axes_survivals = axes[1]
     j = -1
 
     RV = get_RV(RVs, 'mortality')
@@ -59,7 +70,7 @@ with pyplot.rc_context(rc=rc):
     j += 1
     for SAT, v in RV.items():
         axes_hazards[j].plot(t, v.hazard(t), color=colors[SAT],
-                            linestyle='steps-post')
+                             drawstyle='steps-post')
         axes_survivals[j].plot(t, v.sf(t), color=colors[SAT])
     axes_hazards[j].set_title(title)
     axes_survivals[j].set_xlabel(xlabel)
@@ -113,7 +124,7 @@ with pyplot.rc_context(rc=rc):
     axes_survivals[j].set_xlabel(xlabel)
 
     RV = get_RV(RVs, 'chronic_recovery')
-    title = 'Chronic\nRecovery'
+    title = 'Chronic \nrecovery'
     xlabel = 'Time ($\mathrm{y}$)'
     t_max = 1
     t = numpy.linspace(0, t_max, 1001)
@@ -127,20 +138,22 @@ with pyplot.rc_context(rc=rc):
     for ax in axes.flat:
         for l in ('top', 'right'):
             ax.spines[l].set_visible(False)
-            ax.autoscale(tight=True)
-        ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+        ax.autoscale(tight=True)
         ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         for line in ax.lines:
             line.set_clip_on(False)
 
     for ax in axes_hazards:
-        ax.set_ylim(0, )
+        ax.set_ylim(bottom=0)
         ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+        # axes_hazards shares the xaxis with axes_survivals.
+        ax.xaxis.set_tick_params(which='both',
+                                 labelbottom=False, labeltop=False)
+        ax.xaxis.offsetText.set_visible(False)
     for ax in axes_survivals:
         ax.set_ylim(0, 1)
-        ax.yaxis.set_major_formatter(ticker.FuncFormatter(
-            lambda x, pos: '{:g}%'.format(100 * x)))
+        ax.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
 
     axes_hazards[0].set_ylabel(r'Hazard ($\mathrm{y}^{-1}$)')
     axes_survivals[0].set_ylabel('Survival')
@@ -150,7 +163,7 @@ with pyplot.rc_context(rc=rc):
     fig.legend(handles=handles, markerfirst=False, loc='lower center',
                ncol=len(handles))
 
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    fig.align_labels()
 
     fig.savefig('distributions.pgf')
     pyplot.show()
