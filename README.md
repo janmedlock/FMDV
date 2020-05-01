@@ -1,6 +1,6 @@
 # FMDV
 
-## A transmission model of foot-and-model-disease virus in African buffalo
+## A transmission model of foot-and-model-disease viruses in African buffalo
 
 **[Jan Medlock](http://people.oregonstate.edu/~medlockj/)
 [\<jan.medlock@oregonstate.edu\>](mailto:jan.medlock@oregonstate.edu),
