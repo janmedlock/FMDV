@@ -19,8 +19,7 @@ analyze FMDV transmission in African buffalo.
 > Scott K, Medlock J, Charleston B.
 > Endemic dynamics of foot-and-mouth disease viruses in their
 > reservoir, African buffalo. *In preparation*.
-
-[comment]: # (*Nature*. 2020. [doi:XXX](https://doi.org/XXX).)
+<!-- *Nature*. 2020. [doi:XXX](https://doi.org/XXX). -->
 
 The scripts and model code are entirely written in Python3, using many
 third-party libraries.  Most notably:
