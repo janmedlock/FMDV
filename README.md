@@ -27,7 +27,7 @@ third-party libraries.  Most notably:
 [NumPy & SciPy](https://www.scipy.org/),
 [statsmodels](https://www.statsmodels.org/),
 [pandas](https://pandas.pydata.org/),
-[tables](https://www.pytables.org/),
+[PyTables](https://www.pytables.org/),
 [Sorted Containers](http://www.grantjenks.com/docs/sortedcontainers/),
 [matplotlib](https://matplotlib.org/),
 & [Seaborn](https://seaborn.pydata.org/).
