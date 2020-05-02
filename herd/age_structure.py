@@ -9,10 +9,9 @@ class gen(RV):
     def __init__(self, parameters, *args, **kwargs):
         self._density, self._ages = find_stable_age_structure(parameters,
                                                               *args, **kwargs)
-        self._proportion = self._density / self._density.sum()
-        self._quantilerv = rv_discrete(
-            values = (range(len(self._proportion)), self._proportion),
-            *args, **kwargs)
+        self._pmf = self._density / self._density.sum()
+        values = (range(len(self._ages)), self._pmf)
+        self._quantilerv = rv_discrete(values=values, *args, **kwargs)
 
     def rvs(self, *args, **kwargs):
         return self._ages[self._quantilerv.rvs(*args, **kwargs)].squeeze()
@@ -28,7 +27,7 @@ class gen(RV):
         x = numpy.asarray(x)
         ix = (self._ages < x[..., numpy.newaxis])
         # The cumulative probability for all ages < x.
-        p0 = numpy.where(ix, self._proportion, 0).sum(axis=-1)
+        p0 = numpy.where(ix, self._pmf, 0).sum(axis=-1)
         # The cumulative probability from the last age < x
         # up to x.
         a0 = numpy.where(ix, self._ages, 0).max(axis=-1)
