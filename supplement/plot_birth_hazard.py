@@ -56,14 +56,14 @@ with pyplot.rc_context(rc=rc):
                         0, mu * birthRV._alpha,
                         linestyle='dotted', clip_on=False)
     xticks = list(range(int(t[-1]) + 1))
-    xticklabels = [r'${}$'.format(x) for x in xticks]
+    xticklabels = [r'${}\;\mathrm{{y}}$'.format(x) for x in xticks]
     xticks += [tau, tau + 0.5]
     xticklabels += [r'$\tau$', r'$\tau + \frac{1}{2}$']
     axes.set_xticks(xticks)
     axes.set_xticklabels(xticklabels, verticalalignment='center')
-    axes.set_xlabel(r'Time ($\mathrm{y}$)')
+    axes.set_xlabel(r'Time')
     axes.tick_params(axis='x', pad=12)
-    axes.set_ylabel(r'Birth hazard ($\mathrm{y}^{-1}$)')
+    axes.set_ylabel(r'Birth hazard')
     axes.set_yticks(yticks)
     axes.set_yticklabels(yticklabels)
     axes.hlines(yticks[1 : ], t[0], t[-1], linestyle='dotted',
