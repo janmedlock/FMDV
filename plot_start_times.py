@@ -1,29 +1,26 @@
 #!/usr/bin/python3
 
 import os.path
-import sys
 
 from matplotlib import pyplot
 import numpy
 import pandas
 import seaborn
 
-sys.path.append('..')
 import h5
 import plot_common
 import run_common
-sys.path.pop()
 
 
 # All files are relative to this source file.
 _path = os.path.dirname(__file__)
 
-filename = os.path.join(_path, 'run_start_times_SATs.h5')
+filename = os.path.join(_path, 'run_start_times.h5')
 
 
 def get_infected(model='acute'):
     filename_infected = os.path.join(_path,
-                                     'plot_start_times_SATs_infected.h5')
+                                     'plot_start_times_infected.h5')
     try:
         infected = h5.load(filename_infected)
     except FileNotFoundError:
@@ -58,12 +55,12 @@ def plot_infected(model='acute'):
     g.set_axis_labels('time (days)', 'number infected')
     g.set_titles('{col_var} {col_name}')
     pyplot.tight_layout()
-    pyplot.savefig(f'plot_start_times_SATs_infected_{model}.pdf')
+    pyplot.savefig(f'start_times_infected_{model}.pdf')
 
 
 def get_extinction_time(model='acute'):
     filename_et = os.path.join(_path,
-                               'plot_start_times_SATs_extinction_time.h5')
+                               'plot_start_times_extinction_time.h5')
     try:
         extinction_time = h5.load(filename_et)
     except FileNotFoundError:
@@ -89,7 +86,7 @@ def plot_extinction_time(model='acute'):
     pyplot.yticks(locs, ['SAT {}'.format(i.get_text()) for i in labels])
     pyplot.xlim(left=0)
     pyplot.tight_layout()
-    pyplot.savefig(f'plot_start_times_SATs_extinction_time_{model}.pdf')
+    pyplot.savefig(f'start_times_extinction_time_{model}.pdf')
 
 
 def _build_time_to_peak_group(infected):
@@ -118,7 +115,7 @@ def _build_time_to_peak(filename_out):
 
 def get_time_to_peak(model='acute'):
     filename_ttp = os.path.join(_path,
-                                'plot_start_times_SATs_time_to_peak.h5')
+                                'plot_start_times_time_to_peak.h5')
     try:
         extinction_time = h5.load(filename_ttp)
     except FileNotFoundError:
@@ -145,7 +142,7 @@ def plot_time_to_peak(model='acute'):
     locs, labels = pyplot.yticks()
     pyplot.yticks(locs, ['SAT {}'.format(i.get_text()) for i in labels])
     pyplot.tight_layout()
-    pyplot.savefig(f'plot_start_times_SATs_time_to_peak_{model}.pdf')
+    pyplot.savefig(f'start_times_time_to_peak_{model}.pdf')
 
 
 def _build_total_infected_group(df):
@@ -173,7 +170,7 @@ def _build_total_infected(filename_out):
 
 def get_total_infected(model='acute'):
     filename_ti = os.path.join(_path,
-                               'plot_start_times_SATs_total_infected.h5')
+                               'plot_start_times_total_infected.h5')
     try:
         total_infected = h5.load(filename_ti)
     except FileNotFoundError:
@@ -200,14 +197,14 @@ def plot_total_infected(model='acute'):
     locs, labels = pyplot.yticks()
     pyplot.yticks(locs, ['SAT {}'.format(i.get_text()) for i in labels])
     pyplot.tight_layout()
-    pyplot.savefig(f'plot_start_times_SATs_total_infected_{model}.pdf')
+    pyplot.savefig(f'start_times_total_infected_{model}.pdf')
 
 
 if __name__ == '__main__':
     model = 'chronic'
 
-    plot_infected(model)
-    # plot_extinction_time(model)
+    # plot_infected(model)
+    plot_extinction_time(model)
     # plot_time_to_peak(model)
     # plot_total_infected(model)
-    # pyplot.show()
+    pyplot.show()
