@@ -111,6 +111,9 @@ def plot_kde(df):
 
 def plot_kde_2d(df):
     persistence_time_max = dict(acute=0.5, chronic=10)
+    # Make periodic.
+    df.loc[(slice(None), slice(None), 1.)] = df.loc[
+        (slice(None), slice(None), 0.)]
     start_times = (df.index
                      .get_level_values('start_time')
                      .unique()
