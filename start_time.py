@@ -16,7 +16,7 @@ def load_extinction_time():
     try:
         df = h5.load(filename)
     except OSError:
-        df = extinction_time.load_extinction_times(
+        df = extinction_time.load_extinction_time(
             'start_time.h5',
             ['model', 'SAT', 'start_time', 'run'])
         h5.dump(df, filename)
@@ -213,7 +213,7 @@ def plot_kde_2d(df):
 
 
 if __name__ == '__main__':
-    df = load_extinction_times()
+    df = load_extinction_time()
     # plot_median(df)
     # plot_survival(df)
     # plot_kde(df)

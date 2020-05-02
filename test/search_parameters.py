@@ -7,7 +7,7 @@ import csv
 sys.path.append('..')
 import herd
 from herd import birth
-import extinction_times
+import extinction_time
 sys.path.pop()
 
 
@@ -26,14 +26,13 @@ def search_parameter(parameter_name, values, parameters, tmax, nruns,
 
     if new:
         # Write header.
-        w.writerow(paramkeys + ['extinction_times (years)'])
+        w.writerow(paramkeys + ['extinction_time (years)'])
         fd.flush()
 
     for v in values:
         setattr(parameters, parameter_name, v)
         print('{} = {}'.format(parameter_name, v))
-        ets = extinction_times.find_extinction_times(parameters, tmax, nruns,
-                                                     *args, **kwargs)
+        ets = extinction_time.find(parameters, tmax, nruns, *args, **kwargs)
         w.writerow([getattr(parameters, k) for k in paramkeys]
                    + ets)
         fd.flush()
