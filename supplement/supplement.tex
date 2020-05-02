@@ -29,19 +29,23 @@
 \usepackage[style=nature, autocite=superscript, sortcites=true]{biblatex}
 \addbibresource{supplement.bib}
 
+\usepackage[UKenglish]{isodate}
+\cleanlookdateon
+
 % Set up numbering.
+\newcommand{\appendixlabel}{S}
 \newcounter{chapter}
 \setcounter{chapter}{3}
-\newcommand{\appendixlabel}{S}
-\renewcommand{\thesection}{\appendixlabel\thechapter.\arabic{section}}
-\renewcommand{\thefigure}{\appendixlabel\thechapter.\arabic{figure}}
-\renewcommand{\thetable}{\appendixlabel\thechapter.\arabic{table}}
-\renewcommand{\theequation}{\appendixlabel\thechapter.\arabic{equation}}
+\renewcommand{\thechapter}{\appendixlabel\arabic{chapter}}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+\renewcommand{\thetable}{\thechapter.\arabic{table}}
+\renewcommand{\theequation}{\thechapter.\arabic{equation}}
 
 
 \title{\emph{Endemic dynamics of foot-and-mouth disease viruses in
-    their reservoir, African buffalo} \\
-  Appendix \appendixlabel: Model development and analysis}
+    their reservoir, African buffalo}\\
+  Appendix \thechapter: Model development and analysis}
 
 \author{Anna Jolles \and Erin Gorsich \and Simon Gubbins
   \and Brianna Beechler \and Peter Buss \and Nick Juleff
@@ -56,13 +60,16 @@
 
 
 We built a stochastic individual-based model to capture the dynamics
-of FMDV in African buffalo.  The age and sex of each buffalo is
-tracked along with its immune state (\autoref{fig:diagram}): either
-immune due to maternal antibodies ($M$), susceptible to infection
-($S$), exposed ($E$), infectious ($I$), carrier ($C$), or recovered
-($R$).  There are 7 events that can occur to each buffalo: death,
-birth, waning, infection, progression, recovery, and chronic
-recovery.
+of FMDV in African buffalo.  The software we wrote to simulate and
+analyze the model is available for free under an open-source license
+\autocite{medlock_2020}. This software was written in the Python
+programming language \autocite{python}.
+
+In the model, the age and sex of each buffalo is tracked along with
+its immune state (\autoref{fig:diagram}): either immune due to
+maternal antibodies ($M$), susceptible to infection ($S$),
+exposed ($E$), infectious ($I$), carrier ($C$), or recovered ($R$).
+There are 7 events that can occur to each buffalo:
 \begin{description}
 \item[Death] On the birth of new buffalo calf, the age at death of
   that calf is sampled from the mortality distribution.
@@ -92,7 +99,11 @@ recovery.
 \item[Chronic recovery] When a buffalo becomes a carrier, the time to
   recovery is sampled from its distribution.
 \end{description}
-The distributions are detailed below.  (See also \autoref{fig:distributions}.)
+The distributions that govern these processes are detailed below.
+(See also \autoref{fig:distributions}.) When sampling from standard
+distributions, we used the SciPy library \autocite{scipy}.  For
+non-standard distributions, we used the inverse transform method
+\autocite{rubinstein_1981} for sampling.
 
 
 \begin{figure}
@@ -105,45 +116,43 @@ The distributions are detailed below.  (See also \autoref{fig:distributions}.)
 \end{figure}
 
 
-The simulations follow a Gillespie algorithm \autocite{gillespie_1977}.
-For each buffalo, a list of events and the times they occur is stored.
-The next event over the whole population is found and the population
-is updated.  The hazards for infection depend on the number of
-infectious buffalo in the population and so the times to infection are
-updated after each change in the population.  The hazards of the other
-events are independent of the state of the population and so the times
-to these events are not updated.  This process was repeated from $t =
-0$ to $t = t_{\text{max}}$ or until there were $0$ infected (exposed,
-infectious, and chronic) buffalo.
+The model simulations follow a Gillespie algorithm
+\autocite{gillespie_1977}. For each buffalo, a list of events and the
+times they occur is stored. The next event over the whole population
+is found and the population is updated.  The hazards for infection
+depend on the number of infectious buffalo in the population and so
+the times to infection are updated after each change in the
+population.  The hazards of the other events are independent of the
+state of the population and so the times to these events are not
+updated.  This process was repeated from $t = 0$ to until there were
+$0$ infected (exposed, infectious, and chronic) buffalo or until $t =
+\unit[10]{y}$. The simulations were stopped at $t = \unit[10]{y}$ to
+limit the total computation time of running many simulations.
 
-When sampling from simple distributions, standard algorithms were used
-\autocite{scipy}.  For complex distributions, the event times were
-sampled using the inverse transform method \autocite{rubinstein_1981}.
-
-The variables $t$ and $a$ denote time and age, respectively, and are
-both in units of years.
+In the following, the variables $t$ and $a$ denote time and age,
+respectively.
 
 \section{Death}
 
 We took the annual survival to be
 \begin{equation}
-  \Prob\{\text{Survival for $\unit[1]{yr}$}\}
+  \Prob\{\text{Survival for $\unit[1]{y}$}\}
   =
   \begin{cases}
-    0.66 & \text{if $a < 1$},
+    0.66 & \text{if $a < \unit[1]{y}$},
     \\
-    0.79 & \text{if $1 \leq a < 3$},
+    0.79 & \text{if $\unit[1]{y} \leq a < \unit[3]{y}$},
     \\
-    0.88 & \text{if $3 \leq a < 12$},
+    0.88 & \text{if $\unit[3]{y} \leq a < \unit[12]{y}$},
     \\
-    0.66 & \text{if $a \geq 12$}.
+    0.66 & \text{if $a \geq \unit[12]{y}$}.
   \end{cases}
 \end{equation}
 Assuming that the mortality hazard is constant throughout a year gives
 the hazard
 \begin{equation}
   h_{\text{mortality}}(a)
-  = - \log \Prob\{\text{Survival for $\unit[1]{yr}$}\},
+  = - \log \Prob\{\text{Survival for $\unit[1]{y}$}\},
 \end{equation}
 and the survival
 \begin{equation}
@@ -151,61 +160,77 @@ and the survival
     S_{\text{mortality}}(a)
     =
     \begin{cases}
-      0.66^a
-      & \text{if $a < 1$},
+      0.66^{a_{\mathrm{y}}}
+      & \text{if $a < \unit[1]{y}$},
       \\
-      0.66 \cdot 0.79^{a - 1}
-      & \text{if $1 \leq a < 3$},
+      0.66 \cdot 0.79^{a_{\mathrm{y}} - 1}
+      & \text{if $\unit[1]{y} \leq a < \unit[3]{y}$},
       \\
-      0.66 \cdot 0.79^2 \cdot 0.88^{a - 3}
-      & \text{if $3 \leq a < 12$},
+      0.66 \cdot 0.79^2 \cdot 0.88^{a_{\mathrm{y}} - 3}
+      & \text{if $\unit[3]{y} \leq a < \unit[12]{y}$},
       \\
-      0.66 \cdot 0.79^2 \cdot 0.88^9 \cdot 0.66^{a - 12}
-      & \text{if $a \geq 12$}.
+      0.66 \cdot 0.79^2 \cdot 0.88^9 \cdot 0.66^{a_{\mathrm{y}} - 12}
+      & \text{if $a \geq \unit[12]{y}$},
     \end{cases}
   \end{split}
 \end{equation}
-
+with years of age $a_{\mathrm{y}} = \frac{a}{\unit[1]{y}}$.
 
 \section{Birth}
 
-We assumed that females reach reproductive maturity at age $4$ and
-that the birth hazard varies at a periodic, triangular-shaped rate in
-time:
+We assumed that females reach reproductive maturity at age $\unit[4]{y}$
+and that the birth hazard varies at a periodic, triangular-shaped rate in
+time (\autoref{fig:birth_hazard}).
+Define the year fractional part
+\begin{equation}
+  \{t\}_{\mathrm{y}}
+    = \left\{\frac{t}{\unit[1]{y}}\right\},
+\end{equation}
+where $\{x\}$ is the standard fractional-part function,
+and the year floor
+\begin{equation}
+  \lfloor t \rfloor_{\mathrm{y}}
+    = \left\lfloor\frac{t}{\unit[1]{y}}\right\rfloor,
+\end{equation}
+where $\lfloor x \rfloor$ is the standard floor function.
+The hazard is then
 \begin{equation}
   h_{\text{birth}}(t, a) =
   \begin{cases}
-    0 & \text{if $a < 4$},
+    0 & \text{if $a < \unit[4]{y}$},
     \\
-    \mu \alpha \max\big(1 - \beta (1 - |1 - 2 \{t - \tau\}|), 0\big)
-    & \text{if $a \geq 4$},
+    \mu \alpha \max\big(
+    1 - \beta (1 - |1 - 2 \{t - \tau\}_{\mathrm{y}}|),
+    0
+    \big)
+    & \text{if $a \geq \unit[4]{y}$},
   \end{cases}
 \end{equation}
 with
 \begin{equation}
-  \alpha =
-  \begin{cases}
-    1 + c_{\text{v}} \sqrt{3}
-    & \text{if $c_{\text{v}} < \frac{1}{\sqrt{3}}$},
+  \begin{split}
+    \alpha &=
+    \begin{cases}
+      1 + c_{\text{v}} \sqrt{3}
+      & \text{if $c_{\text{v}} < \frac{1}{\sqrt{3}}$},
+      \\
+      \frac{3}{2} \left(1 + c_{\text{v}}^2\right)
+      & \text{if $c_{\text{v}} \geq \frac{1}{\sqrt{3}}$},
+    \end{cases}
     \\
-    \frac{3}{2} \left(1 + c_{\text{v}}^2\right)
-    & \text{if $c_{\text{v}} \geq \frac{1}{\sqrt{3}}$},
-  \end{cases}
+    \beta &=
+    \begin{cases}
+      \frac{2 c_{\text{v}} \sqrt{3}}{1 + c_{\text{v}} \sqrt{3}}
+      & \text{if $c_{\text{v}} < \frac{1}{\sqrt{3}}$},
+      \\
+      \frac{3}{4} \left(1 + c_{\text{v}}^2\right)
+      & \text{if $c_{\text{v}} \geq \frac{1}{\sqrt{3}}$}.
+    \end{cases}
+  \end{split}
 \end{equation}
-\begin{equation}
-  \beta =
-  \begin{cases}
-    \frac{2 c_{\text{v}} \sqrt{3}}{1 + c_{\text{v}} \sqrt{3}}
-    & \text{if $c_{\text{v}} < \frac{1}{\sqrt{3}}$},
-    \\
-    \frac{3}{4} \left(1 + c_{\text{v}}^2\right)
-    & \text{if $c_{\text{v}} \geq \frac{1}{\sqrt{3}}$},
-  \end{cases}
-\end{equation}
-where $\{x\}$ is the fractional part of $x$
-(\autoref{fig:birth_hazard}).  The magnitude of the seasonal variation
-is captured by the coefficient of variation $c_{\text{v}}$.  The time of year
-of the peak birth hazard is $\tau$.  The annual mean $\mu$ was determined
+The magnitude of the seasonal variation is captured by the coefficient
+of variation $c_{\text{v}}$.  The time of year of the peak birth
+hazard is $\tau$.  The annual mean $\mu$ was determined
 so that the population has asymptotic growth rate $r = 0$.  (See
 \autoref{stable_age_distribution}.)
 
@@ -214,90 +239,92 @@ so that the population has asymptotic growth rate $r = 0$.  (See
   \begin{sansmath}
     \input{birth_hazard.pgf}
   \end{sansmath}
-  \caption{Model birth hazards for ages 4 years and older.}
+  \caption{Model birth hazards for ages $\unit[4]{y}$ and older.}
   \label{fig:birth_hazard}
 \end{figure}
 
-The cumulative hazard for $t$ years, given age $a_0$ at the current
+The cumulative hazard at time $t$ given age $a_0$ at the current
 time $t_0$ is
 \begin{equation}
   H_{\text{birth}}(t, t_0, a_0) =
   \begin{cases}
-    0 & \text{if $a_0 + t < 4$},
+    0 & \text{if $a_0 + t < \unit[4]{y}$},
     \\
-    \mu \left(H_0 + H_1  + H_2\right)
-    & \text{if $a_0 + t \geq 4$ and $c_{\text{v}} < \frac{1}{\sqrt{3}}$},
+    \mu_{\mathrm{y}} \left(H_0 + H_1  + H_2\right)
+    & \text{if $a_0 + t \geq \unit[4]{y}$
+      and $c_{\text{v}} < \frac{1}{\sqrt{3}}$},
     \\
-    \mu \left(H_0 + H_3 + H_4\right)
-    & \text{if $a_0 + t \geq 4$ and $c_{\text{v}} \geq \frac{1}{\sqrt{3}}$},
+    \mu_{\mathrm{y}} \left(H_0 + H_3 + H_4\right)
+    & \text{if $a_0 + t \geq \unit[4]{y}$
+      and $c_{\text{v}} \geq \frac{1}{\sqrt{3}}$},
   \end{cases}
 \end{equation}
 with
 \begin{equation}
   \begin{split}
-    c &= t_0 + \max(4 - a_0, 0) - \tau,
+    \mu_{\mathrm{y}} &= \mu \cdot (\unit[1]{y}),
+    \\
+    c &= t_0 + \max(\unit[4]{y} - a_0, 0) - \tau,
     \\
     d &= t_0 + t - \tau,
     \\
-    H_0 &= \lfloor d \rfloor - \lfloor c \rfloor - 1,
+    H_0 &= \lfloor d \rfloor_{\mathrm{y}} - \lfloor c \rfloor_{\mathrm{y}} - 1,
     \\
     H_1 &=
     \begin{cases}
       \frac{1}{2}
-      + \alpha \left(\frac{1}{2} - \{c\}\right)
+      + \alpha \left(\frac{1}{2} - \{c\}_{\mathrm{y}}\right)
       \left[1 - \beta
-        + \beta \left(\frac{1}{2} - \{c\}\right)\right]
-      & \text{if $\{c\} < \frac{1}{2}$},
+        + \beta \left(\frac{1}{2} - \{c\}_{\mathrm{y}}\right)\right]
+      & \text{if $\{c\}_{\mathrm{y}} < \frac{1}{2}$},
       \\
-      \alpha \left(1 - \{c\}\right)
-      \left[1 - \beta + \beta \left(1 - \{c\}\right)\right]
-      & \text{if $\{c\} \geq \frac{1}{2}$},
+      \alpha \left(1 - \{c\}_{\mathrm{y}}\right)
+      \left[1 - \beta + \beta \left(1 - \{c\}_{\mathrm{y}}\right)\right]
+      & \text{if $\{c\}_{\mathrm{y}} \geq \frac{1}{2}$},
     \end{cases}
     \\
     H_2 &=
     \begin{cases}
-      \alpha \{d\}\left(1 - \beta \{d\}\right)
-      & \text{if $\{d\} < \frac{1}{2}$},
+      \alpha \{d\}_{\mathrm{y}}\left(1 - \beta \{d\}_{\mathrm{y}}\right)
+      & \text{if $\{d\}_{\mathrm{y}} < \frac{1}{2}$},
       \\
       \frac{1}{2}
-      + \alpha \left(\{d\} - \frac{1}{2}\right)
+      + \alpha \left(\{d\}_{\mathrm{y}} - \frac{1}{2}\right)
       \left[1 - \beta
-        + \beta \left(\{d\} - \frac{1}{2}\right)\right]
-      & \text{if $\{d\} \geq \frac{1}{2}$},
+        + \beta \left(\{d\}_{\mathrm{y}} - \frac{1}{2}\right)\right]
+      & \text{if $\{d\}_{\mathrm{y}} \geq \frac{1}{2}$},
     \end{cases}
     \\
     H_3 &=
     \begin{cases}
-      \frac{1}{2} + \alpha \beta \left(\frac{1}{2 \beta} - \{c\}\right)^2
-      & \text{if $\{c\} < \frac{1}{2 \beta}$},
+      \frac{1}{2} + \alpha \beta \left(\frac{1}{2 \beta} - \{c\}_{\mathrm{y}}\right)^2
+      & \text{if $\{c\}_{\mathrm{y}} < \frac{1}{2 \beta}$},
       \\
       \frac{1}{2}
-      & \text{if $\frac{1}{2 \beta} \leq \{c\} < 1 - \frac{1}{2 \beta}$},
+      & \text{if $\frac{1}{2 \beta} \leq \{c\}_{\mathrm{y}} < 1 - \frac{1}{2 \beta}$},
       \\
-      \alpha \left(1 - \{c\}\right) \left[1 -
-        \beta \left(1 - \{c\}\right)\right]
-      & \text{if $\{c\} \geq 1 - \frac{1}{2 \beta}$},
+      \alpha \left(1 - \{c\}_{\mathrm{y}}\right) \left[1 -
+        \beta \left(1 - \{c\}_{\mathrm{y}}\right)\right]
+      & \text{if $\{c\}_{\mathrm{y}} \geq 1 - \frac{1}{2 \beta}$},
     \end{cases}
     \\
     H_4 &=
     \begin{cases}
-      \alpha \{d\} \left[1 - \beta \{d\}\right]
-      & \text{if $\{d\} < \frac{1}{2 \beta}$},
+      \alpha \{d\}_{\mathrm{y}} \left[1 - \beta \{d\}_{\mathrm{y}}\right]
+      & \text{if $\{d\}_{\mathrm{y}} < \frac{1}{2 \beta}$},
       \\
       \frac{1}{2}
-      & \text{if $\frac{1}{2 \beta} \leq \{d\} <
+      & \text{if $\frac{1}{2 \beta} \leq \{d\}_{\mathrm{y}} <
         1 - \frac{1}{2 \beta}$},
       \\
       \frac{1}{2}
       + \alpha \beta
-      \left[\{d\} - \left(1 - \frac{1}{2 \beta}\right)\right]^2
-      & \text{if $\{d\} \geq 1 - \frac{1}{2 \beta}$},
+      \left[\{d\}_{\mathrm{y}} - \left(1 - \frac{1}{2 \beta}\right)\right]^2
+      & \text{if $\{d\}_{\mathrm{y}} \geq 1 - \frac{1}{2 \beta}$}.
     \end{cases}
   \end{split}
 \end{equation}
-and $\lfloor x \rfloor$ is the floor function,
-i.e.~$\lfloor x \rfloor = x - \{x\}$.
-The survival function for $t$ years, given age
+The survival function for $t$ years given age
 $a_0$ at the current time $t_0$ is then
 \begin{equation}
   S_{\text{birth}}(t, t_0, a_0) = \exp\left(- H_{\text{birth}}(t, t_0, a_0)\right).
@@ -389,74 +416,22 @@ initialize the population.  (See \autoref{stable_age_distribution}.)
 The sex of each buffalo was randomly selected with probability
 $p_{\text{female}}$ of being female.
 
-The simulations were started at $t = 0$ with $2$ initial infections
-in randomly chosen members of the population.
+\textbf{TODO: HOW TO DO INITIAL CONDITIONS.}
 
 \cite{hedger_1972}
 
-\cite{medlock_2020}
+The simulations were started at $t = 0$ with $2$ initial infections
+in randomly chosen susceptible in the population.
 
+The model was initiated at $t_0 = \unit[0.5]{y}$, i.e.~about 1 July.
+The peak of the birth hazard was at $\tau = 0$, i.e.~1 January.
+Plot of sensitivity to $t_0$?
 
 \section{Stable age distribution}
 \label{stable_age_distribution}
 
-The mean rate of female births $B(t)$ follows the Lotka equation
-\begin{equation}
-  \label{lotka}
-  \begin{split}
-    B(t) =&
-    p_{\text{female}} \bigg[
-      \int_0^t B(t - a)
-      S_{\text{mortality}}(a)
-      h_{\text{birth}}(t, a) \md a
-    \\
-    & \quad\quad\quad\quad\quad {} +
-      \int_0^{\infty} n_0(a)
-      \frac{S_{\text{mortality}}(a + t)}{S_{\text{mortality}}(a)}
-      h_{\text{birth}}(t, a + t) \md a
-    \bigg],
-  \end{split}
-\end{equation}
-where $n_0(a)$ is the density of age $a$ females at time $t = 0$
-% Chapter VI, Section 29 on pp.~159--161 of harris_1963
-% Chapter 20 on pp.~353--364 of kot_01
-\autocite{harris_1963, kot_01}.
-% For large $t$, the contribution of the initial cohort---the second
-% integral in \eqref{lotka}---becomes negligible, so
-% \begin{equation}
-%   B(t) =
-%   p_{\text{female}} \int_0^t B(t - a)
-%   \hat{h}_{\text{birth}}(t, a) \md a
-% \end{equation}
-% for large $t$,
-% where
-% \begin{equation}
-%   \hat{h}_{\text{birth}}(t, a) =
-%   S_{\text{mortality}}(a)
-%   h_{\text{birth}}(t, a).
-% \end{equation}
-% Alternately,
-% \begin{equation}
-%   B(t)
-%   =
-%   p_{\text{female}} \int_0^{t}
-%   B(u)
-%   \hat{h}_{\text{birth}}(t, t - u)
-%   \md u.
-% \end{equation}
-Given $B(t)$, the mean density of females of age $a$ is
-\begin{equation}
-  n(t, a) =
-  \begin{cases}
-    B(t - a) S_{\text{mortality}}(a)
-    & \text{if $a < t$},
-    \\
-    n_0(a - t)
-    \frac{S_{\text{mortality}}(a)}{S_{\text{mortality}}(a - t)}
-    & \text{if $a > t$}.
-  \end{cases}
-\end{equation}
-The mean density of females of age $a$ satisifies the McKendrick--von
+Because there is no additional mortality due to the pathogen, the mean
+density of female buffaloes of age $a$ satisifies the McKendrick--von
 Foerster partial differential equation (PDE)
 \begin{equation}
   \label{PDE}
@@ -469,18 +444,23 @@ Foerster partial differential equation (PDE)
     p_{\text{female}}
     \int_0^{+\infty} h_{\text{birth}}(t, a) n(t, a) \md a,
     \\
-    n(0, a) &= n_0(a).
+    n(t_0, a) &= n_0(a).
   \end{split}
 \end{equation}
+where $n_0(a)$ is the initial density
+% Chapter VI, Section 29 on pp.~159--161 of harris_1963
+% Chapter 20 on pp.~353--364 of kot_01
+\autocite{harris_1963, kot_01}.
 
 Because the birth hazard, $h_{\text{birth}}(t, a)$,
 is periodic with period $T = \unit[1]{y}$,
-we found the stable age distribution and the asymptotic population growth
-rate using Floquet theory \autocite{parker_1992}.
-Floquet theory requires the fundamental solution $\Phi(t, a, a')$ for
-McKendrick--von Foerster equation \eqref{PDE}, which, for each $a'$,
-satisfies the same PDE and birth integral as
-$n(t, a)$, but with an initial condition localized to age $a'$:
+we found the stable age distribution and the asymptotic population
+growth rate using Floquet theory \autocite{parker_1992}.  Floquet
+theory requires the fundamental solution $\Phi(t, a, a')$
+for McKendrick--von Foerster equation \eqref{PDE}, which, for each
+$a'$,
+satisfies the same PDE and birth integral as $n(t, a)$,
+but with an initial condition localized to age $a'$:
 \begin{equation}
   \label{fundamental_PDE}
   \begin{split}
@@ -492,22 +472,22 @@ $n(t, a)$, but with an initial condition localized to age $a'$:
     p_{\text{female}}
     \int_0^{+\infty} h_{\text{birth}}(t, a) \Phi(t, a, a') \md a,
     \\
-    \Phi(0, a, a') &= \delta(a - a'),
+    \Phi(t_0, a, a') &= \delta(a - a'),
   \end{split}
 \end{equation}
 where $\delta(x)$ is the Dirac delta.
-To solve this numerically, we used the
-Crank--Nicolson method on characteristics and the composite trapezoid
-rule for the birth integral \autocite{milner_1992}.  Given the time
-step $\Delta t$,
+
+To solve this numerically, we used the Crank--Nicolson method on
+characteristics and the composite trapezoid rule for the birth
+integral \autocite{milner_1992}.  Given the time step $\Delta t$,
 let $a_i = i \Delta t$
 and $a'_j = j \Delta t$
 for $i, j \in \{0, 1, 2, \ldots, I - 1\}$;
-$t^k = k \Delta t$
+$t^k = t_0 + k \Delta t$
 for $k \in \{0, 1, \ldots, K - 1\}$;
 and $\Phi_{i, j}^k \approx \Phi(t^k, a_i, a'_j)$.
-For each $j$ and each $k \geq 1$, the Crank--Nicolson method on
-characteristics is
+For each $j$
+and each $k \geq 1$, the Crank--Nicolson method on characteristics is
 \begin{equation}
   \label{CN_step}
   \frac{\Phi_{i, j}^k - \Phi_{i - 1, j}^{k - 1}}{\Delta t}
@@ -570,24 +550,30 @@ with the matrix $\mat{M} = [M_{i, j}]$ where
     \frac{1 - C_{i - 1 / 2}}{1 + C_{i - 1 / 2}}
     & \text{if $i = j + 1$}, \\
     \frac{1 - C_{I - 1}}{1 + C_{I - 1}} & \text{if $i = j = I - 1$}, \\
-    0 & \text{otherwise};
+    0 & \text{otherwise}.
   \end{cases}
+\end{equation}
+Because the birth hazard can be decomposed into the product of a
+time-varying part and an age-varying part,
+\begin{equation}
+  h_{\text{birth}}(t^k, a_i)
+  = \hat{h}_{\text{birth}}(t^k) \bar{h}_{\text{birth}}(a_i),
 \end{equation}
 the birth integral \eqref{birth_step} is then
 \begin{equation}
-  \mat{\Phi}_0^k = \vec{v} \mat{\Phi}^k,
+  \mat{\Phi}_0^k = \hat{h}_{\text{birth}}(t^k) \vec{v} \mat{\Phi}^k,
 \end{equation}
-with the vector $\vec{v} = [v_i]$ where
+with the vector $\vec{v} = [v_i]$ for
 \begin{equation}
   v_i =
   \begin{cases}
-    \frac{p_{\text{female}} \Delta t}{2}
+    \frac{1}{2} p_{\text{female}} \bar{h}_{\text{birth}}(a_i) \Delta t
     & \text{if $i = 0$ or $i = I - 1$}, \\
-    p_{\text{female}} \Delta t
-    & \text{otherwise};
+    p_{\text{female}} \bar{h}_{\text{birth}}(a_i) \Delta t
+    & \text{otherwise}.
   \end{cases}
 \end{equation}
-and the initial condition is
+The initial condition is
 \begin{equation}
   \mat{\Phi}^0 = \mat{I},
 \end{equation}
@@ -600,19 +586,19 @@ fundamental solution after one period:
 \end{equation}
 The monodromy matrix projects the population forward at by one period,
 \begin{equation}
-  \vec{n}(T) = \mat{\Psi} \vec{n}(0),
+  \vec{n}(t_0 + T) = \mat{\Psi} \vec{n}(t_0),
 \end{equation}
 where $\vec{n}(t) = [n(t, a_i)]$.
 Using the monodromy operator to repeatedly project the population
 forward gives
 \begin{equation}
-  \vec{n}(K T)
-  = \mat{\Psi}^K \vec{n}(0)
+  \vec{n}(t_0 + K T)
+  = \mat{\Psi}^K \vec{n}(t_0)
   \to \rho_0^K \vec{w}_0
   = \me^{r K T} \vec{w}_0
 \end{equation}
 as $K \to \infty$,
-where $\rho_0$ is the dominant eigenvalue, i.e. the eigenvalue with
+where $\rho_0$ is the dominant eigenvalue, i.e.~the eigenvalue with
 largest magnitude, of $\mat{\Psi}$;
 the corresponding right eigenvector $\vec{w}_0$ is the stable age
 distribution; and
@@ -622,33 +608,32 @@ distribution; and
 is the asymptotic population growth rate.
 
 We numerically computed the population growth rate and stable age
-distribution by using age and time steps $\Delta t = 0.01$,
-maximum age $a_{\text{max}} = 35$
+distribution by using time step $\Delta t = \unit[0.01]{y}$,
+maximum age $a_{\text{max}} = \unit[35]{y}$
 (probability of survival
-$S_{\text{mortality}}(35) \approx 10^{-5}$),
+$S_{\text{mortality}}(\unit[35]{y}) \approx 10^{-5}$),
 finding the monodromy matrix by numerically solving
-\eqref{fundamental_PDE} from $t = 0$ to $T$, and
+\eqref{fundamental_PDE} from $t = t_0$ to $T$, and
 then finding its dominant eigenvalue and corresponding eigenvector.
 We then used a root-finding algorithm to find the value of the mean
-birth hazard $\mu \approx 0.9379$ that gave growth rate $r = 0$.
-Halving the age step to $\Delta a = 0.005$
-gave a relative error for $\mu$ of $7 \times 10^{-4}$
-and doubling the maximum age to $a_{\text{max}} = 70$
-gave a relative error of $5 \times 10^{-6}$.
-These computations were done in Python \autocite{python} using the
-NumPy \autocite{numpy} and SciPy \autocite{scipy} libraries.
-
+birth hazard $\mu \approx \unit[0.9379]{y^{-1}}$ that gave growth rate
+$r = 0$ (\autoref{fig:stable_age_distribution}). Halving the time
+step to $\Delta t = \unit[0.005]{y}$ gave a relative error for $\mu$
+of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
+= \unit[70]{y}$ gave a relative error of $5 \times 10^{-6}$.
 
 \begin{figure}
   \centering
   \begin{sansmath}
     \input{stable_age_distribution.pgf}
   \end{sansmath}
-  \caption{TODO: Write caption.
-    This is on 01 July and the birth peak is 01 January.
-    Reference this figure in the text.}
+  \caption{The stable age distribution in the buffalo population
+    at $t_0 = \unit[0.5]{y}$, i.e.~about 1 July. The peak in the birth
+    hazard is on 1 January ($\tau = 0$).}
   \label{fig:stable_age_distribution}
 \end{figure}
+
+\textbf{TODO: HOW TO DO SAMPLING}
 
 
 \printbibliography
