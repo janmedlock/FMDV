@@ -5,19 +5,19 @@ import numpy
 import seaborn
 import statsmodels.nonparametric.api
 
-import extinction_times
+import extinction_time
 import h5
 import plot_common
 import stats
 
 
-def load_extinction_times():
-    filename = 'plot_birth_seasonality.h5'
+def load_extinction_time():
+    filename = 'birth_seasonality_extinction_time.h5'
     try:
         df = h5.load(filename)
     except OSError:
-        df = extinction_times.load_extinction_times(
-            'run_birth_seasonality.h5',
+        df = extinction_time.load_extinction_time(
+            'birth_seasonality.h5',
             ['model', 'SAT', 'birth_seasonal_coefficient_of_variation', 'run'])
         h5.dump(df, filename)
     return df
@@ -216,7 +216,7 @@ def plot_kde_2d(df):
 
 
 if __name__ == '__main__':
-    df = load_extinction_times()
+    df = load_extinction_time()
     # plot_median(df)
     # plot_survival(df)
     # plot_kde(df)

@@ -4,8 +4,8 @@ from matplotlib import colors, pyplot, ticker
 import numpy
 
 import plot_common
-import plot_population_sizes
-import plot_samples
+import population_size
+import samples
 import stats
 
 
@@ -21,13 +21,13 @@ rc['axes.labelsize'] = 6
 rc['xtick.labelsize'] = rc['ytick.labelsize'] = 5
 
 
-def load_population_sizes():
-    df = plot_population_sizes.load_extinction_times()
+def load_population_size():
+    df = population_size.load_extinction_time()
     return df.loc['chronic']
 
 
 def plot_sensitivity_population_sizes(axes):
-    df = load_population_sizes()
+    df = load_population_size()
     population_sizes = (df.index
                           .get_level_values('population_size')
                           .unique()
@@ -90,7 +90,7 @@ def plot_sensitivity_population_sizes(axes):
 
 
 def load_samples():
-    df = plot_samples.load_extinction_times()
+    df = samples.load_extinction_time()
     return df.loc['chronic']
 
 
@@ -102,8 +102,6 @@ def _get_prcc(df, params, outcome):
 def plot_sensitivity_samples(axes):
     df = load_samples()
     outcome = 'extinction_time'
-    SATs = df.index.get_level_values('SAT').unique()
-    samples = df.index.get_level_values('sample').unique()
     params = df.columns.drop([outcome, 'extinction_observed'])
     colors_ = [f'C{j}' for j in range(len(params))][::-1]
     rho = df.groupby('SAT').apply(_get_prcc, params, outcome).T
@@ -113,9 +111,9 @@ def plot_sensitivity_samples(axes):
     rho = rho.loc[order]
     xabsmax = rho.abs().max().max()
     y = range(len(rho))
-    ylabels = [plot_samples.param_transforms.get(p, p)
-                                            .capitalize()
-                                            .replace('_', ' ')
+    ylabels = [samples.param_transforms.get(p, p)
+                                       .capitalize()
+                                       .replace('_', ' ')
                for p in rho.index]
     for ((SAT, rho_SAT), ax) in zip(rho.items(), axes):
         ax.barh(y, rho_SAT, height=1, left=0,

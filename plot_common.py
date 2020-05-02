@@ -8,7 +8,7 @@ import pandas
 import statsmodels.nonparametric.api
 
 import h5
-import run_common
+import run
 
 
 # Nature.
@@ -52,7 +52,7 @@ def build_downsample(filename_in, t_min=0, t_max=10, t_step=1/365):
             downsample = pandas.concat({ix: downsample},
                                        names=by, copy=False)
             store_out.put(downsample, dropna=True, index=False,
-                          min_itemsize=run_common._min_itemsize)
+                          min_itemsize=run._min_itemsize)
         store_out.create_table_index()
         store_out.repack()
 
@@ -75,11 +75,11 @@ def _build_infected(filename, filename_out):
     infected = pandas.concat(infected, copy=False)
     infected.name = 'infected'
     h5.dump(infected, filename_out, mode='w',
-            min_itemsize=run_common._min_itemsize)
+            min_itemsize=run._min_itemsize)
 
 
 def get_infected():
-    filename_infected = os.path.join(_path, 'plot_common_infected.h5')
+    filename_infected = os.path.join(_path, 'run_infected.h5')
     try:
         infected = h5.load(filename_infected)
     except OSError:
@@ -108,12 +108,11 @@ def _build_extinction_time(filename, filename_out):
     ser = pandas.Series(ser, name='extinction time (days)')
     ser.rename_axis(by, inplace=True)
     h5.dump(ser, filename_out, mode='w',
-            min_itemsize=run_common._min_itemsize)
+            min_itemsize=run._min_itemsize)
 
 
 def get_extinction_time():
-    filename_et = os.path.join(_path,
-                               'plot_common_extinction_time.h5')
+    filename_et = os.path.join(_path, 'run_extinction_time.h5')
     try:
         extinction_time = h5.load(filename_et)
     except OSError:

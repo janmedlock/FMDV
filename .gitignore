@@ -18,4 +18,5 @@ __pycache__/
 _cache/
 /herd/floquet/monodromy*.so
 /manuscript/
+/papers/
 /orphans/

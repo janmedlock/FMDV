@@ -11,10 +11,10 @@ import pandas
 import h5
 import herd
 import herd.samples
-import run_common
+import run
 
 
-_path = 'run_samples'
+_path = 'samples'
 _index = 'time (y)'
 
 
@@ -58,14 +58,14 @@ def _run_samples_model(model, tmax, path):
     logging_prefix = f'model {model}, '
     return itertools.chain.from_iterable(
         _run_samples_SAT(model, SAT, tmax, path_model, logging_prefix)
-        for SAT in run_common._SATs)
+        for SAT in run._SATs)
 
 
 def run_samples(tmax):
     os.makedirs(_path, exist_ok=True)
     jobs = itertools.chain.from_iterable(
         _run_samples_model(model, tmax, _path)
-        for model in run_common._models)
+        for model in run._models)
     Parallel(n_jobs=-1)(jobs)
 
 
@@ -75,7 +75,7 @@ def _get_sample_number(filename):
 
 
 def combine():
-    with h5.HDFStore('run_samples.h5', mode='a') as store:
+    with h5.HDFStore('samples.h5', mode='a') as store:
         # (model, SAT, sample) that are already in `store`.
         store_idx = store.get_index().droplevel(_index).unique()
         for model in os.listdir(_path):
@@ -91,16 +91,16 @@ def combine():
                         recarray = numpy.load(path_sample)
                         df = pandas.DataFrame.from_records(recarray,
                                                            index=_index)
-                        run_common._prepend_index_levels(df,
-                                                         model=model,
-                                                         SAT=SAT,
-                                                         sample=sample)
+                        run._prepend_index_levels(df,
+                                                  model=model,
+                                                  SAT=SAT,
+                                                  sample=sample)
                         print('Inserting '
                               + ', '.join((f'model={model}',
                                            f'SAT={SAT}',
                                            f'sample={sample}'))
                               + '.')
-                        store.put(df, min_itemsize=run_common._min_itemsize)
+                        store.put(df, min_itemsize=run._min_itemsize)
                         # os.remove(path_sample)
 
 

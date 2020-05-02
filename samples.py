@@ -20,8 +20,8 @@ def _get_extinction(infected):
             'extinction_observed': observed}
 
 
-def _load_extinction_times():
-    with h5.HDFStore('run_samples.h5', mode='r') as store:
+def _load_extinction_time():
+    with h5.HDFStore('samples.h5', mode='r') as store:
         df = []
         for model in ('acute', 'chronic'):
             for SAT in (1, 2, 3):
@@ -44,12 +44,12 @@ def _load_extinction_times():
         return pandas.concat(df, axis='index', copy=False)
 
 
-def load_extinction_times():
+def load_extinction_time():
     try:
-        df = h5.load('plot_samples.h5')
+        df = h5.load('samples_extinction_time.h5')
     except OSError:
-        df = _load_extinction_times()
-        h5.dump(df, 'plot_samples.h5')
+        df = _load_extinction_time()
+        h5.dump(df, 'samples_extinction_time.h5')
     return df
 
 
@@ -268,7 +268,7 @@ def plot_sensitivity(df, rank=True, errorbars=False):
 
 
 if __name__ == '__main__':
-    df = load_extinction_times()
+    df = load_extinction_time()
     # plot_times(df)
     # plot_parameters(df)
     plot_sensitivity(df)

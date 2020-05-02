@@ -4,7 +4,7 @@ import numpy
 import pandas
 
 import h5
-import run_common
+import run
 
 
 def _get_index_levels_unique(store, levels, *args, key=None, **kwargs):
@@ -27,7 +27,7 @@ def _get_extinction(infected, tmax=10):
     return dict(time=time, observed=observed)
 
 
-def load_extinction_times(filename, by):
+def load_extinction_time(filename, by):
     columns = ['exposed', 'infectious', 'chronic']
     extinction = {}
     with h5.HDFStore(filename, mode='r') as store:
@@ -51,7 +51,7 @@ def number_infected(x):
 
 
 def find(parameters, tmax, nruns, *args, **kwds):
-    data = run_common.run_many(parameters, tmax, nruns, *args, **kwds)
+    data = run.run_many(parameters, tmax, nruns, *args, **kwds)
     (T, X) = zip(*(zip(*d) for d in data))
     extinction_times = [t[-1] if (number_infected(x[-1]) == 0) else None
                         for (t, x) in zip(T, X)]

@@ -5,22 +5,59 @@ import numpy
 import seaborn
 import statsmodels.nonparametric.api
 
-import extinction_times
+import extinction_time
 import h5
 import plot_common
 import stats
 
 
-def load_extinction_times():
-    filename = 'plot_population_sizes.h5'
+def load_extinction_time():
+    filename = 'start_time_extinction_time.h5'
     try:
         df = h5.load(filename)
     except OSError:
-        df = extinction_times.load_extinction_times(
-            'run_population_sizes.h5',
-             ['model', 'SAT', 'population_size', 'run'])
+        df = extinction_time.load_extinction_times(
+            'start_time.h5',
+            ['model', 'SAT', 'start_time', 'run'])
         h5.dump(df, filename)
     return df
+
+
+def plot_median(df, CI=0.5):
+    row = dict(acute=0, chronic=1)
+    column = dict(enumerate(range(3), 1))
+    levels = [CI / 2, 1 - CI / 2]
+    with seaborn.axes_style('darkgrid'):
+        fig, axes = pyplot.subplots(len(row), len(column),
+                                    sharex='col', sharey='row')
+        for ((model, SAT), group) in df.groupby(['model', 'SAT']):
+            i, j = row[model], column[SAT]
+            ax = axes[i, j]
+            by = 'start_time'
+            times = group.groupby(by).time
+            median = times.median()
+            ax.plot(median.index, median,
+                    color=plot_common.SAT_colors[SAT])
+            CI_ = times.quantile(levels).unstack()
+            ax.fill_between(CI_.index, CI_[levels[0]], CI_[levels[1]],
+                            color=plot_common.SAT_colors[SAT],
+                            alpha=0.5)
+            if ax.is_first_row():
+                ax.set_title(f'SAT{SAT}', fontsize='medium')
+            else:
+                ax.set_title('')
+            if ax.is_last_row():
+                if j == 1:
+                    ax.set_xlabel('Start time (y)')
+            else:
+                ax.set_xlabel('')
+            if ax.is_first_col():
+                ax.set_ylabel(
+                    f'{model.capitalize()} model\n\nextinction time (y)')
+        for ax in axes[:, -1]:
+            ax.set_ylim(bottom=0)
+        fig.align_labels()
+        fig.tight_layout()
 
 
 def plot_survival(df):
@@ -30,11 +67,11 @@ def plot_survival(df):
     for ((model, SAT), group) in df.groupby(['model', 'SAT']):
         i, j = row[SAT], column[model]
         ax = axes[i, j]
-        for (p, g) in group.groupby('population_size'):
+        for (s, g) in group.groupby('start_time'):
             survival = stats.get_survival(g, 'time', 'observed')
             ax.step(survival.index, survival,
                     where='post',
-                    label=f'population size {p}')
+                    label=f'start_time {s}')
 
 
 def plot_kde(df):
@@ -45,7 +82,7 @@ def plot_kde(df):
         for ((model, SAT), group) in df.groupby(['model', 'SAT']):
             i, j = row[SAT], column[model]
             ax = axes[i, j]
-            for (p, g) in group.groupby('population_size'):
+            for (s, g) in group.groupby('start_time'):
                 ser = g.time[g.observed]
                 proportion_observed = len(ser) / len(g)
                 if proportion_observed > 0:
@@ -55,7 +92,7 @@ def plot_kde(df):
                     y = proportion_observed * kde.density
                 else:
                     x, y = [], []
-                label = p if i == j == 0 else ''
+                label = s if i == j == 0 else ''
                 ax.plot(x, y, label=label, alpha=0.7)
             ax.yaxis.set_major_locator(ticker.NullLocator())
             if ax.is_first_row():
@@ -68,19 +105,17 @@ def plot_kde(df):
                 ylabel = '\ndensity' if i == 1 else ''
                 ax.set_ylabel(f'SAT{SAT}{ylabel}')
         leg = fig.legend(loc='center left', bbox_to_anchor=(0.8, 0.5),
-                         handletextpad=3, title='Population size')
-        for text in leg.get_texts():
-            text.set_horizontalalignment('right')
+                         title='Start time (y)')
         fig.tight_layout(rect=(0, 0, 0.82, 1))
 
 
 def plot_kde_2d(df):
     persistence_time_max = dict(acute=0.5, chronic=10)
-    population_sizes = (df.index
-                          .get_level_values('population_size')
-                          .unique()
-                          .sort_values())
-    population_size_baseline = 1000
+    start_times = (df.index
+                     .get_level_values('start_time')
+                     .unique()
+                     .sort_values())
+    start_time_baseline = 0.5
     width = 390 / 72.27
     height = 0.8 * width
     rc = plot_common.rc.copy()
@@ -114,11 +149,10 @@ def plot_kde_2d(df):
             for (j, (SAT, group_SAT)) in enumerate(group_model.groupby('SAT')):
                 ax = axes[i, j]
                 density = numpy.zeros((len(persistence_time),
-                                       len(population_sizes)))
-                proportion_observed = numpy.zeros_like(population_sizes,
-                                                       dtype=float)
-                grouper = group_SAT.groupby('population_size')
-                for (k, (p, g)) in enumerate(grouper):
+                                       len(bscovs)))
+                proportion_observed = numpy.zeros_like(bscovs, dtype=float)
+                grouper = group_SAT.groupby('start_time')
+                for (k, (s, g)) in enumerate(grouper):
                     ser = g.time[g.observed]
                     nruns = len(g)
                     proportion_observed[k] = len(ser) / nruns
@@ -130,14 +164,14 @@ def plot_kde_2d(df):
                 norm = colors.Normalize(vmin=0, vmax=numpy.max(density))
                 ax.imshow(density * proportion_observed,
                           cmap=cmap, norm=norm, interpolation='bilinear',
-                          extent=(min(population_sizes), max(population_sizes),
+                          extent=(min(bscovs), max(bscovs),
                                   min(persistence_time), max(persistence_time)),
                           aspect='auto', origin='lower', clip_on=False)
-                ax.set_xscale('log')
                 # ax shares the xaxis with ax_po.
                 ax.xaxis.set_tick_params(which='both',
                                          labelbottom=False, labeltop=False)
                 ax.xaxis.offsetText.set_visible(False)
+                ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
                 ax.yaxis.set_major_locator(
                     ticker.MultipleLocator(max(persistence_time) / 5))
                 ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
@@ -147,19 +181,18 @@ def plot_kde_2d(df):
                     ax.set_title(f'SAT{SAT}')
                 if model == 'chronic':
                     ax_po = axes[-1, j]
-                    ax_po.plot(population_sizes, 1 - proportion_observed,
+                    ax_po.plot(bscovs, 1 - proportion_observed,
                                color=plot_common.SAT_colors[SAT],
                                clip_on=False, zorder=3)
-                    ax_po.set_xscale('log')
-                    ax_po.set_xlabel('Population size')
-                    ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
+                    ax_po.set_xlabel('Start time (y)')
+                    ax_po.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
                     ax_po.yaxis.set_major_formatter(
                         ticker.PercentFormatter(xmax=1))
                     ax_po.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
                     if ax_po.is_first_col():
                         ax_po.set_ylabel('Persisting 10 y')
         for ax in fig.axes:
-            ax.axvline(population_size_baseline,
+            ax.axvline(bscov_baseline,
                        color='black', linestyle='dotted', alpha=0.7)
             ax.autoscale(tight=True)
             if not ax.is_first_col():
@@ -176,11 +209,12 @@ def plot_kde_2d(df):
                          verticalalignment='center')
         fig.text(label_x, 0.79, 'Acute model', **label_kws)
         fig.text(label_x, 0.31, 'Chronic model', **label_kws)
-        fig.savefig('population_sizes.pdf')
+        fig.savefig('start_times.pdf')
 
 
 if __name__ == '__main__':
     df = load_extinction_times()
+    # plot_median(df)
     # plot_survival(df)
     # plot_kde(df)
     plot_kde_2d(df)

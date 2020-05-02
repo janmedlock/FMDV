@@ -11,7 +11,7 @@ import seaborn
 
 sys.path.append('..')
 import herd
-import run_common
+import run
 sys.path.pop()
 
 
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     p = herd.Parameters(model=model, SAT=SAT)
     t0 = time.time()
-    data = run_common.run_many(p, tmax, nruns)
+    data = run.run_many(p, tmax, nruns)
     t1 = time.time()
     print('Run time: {} seconds.'.format(t1 - t0))
 

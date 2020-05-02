@@ -13,7 +13,6 @@ import seaborn
 import statsmodels.nonparametric.api
 
 import plot_common
-import run_common
 
 
 
