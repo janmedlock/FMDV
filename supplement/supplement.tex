@@ -27,6 +27,8 @@
 \usepackage{tikz}
 
 \usepackage[style=nature, autocite=superscript, sortcites=true]{biblatex}
+% Check the Harris, Kot, and Hedger citations if you change the
+% citation style.
 \addbibresource{supplement.bib}
 
 \usepackage[UKenglish]{isodate}
@@ -109,9 +111,10 @@ non-standard distributions, we used the inverse transform method
 \begin{figure}
   \centering
   \textsf{\input{../diagram/diagram.tex}}
-  \caption{Model diagram.  The dashed box and arrows show the state
-    and transitions present in the chronic model but not the acute
-    model.}
+  \caption{Model diagram. The dashed box and arrows show the
+    state and transitions present in the model with both acute and
+    chronic transmission that are not present in the model with only
+    acute transmission.}
   \label{fig:diagram}
 \end{figure}
 
@@ -124,10 +127,11 @@ depend on the number of infectious buffalo in the population and so
 the times to infection are updated after each change in the
 population.  The hazards of the other events are independent of the
 state of the population and so the times to these events are not
-updated.  This process was repeated from $t = 0$ to until there were
-$0$ infected (exposed, infectious, and chronic) buffalo or until $t =
-\unit[10]{y}$. The simulations were stopped at $t = \unit[10]{y}$ to
-limit the total computation time of running many simulations.
+updated.  This process was repeated from $t = t_0$ to until there were
+$0$ infected (exposed, infectious, and chronic) buffalo or until
+$t = t_0 + \unit[10]{y}$. The simulations were stopped after
+$\unit[10]{y}$ to limit the total computation time of running many
+simulations.
 
 In the following, the variables $t$ and $a$ denote time and age,
 respectively.
@@ -264,7 +268,7 @@ with
   \begin{split}
     \mu_{\mathrm{y}} &= \mu \cdot (\unit[1]{y}),
     \\
-    c &= t_0 + \max(\unit[4]{y} - a_0, 0) - \tau,
+    c &= t_0 + \max(\unit[4]{y} - a_0, \unit[0]{y}) - \tau,
     \\
     d &= t_0 + t - \tau,
     \\
@@ -350,8 +354,11 @@ $a_0$ at $t_0$, is
 %   & & \text{for $m \in \{0, 1, 2, \ldots\}$}.
 % \end{align}
 
-On birth, a newborn is female with probability
-$p_{\text{female}} = 0.5$ or otherwise male.
+At birth, a newborn is determined to be female with probability
+$p_{\text{female}} = 0.5$ or otherwise male. A newborn has the immune
+state of maternal immunity if its mother was in the recovered or
+chronic immune states and otherwise the newborn has the susceptible
+immune state.
 
 
 \section{Waning}
@@ -409,24 +416,6 @@ $\mu_{\text{chronic recovery}}$.
 \end{figure}
 
 
-\section{Initial conditions}
-
-A sample of size $N$ from the stable age distribution was used to
-initialize the population.  (See \autoref{stable_age_distribution}.)
-The sex of each buffalo was randomly selected with probability
-$p_{\text{female}}$ of being female.
-
-\textbf{TODO: HOW TO DO INITIAL CONDITIONS.}
-
-\cite{hedger_1972}
-
-The simulations were started at $t = 0$ with $2$ initial infections
-in randomly chosen susceptible in the population.
-
-The model was initiated at $t_0 = \unit[0.5]{y}$, i.e.~about 1 July.
-The peak of the birth hazard was at $\tau = 0$, i.e.~1 January.
-Plot of sensitivity to $t_0$?
-
 \section{Stable age distribution}
 \label{stable_age_distribution}
 
@@ -440,16 +429,17 @@ Foerster partial differential equation (PDE)
     + \frac{\partial n}{\partial a}(t, a)
     &= - h_{\text{death}}(a) n(t, a),
     \\
-    n(t, 0) &=
+    n(t, \unit[0]{y}) &=
     p_{\text{female}}
-    \int_0^{+\infty} h_{\text{birth}}(t, a) n(t, a) \md a,
+    \int_{\unit[0]{y}}^{\unit[+\infty]{y}}
+    h_{\text{birth}}(t, a) n(t, a) \md a,
     \\
     n(t_0, a) &= n_0(a).
   \end{split}
 \end{equation}
 where $n_0(a)$ is the initial density
-% Chapter VI, Section 29 on pp.~159--161 of harris_1963
-% Chapter 20 on pp.~353--364 of kot_01
+% \autocites[Chapter VI, Section 29 on pp.~159--161]{harris_1963}%
+% [Chapter 20 on pp.~353--364]{kot_01}.
 \autocite{harris_1963, kot_01}.
 
 Because the birth hazard, $h_{\text{birth}}(t, a)$,
@@ -468,9 +458,10 @@ but with an initial condition localized to age $a'$:
     + \frac{\partial \Phi}{\partial a}(t, a, a')
     &= - h_{\text{death}}(a) \Phi(t, a, a'),
     \\
-    \Phi(t, 0, a') &=
+    \Phi(t, \unit[0]{y}, a') &=
     p_{\text{female}}
-    \int_0^{+\infty} h_{\text{birth}}(t, a) \Phi(t, a, a') \md a,
+    \int_{\unit[0]{y}}^{\unit[+\infty]{y}}
+    h_{\text{birth}}(t, a) \Phi(t, a, a') \md a,
     \\
     \Phi(t_0, a, a') &= \delta(a - a'),
   \end{split}
@@ -503,7 +494,7 @@ or
 with
 \begin{equation}
   C_{i - 1 / 2}
-  = \frac{h_{\text{death}}(a_{i - 1 / 2}) \Delta t}{2},
+  = \frac{1}{2} h_{\text{death}}(a_{i - 1 / 2}) \Delta t,
 \end{equation}
 for $i \in \{1, 2, \ldots, I - 2\}$.  For $i = I - 1$,
 a term was added to prevent buffaloes from aging out of this
@@ -518,16 +509,17 @@ last age group:
 with
 \begin{equation}
   C_{I - 1}
-  = \frac{h_{\text{death}}(a_{I - 1}) \Delta t}{2}.
+  = \frac{1}{2} h_{\text{death}}(a_{I - 1}) \Delta t.
 \end{equation}
 For $i = 0$, the birth integral is given by the composite trapezoid rule,
 \begin{equation}
   \label{birth_step}
   \Phi_{0, j}^k =
-  \frac{p_{\text{female}} \Delta t}{2}
+  p_{\text{female}}
   \sum_{i = 1}^{I - 1}
-  \left[h_{\text{birth}}(t^k, a_i) \Phi_{i, j}^k +
-    h_{\text{birth}}(t^k, a_{i - 1}) \Phi_{i - 1, j}^k\right].
+  \frac{h_{\text{birth}}(t^k, a_i) \Phi_{i, j}^k +
+    h_{\text{birth}}(t^k, a_{i - 1}) \Phi_{i - 1, j}^k}{2}
+  \Delta t.
 \end{equation}
 The initial condition is
 \begin{equation}
@@ -582,14 +574,14 @@ where $\mat{I}$ is the $I \times I$ identity matrix.
 Using this numerical scheme, we solved for the monodromy matrix, the
 fundamental solution after one period:
 \begin{equation}
-  \mat{\Psi} = [\Psi_{i, j}] \approx [\Phi(T, a_i, a'_j)].
+  \mat{\Psi} = [\Psi_{i, j}] \approx [\Phi(t_0 + T, a_i, a'_j)].
 \end{equation}
 The monodromy matrix projects the population forward at by one period,
 \begin{equation}
   \vec{n}(t_0 + T) = \mat{\Psi} \vec{n}(t_0),
 \end{equation}
 where $\vec{n}(t) = [n(t, a_i)]$.
-Using the monodromy operator to repeatedly project the population
+Using the monodromy matrix to repeatedly project the population
 forward gives
 \begin{equation}
   \vec{n}(t_0 + K T)
@@ -612,13 +604,13 @@ distribution by using time step $\Delta t = \unit[0.01]{y}$,
 maximum age $a_{\text{max}} = \unit[35]{y}$
 (probability of survival
 $S_{\text{mortality}}(\unit[35]{y}) \approx 10^{-5}$),
-finding the monodromy matrix by numerically solving
-\eqref{fundamental_PDE} from $t = t_0$ to $T$, and
+finding the monodromy matrix using our Crank--Nicolson method, and
 then finding its dominant eigenvalue and corresponding eigenvector.
 We then used a root-finding algorithm to find the value of the mean
 birth hazard $\mu \approx \unit[0.9379]{y^{-1}}$ that gave growth rate
-$r = 0$ (\autoref{fig:stable_age_distribution}). Halving the time
-step to $\Delta t = \unit[0.005]{y}$ gave a relative error for $\mu$
+$r = \unit[0]{y^{-1}}$
+(\autoref{fig:stable_age_distribution}). Halving the time step to
+$\Delta t = \unit[0.005]{y}$ gave a relative error for $\mu$
 of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
 = \unit[70]{y}$ gave a relative error of $5 \times 10^{-6}$.
 
@@ -627,15 +619,102 @@ of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
   \begin{sansmath}
     \input{stable_age_distribution.pgf}
   \end{sansmath}
-  \caption{The stable age distribution in the buffalo population
+  \caption{The stable age distribution of the buffalo population
     at $t_0 = \unit[0.5]{y}$, i.e.~about 1 July. The peak in the birth
-    hazard is on 1 January ($\tau = 0$).}
+    hazard is on 1 January ($\tau = \unit[0]{y}$).}
   \label{fig:stable_age_distribution}
 \end{figure}
 
-\textbf{TODO: HOW TO DO SAMPLING}
+For the initial conditions of the stochastic model, samples from the
+stable age distribution at growth rate $r = \unit[0]{y}$ were used to
+generate random ages of the buffalo present at time $t_0$. The random ages
+were sampled from the discrete ages $\vec{a} = [a_i] = [i \Delta t]$
+with probabilities given by the dominant eigenvector $\vec{w}_0$ of
+the monodromy matrix.
 
 
+\section{Initial conditions}
+
+The stochastic model was initiated at $t_0 = \unit[0.5]{y}$ (about 1
+July), chosen to be some time after the peak of the birth
+hazard at $\tau = \unit[0]{y}$ (1 January) so that many susceptible
+young buffalo without maternal immunity were available or would soon
+be. The model was initiated with 1000 buffalo. The ages of these
+buffalo were sampled from the stable age distribution and the sex of
+each buffalo was randomly sampled with probability
+$p_{\text{female}} = 0.5$ of being female. The buffalo were then
+assigned to a random immune state with probabilities depending on
+the age of the buffalo, as described below. If there were fewer than 2
+susceptible buffalo, the processes of choosing the initial population
+was restarted. Otherwise, 2 buffalo were randomly chosen among the
+susceptible buffalo with equal probabilities and these were changed to
+the infectious immune state.
+
+To determine the probabilities of being in each immune state as a
+function of age, conditioned on the buffalo being alive at that age, we
+considered a simplified version of our model with the hazard of
+infection constant in time, with the times to progression and recovery
+very fast compared to the other times of the other transitions, and
+with all buffalo born into the maternal immunity state
+(\autoref{fig:diagram_initial_conditions}). The probability of being
+in the maternal immunity state at age $a$, conditioned on being alive
+at age $a$, is simply the survival function for the waning process,
+\begin{equation}
+  P_{\mathrm{M}}(a) = S_{\text{waning}}(a).
+\end{equation}
+To be in the susceptible state at age $a$, a buffalo must have
+undergone waning at some age $a'$ and not yet been infected in the
+remaining time $a - a'$:
+\begin{equation}
+  \label{eq:P_S}
+  P_{\mathrm{S}}(a) =
+  \int_0^a p_{\text{waning}}(a')
+  \me^{- h_{\text{infection}} (a - a')} \md a',
+\end{equation}
+where $p_{\text{waning}}(a')$ is the probability density function for
+waning. To be in the chronic state at age $a$, a buffalo must have
+been infected at some age $a'$, become chronic with probability
+$p_{\text{chronic}}$, and not yet undergone chronic recovery in the
+remaining time $a - a'$:
+\begin{equation}
+  \label{eq:P_C}
+  P_{\mathrm{C}}(a) =
+  \int_0^a h_{\text{infection}} P_{\mathrm{S}}(a')
+  p_{\text{chronic}}
+  S_{\text{chronic recovery}}(a - a') \md a',
+\end{equation}
+where the probability of being infected at age $a'$ is the product of
+$P_{\mathrm{S}}(a')$, the probability of being susceptible at age
+$a'$, and the hazard of infection, $h_{\text{infection}}$.
+(For the model with only acute transmission, $p_{\text{chronic}} = 0$
+so that $P_{\mathrm{C}}(a) = 0$ for all $a$.)
+To be in the recovered state at age $a$, a buffalo must not be in any
+of the other states:
+\begin{equation}
+  P_{\mathrm{R}}(a) = 1 - P_{\mathrm{M}}(a)
+  - P_{\mathrm{S}}(a) - P_{\mathrm{C}}(a).
+\end{equation}
+For a given hazard of infection, $h_{\text{infection}}$, the
+integrals in \eqref{eq:P_S} and \eqref{eq:P_C} were computed
+numerically using Gaussian quadrature.
+
+\begin{figure}
+  \centering
+  \textsf{\input{../diagram/diagram_initial_conditions.tex}}
+  \caption{Diagram of the simplified model used in finding initial
+    conditions for the full model. The dashed box and arrows show the
+    state and transitions present in the model with both acute and
+    chronic transmission that are not present in the model with only
+    acute transmission.}
+  \label{fig:diagram_initial_conditions}
+\end{figure}
+
+We estimated the hazard of infection using data from
+\citeauthor{hedger_1972} \autocite{hedger_1972}.
+
+
+
+\clearpage
 \printbibliography
 
 
@@ -670,6 +749,7 @@ of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
     transmission.}
 \end{figure}
 
+
 \begin{figure}
   \centering
   \includegraphics{../birth_seasonality}
@@ -688,15 +768,15 @@ of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
     10-year period with both acute and chronic transmission.}
 \end{figure}
 
+
 \begin{figure}
   \centering
   \includegraphics{../samples_sensitivity_acute}
   \caption{The sensitivity of FMDV extinction time to model
     parameters, for the model with only acute transmission.
     The sensitivity is measured by the partial rank correlation
-    coefficient (PRCC) \autocite{blower_1994}.
-    The model was simulated with each of 20,000 samples from the
-    posterior distributions of the parameters
+    coefficient (PRCC). The model was simulated with each of 20,000
+    samples from the posterior distributions of the parameters
     (Fig.~2; Tables S2, S3).}
 \end{figure}
 
