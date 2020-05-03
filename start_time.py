@@ -11,6 +11,24 @@ import plot_common
 import stats
 
 
+def _get_index(df, **kwds):
+    ix = tuple(kwds[level] if level in kwds else slice(None)
+               for level in df.index.names)
+    return ix
+
+
+def _make_periodic(df):
+    '''Make periodic by copying the values from `start_time` = 0 to
+    `start_time` = 1.'''
+    new = df.loc[_get_index(df, start_time=0.), :].copy()
+    new.reset_index(inplace=True)
+    new['start_time'] = 1.
+    new.set_index(df.index.names, inplace=True)
+    df = df.append(new)
+    df.sort_index(level=df.index.names, inplace=True)
+    return df
+
+
 def load_extinction_time():
     filename = 'start_time_extinction_time.h5'
     try:
@@ -20,6 +38,7 @@ def load_extinction_time():
             'start_time.h5',
             ['model', 'SAT', 'start_time', 'run'])
         h5.dump(df, filename)
+    df = _make_periodic(df)
     return df
 
 
@@ -111,9 +130,6 @@ def plot_kde(df):
 
 def plot_kde_2d(df):
     persistence_time_max = dict(acute=0.5, chronic=10)
-    # Make periodic.
-    df.loc[(slice(None), slice(None), 1.)] = df.loc[
-        (slice(None), slice(None), 0.)]
     start_times = (df.index
                      .get_level_values('start_time')
                      .unique()
@@ -152,8 +168,9 @@ def plot_kde_2d(df):
             for (j, (SAT, group_SAT)) in enumerate(group_model.groupby('SAT')):
                 ax = axes[i, j]
                 density = numpy.zeros((len(persistence_time),
-                                       len(bscovs)))
-                proportion_observed = numpy.zeros_like(bscovs, dtype=float)
+                                       len(start_times)))
+                proportion_observed = numpy.zeros_like(start_times,
+                                                       dtype=float)
                 grouper = group_SAT.groupby('start_time')
                 for (k, (s, g)) in enumerate(grouper):
                     ser = g.time[g.observed]
@@ -167,7 +184,7 @@ def plot_kde_2d(df):
                 norm = colors.Normalize(vmin=0, vmax=numpy.max(density))
                 ax.imshow(density * proportion_observed,
                           cmap=cmap, norm=norm, interpolation='bilinear',
-                          extent=(min(bscovs), max(bscovs),
+                          extent=(min(start_times), max(start_times),
                                   min(persistence_time), max(persistence_time)),
                           aspect='auto', origin='lower', clip_on=False)
                 # ax shares the xaxis with ax_po.
@@ -184,7 +201,7 @@ def plot_kde_2d(df):
                     ax.set_title(f'SAT{SAT}')
                 if model == 'chronic':
                     ax_po = axes[-1, j]
-                    ax_po.plot(bscovs, 1 - proportion_observed,
+                    ax_po.plot(start_times, 1 - proportion_observed,
                                color=plot_common.SAT_colors[SAT],
                                clip_on=False, zorder=3)
                     ax_po.set_xlabel('Start time (y)')
@@ -195,7 +212,7 @@ def plot_kde_2d(df):
                     if ax_po.is_first_col():
                         ax_po.set_ylabel('Persisting 10 y')
         for ax in fig.axes:
-            ax.axvline(bscov_baseline,
+            ax.axvline(start_time_baseline,
                        color='black', linestyle='dotted', alpha=0.7)
             ax.autoscale(tight=True)
             if not ax.is_first_col():
@@ -212,7 +229,7 @@ def plot_kde_2d(df):
                          verticalalignment='center')
         fig.text(label_x, 0.79, 'Acute model', **label_kws)
         fig.text(label_x, 0.31, 'Chronic model', **label_kws)
-        fig.savefig('start_times.pdf')
+        fig.savefig('start_time.pdf')
 
 
 if __name__ == '__main__':
