@@ -1,44 +1,33 @@
-\documentclass[12pt]{article}
+\documentclass[12pt, UKenglish]{article}  % Nature: UK variant of English.
 
-\usepackage[T1]{fontenc}
-\usepackage{textcomp}
-
-\usepackage[english]{babel}
-\usepackage[utf8]{inputenc}
+\usepackage{babel}
 \usepackage{csquotes}
-
-\usepackage{lmodern}
-
-\usepackage{hyperref}
-\hypersetup{breaklinks}
-\hypersetup{pdfborder=0 0 0}
-
+\usepackage[breaklinks, pdfborder={0 0 0}]{hyperref}
 \usepackage[babel=true]{microtype}
-
 \usepackage{amsmath}
-\renewcommand{\vec}[1]{\mathbf{#1}}
-\newcommand{\mat}[1]{\mathbf{#1}}
-\DeclareMathOperator{\Prob}{Prob}
-\newcommand{\md}{\mathrm{d}}
-\newcommand{\me}{\mathrm{e}}
-\usepackage{sansmath}  % To use sans serif in math in figures.
-
 \usepackage{units}
 \usepackage{tikz}
-
+\usepackage{sansmath}  % Nature: sans serif in math in figures.
+\usepackage[cleanlook]{isodate} % Nature: UK-style dates.
+% Nature: Careful with the Harris, Kot, and Hedger citations if the
+%         style is changed.
 \usepackage[style=nature, autocite=superscript, sortcites=true]{biblatex}
-% Check the Harris, Kot, and Hedger citations if you change the
-% citation style.
+
 \addbibresource{supplement.bib}
 
-\usepackage[UKenglish]{isodate}
-\cleanlookdateon
+% Math macros.
+\DeclareMathOperator{\Prob}{Prob}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\newcommand{\md}{\mathrm{d}}
+\newcommand{\me}{\mathrm{e}}
 
-% Set up numbering.
-\newcommand{\appendixlabel}{S}
-\newcounter{chapter}
-\setcounter{chapter}{3}
-\renewcommand{\thechapter}{\appendixlabel\arabic{chapter}}
+% Setup section etc numbering.
+% This is appendix #3. The figures that follow are #4, #5, ...
+\newcounter{chapter} \setcounter{chapter}{3}
+% Nature: Prepend 'S' to the appendix number.
+\newcommand{\appendixprefix}{S}
+\renewcommand{\thechapter}{\appendixprefix\arabic{chapter}}
 \renewcommand{\thesection}{\thechapter.\arabic{section}}
 \renewcommand{\thefigure}{\thechapter.\arabic{figure}}
 \renewcommand{\thetable}{\thechapter.\arabic{table}}
@@ -620,8 +609,10 @@ of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
     \input{stable_age_distribution.pgf}
   \end{sansmath}
   \caption{The stable age distribution of the buffalo population
-    at $t_0 = \unit[0.5]{y}$, i.e.~about 1 July. The peak in the birth
-    hazard is on 1 January ($\tau = \unit[0]{y}$).}
+    at $t_0 = \unit[0.5]{y}$, i.e.~about
+    {\printyearoff\printdate{2020-07-01}}. The peak in the birth
+    hazard is on {\printyearoff\printdate{2020-01-01}}
+    ($\tau = \unit[0]{y}$).}
   \label{fig:stable_age_distribution}
 \end{figure}
 
@@ -634,21 +625,23 @@ the monodromy matrix.
 
 
 \section{Initial conditions}
+\label{initial_conditions}
 
-The stochastic model was initiated at $t_0 = \unit[0.5]{y}$ (about 1
-July), chosen to be some time after the peak of the birth
-hazard at $\tau = \unit[0]{y}$ (1 January) so that many susceptible
-young buffalo without maternal immunity were available or would soon
-be. The model was initiated with 1000 buffalo. The ages of these
-buffalo were sampled from the stable age distribution and the sex of
-each buffalo was randomly sampled with probability
-$p_{\text{female}} = 0.5$ of being female. The buffalo were then
-assigned to a random immune state with probabilities depending on
-the age of the buffalo, as described below. If there were fewer than 2
-susceptible buffalo, the processes of choosing the initial population
-was restarted. Otherwise, 2 buffalo were randomly chosen among the
-susceptible buffalo with equal probabilities and these were changed to
-the infectious immune state.
+The stochastic model was initiated at $t_0 = \unit[0.5]{y}$
+(about {\printyearoff\printdate{2020-07-01}}), chosen to be some time
+after the peak of the birth hazard at $\tau = \unit[0]{y}$
+({\printyearoff\printdate{2020-01-01}}) so that many susceptible young
+buffalo without maternal immunity were available or would soon be. The
+model was initiated with 1000 buffalo. The ages of these buffalo were
+sampled from the stable age distribution and the sex of each buffalo
+was randomly sampled with probability $p_{\text{female}} = 0.5$
+of being female. The buffalo were then assigned to a random immune
+state with probabilities depending on the age of the buffalo, as
+described below. If there were fewer than 2 susceptible buffalo, the
+processes of choosing the initial population was restarted. Otherwise,
+2 buffalo were randomly chosen among the susceptible buffalo with
+equal probabilities and these were changed to the infectious immune
+state.
 
 To determine the probabilities of being in each immune state as a
 function of age, conditioned on the buffalo being alive at that age, we
@@ -709,9 +702,64 @@ numerically using Gaussian quadrature.
   \label{fig:diagram_initial_conditions}
 \end{figure}
 
-We estimated the hazard of infection using data from
-\citeauthor{hedger_1972} \autocite{hedger_1972}.
+We estimated the hazard of infection using survey data of buffalo
+antibodies to FMDV from \citeauthor{hedger_1972} \autocite{hedger_1972}
+(\autoref{tab:hedger_data}).
 
+Anna classified them. We summed over SAT. There was 1 I that I instead
+called a C. I summed the C and R, maybe because it didn't matter for
+finding $h_{\mathrm{infection}}$.
+
+\begin{table}
+  \centering
+  \begin{tabular}{|l|l|rrrrrr|}
+    \hline
+    &
+    & \multicolumn{6}{c|}{\textbf{Age (y)}}
+    \\
+    \multicolumn{1}{|c|}{\textbf{Model}}
+    & \multicolumn{1}{|c|}{\textbf{Immune state}}
+    & \multicolumn{1}{|c}{\textbf{0--1}}
+    & \multicolumn{1}{c}{\textbf{1--2}}
+    & \multicolumn{1}{c}{\textbf{2--3}}
+    & \multicolumn{1}{c}{\textbf{3--4}}
+    & \multicolumn{1}{c}{\textbf{4--7}}
+    & \multicolumn{1}{c|}{\textbf{7--11}}
+    \\ \hline
+    & Maternal immunity
+    & 17 & 0 & 0 & 0 & 0 & 0
+    \\
+    Acute
+    & Susceptible
+    & 1 & 6 & 4 & 2 & 3 & 3
+    \\
+    & Recovered
+    & 0 & 18 & 23 & 22 & 30 & 54
+    \\ \hline
+    & Maternal immunity
+    & 17 & 0 & 0 & 0 & 0 & 0
+    \\
+    \raisebox{-0.5em}[0em][0em]{Chronic}
+    & Susceptible
+    & 1 & 2 & 4 & 2 & 3 & 3
+    \\
+    & Chronic
+    & 0 & 8 & 12 & 8 & 6 & 8
+    \\
+    & Recovered
+    & 0 & 14 & 11 & 14 & 24 & 46
+    \\ \hline
+  \end{tabular}
+  \caption{Counts of buffalo by immune state and age, based on surveys
+    of FMDV antibodies \autocite{hedger_1972}.
+    The surveyed buffalo were assigned by expert opinion to the immune
+    states present in our simplified model with only acute transmission
+    (\enquote{Acute}) and to those present in our simplified model
+    with both acute and chronic transmission
+    (\enquote{Chronic}). These counts were then pooled across
+    SATs. See \autoref{initial_conditions} for more information.}
+  \label{tab:hedger_data}
+\end{table}
 
 
 \clearpage
@@ -725,7 +773,8 @@ We estimated the hazard of infection using data from
 % I.e. if the previous was Appendix S3, these will be Figure S4,
 % Figure S5, ...
 \setcounter{figure}{\value{chapter}}
-\renewcommand{\thefigure}{\appendixlabel\arabic{figure}}
+\renewcommand{\thefigure}{\appendixprefix\arabic{figure}}
+ % Fix some warnings from hyperref.
 \renewcommand{\HyperDestNameFilter}[1]{chapter-#1}
 
 
