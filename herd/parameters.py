@@ -10,9 +10,11 @@ class Parameters:
         if _set_defaults:
             self.population_size = 1000
             self.initial_infectious = 2
-            self.start_time = 0.5  # 01 June, 6 months after birth peak.
+            self.start_time = 0.5  # 6 months after birth peak.
             self.female_probability_at_birth = 0.5
-            self.birth_peak_time_of_year = 0  # 01 January.
+            # I should have used birth_peak_time_of_year = 0.041667,
+            # about 16 January, to make things simpler.
+            self.birth_peak_time_of_year = 0
             # self.birth_seasonal_coefficient_of_variation = 0.505  # 1st year.
             # self.birth_seasonal_coefficient_of_variation = 0.984  # 2nd year.
             self.birth_seasonal_coefficient_of_variation = 0.613  # Both years.
