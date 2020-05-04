@@ -344,6 +344,13 @@ $a_0$ at $t_0$, is
 %   & & \text{for $m \in \{0, 1, 2, \ldots\}$}.
 % \end{align}
 
+Using our birth data for 2013–2014 and 2014–2015, the
+maximum-likelihood estimates for the parameters of the birth hazard
+are coefficient of variation $c_{\mathrm{v}} = 0.613$ with peak on
+{\printyearoff\printdate{2020-01-16}} (\unit[0.041667]{y}, Fig.~1). We
+chose $\tau = 0$ so times are measured from the peak in the birth
+hazard.
+
 At birth, a newborn is determined to be female with probability
 $p_{\text{female}} = 0.5$ or otherwise male. A newborn has the immune
 state of maternal immunity if its mother was in the recovered or
@@ -610,10 +617,8 @@ of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
     \input{stable_age_distribution.pgf}
   \end{sansmath}
   \caption{The stable age distribution of the buffalo population
-    at $t_0 = \unit[0.5]{y}$, i.e.~about
-    {\printyearoff\printdate{2020-07-01}}. The peak in the birth
-    hazard is on {\printyearoff\printdate{2020-01-01}}
-    ($\tau = \unit[0]{y}$).}
+    on {\printyearoff\printdate{2020-07-16}}, $t_0 = \unit[0.5]{y}$
+    after the peak in the birth hazard.}
   \label{fig:stable_age_distribution}
 \end{figure}
 
@@ -628,40 +633,37 @@ the monodromy matrix.
 \section{Initial conditions}
 \label{initial_conditions}
 
-The stochastic model was initiated at $t_0 = \unit[0.5]{y}$
-(about {\printyearoff\printdate{2020-07-01}}), chosen to be some time
-after the peak of the birth hazard at $\tau = \unit[0]{y}$
-({\printyearoff\printdate{2020-01-01}}) so that many susceptible young
-buffalo without maternal immunity were available or would soon be. The
+The stochastic model was initiated on
+{\printyearoff\printdate{2020-07-16}}, $t_0 = \unit[0.5]{y}$ after the
+peak in the birth hazard, so that many susceptible young buffalo
+without maternal immunity were available or would soon be. The
 simulated extinction times of FMDV were insensitive to the choice of
 start time (\autoref{fig:start_time}). The model was initiated with
 1000 buffalo. The ages of these buffalo were sampled from the stable
 age distribution and the sex of each buffalo was randomly sampled with
-probability $p_{\text{female}} = 0.5$
-of being female. The buffalo were then assigned to a random immune
-state with probabilities depending on the age of the buffalo, as
-described below. If there were fewer than 2 susceptible buffalo, the
-processes of choosing the initial population was restarted. Otherwise,
-2 buffalo were randomly chosen among the susceptible buffalo with
-equal probabilities and these were changed to the infectious immune
-state.
+probability $p_{\text{female}} = 0.5$ of being female. The buffalo
+were then assigned to a random immune state with probabilities
+depending on the age of the buffalo, as described below. If there were
+fewer than 2 susceptible buffalo, the processes of choosing the
+initial population was restarted. Otherwise, 2 buffalo were randomly
+chosen among the susceptible buffalo with equal probabilities and
+these were changed to the infectious immune state.
 
 \begin{figure}
   \centering
   \includegraphics{../start_time}
   \caption{The sensitivity of extinction time to model start time.
     For each model and each SAT, the model was simulated for
-    1000 runs starting at time $t_0 = \unit[i / 12]{y}$ for $i = 0,
-    1, \dots, 11$ (roughly the first day of each month). The
-    baseline value is $t_0 = \unit[0.5]{y}$ (dotted vertical
-    lines). The other parameters were fixed at their baseline
-    values. The top and middle rows of graphs show the distribution of
-    FMDV extinction times for the model with only acute transmission
-    and the model with both acute and chronic transmission,
-    respectively. The bottom row shows the proportion of simulations
-    where FMDV persisted in the buffalo population for the whole
-    simulated 10-year period with both acute and chronic
-    transmission.}
+    1000 runs starting $t_0 = \unit[i / 12]{y}$ after the peak in the
+    birth hazard, for $i = 0, 1, \dots, 11$. The baseline value is
+    $t_0 = \unit[0.5]{y}$ (dotted vertical lines). The other
+    parameters were fixed at their baseline values. The top and middle
+    rows of graphs show the distribution of FMDV extinction times for
+    the model with only acute transmission and the model with both
+    acute and chronic transmission, respectively. The bottom row shows
+    the proportion of simulations where FMDV persisted in the buffalo
+    population for the whole simulated 10-year period with both acute
+    and chronic transmission.}
   \label{fig:start_time}
 \end{figure}
 
