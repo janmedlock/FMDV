@@ -228,7 +228,7 @@ def plot_kde_2d(df):
                          horizontalalignment='left',
                          verticalalignment='center')
         fig.text(label_x, 0.79, 'Acute model', **label_kws)
-        fig.text(label_x, 0.31, 'Chronic model', **label_kws)
+        fig.text(label_x, 0.31, 'Carrier model', **label_kws)
         fig.savefig('start_time.pdf')
 
 

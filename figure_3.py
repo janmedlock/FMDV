@@ -77,7 +77,8 @@ def plot_infected(ax, infected, model, SAT, draft=False):
                                  labelleft=False, labelright=False)
         ax.yaxis.offsetText.set_visible(False)
     if ax.is_first_row():
-        ax.set_title(f'{model.capitalize()} model', loc='center')
+        model_ = {'chronic': 'carrier'}.get(model, model)
+        ax.set_title(f'{model_.capitalize()} model', loc='center')
 
 
 def kdeplot(endog, ax=None, shade=False, cut=0, **kwds):

@@ -124,7 +124,7 @@ with pyplot.rc_context(rc=rc):
     axes_survivals[j].set_xlabel(xlabel)
 
     RV = get_RV(RVs, 'chronic_recovery')
-    title = 'Chronic \nrecovery'
+    title = 'Carrier \nrecovery'
     xlabel = 'Time ($\mathrm{y}$)'
     t_max = 1
     t = numpy.linspace(0, t_max, 1001)

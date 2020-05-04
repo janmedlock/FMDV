@@ -158,8 +158,10 @@ class Colors:
 
 
 param_transforms = {
-    'chronic_recovery_mean': 'chronic_duration_mean',
-    'chronic_recovery_mean': 'chronic_duration_shape',
+    'chronic_transmission_rate': 'carrier_transmission_rate',
+    'chronic_recovery_mean': 'carrier_duration_mean',
+    'chronic_recovery_shape': 'carrier_duration_shape',
+    'probability_chronic': 'probability_carrier',
     'progression_mean': 'latent_duration_mean',
     'progression_shape': 'latent_duration_shape',
     'recovery_mean': 'infectious_duration_mean',

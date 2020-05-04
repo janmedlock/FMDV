@@ -88,7 +88,7 @@ There are 7 events that can occur to each buffalo:
   distribution.  A simple Bernoulli sample determines whether the
   recovered buffalo becomes a carrier.
 
-\item[Chronic recovery] When a buffalo becomes a carrier, the time to
+\item[Carrier recovery] When a buffalo becomes a carrier, the time to
   recovery is sampled from its distribution.
 \end{description}
 The distributions that govern these processes are detailed below.
@@ -103,7 +103,7 @@ non-standard distributions, we used the inverse transform method
   \textsf{\input{../diagram/diagram.tex}}
   \caption{Model diagram. The dashed box and arrows show the
     state and transitions present in the model with both acute and
-    chronic transmission that are not present in the model with only
+    carrier transmission that are not present in the model with only
     acute transmission.}
   \label{fig:diagram}
 \end{figure}
@@ -118,7 +118,7 @@ the times to infection are updated after each change in the
 population.  The hazards of the other events are independent of the
 state of the population and so the times to these events are not
 updated.  This process was repeated from $t = t_0$ to until there were
-$0$ infected (exposed, infectious, and chronic) buffalo or until
+$0$ infected (exposed, infectious, and carrier) buffalo or until
 $t = t_0 + \unit[10]{y}$. The simulations were stopped after
 $\unit[10]{y}$ to limit the total computation time of running many
 simulations.
@@ -354,7 +354,7 @@ hazard.
 At birth, a newborn is determined to be female with probability
 $p_{\text{female}} = 0.5$ or otherwise male. A newborn has the immune
 state of maternal immunity if its mother was in the recovered or
-chronic immune states and otherwise the newborn has the susceptible
+carrier immune states and otherwise the newborn has the susceptible
 immune state.
 
 
@@ -370,12 +370,12 @@ and mean $\mu_{\text{waning}}$.
 The infection hazard was taken to be
 \begin{equation}
   h_{\text{infection}}(t) = \beta_{\text{acute}} I(t) +
-  \beta_{\text{chronic}} C(t),
+  \beta_{\text{carrier}} C(t),
 \end{equation}
-where $I(t)$ and $C(t)$ are the total number of infectious and
-chronic-carrier buffalo in the herd at time $t$.  Over periods where
-$I(t)$ and $C(t)$ are constant, the hazard is constant, which gives an
-exponential random variable.
+where $I(t)$ and $C(t)$ are the total number of infectious and carrier
+buffalo in the herd at time $t$.  Over periods where $I(t)$ and $C(t)$
+are constant, the hazard is constant, which gives an exponential
+random variable.
 
 
 \section{Progression}
@@ -391,16 +391,15 @@ The duration of infection was taken to be a standard gamma random
 variable with shape $k_{\text{recovery}}$ and mean
 $\mu_{\text{recovery}}$.
 
-On recovery, buffalo become chronic carriers with probability
-$p_{\text{chronic}}$ or otherwise are recovered, i.e.~fully cleared
-of pathogen.
+On recovery, buffalo become carriers with probability
+$p_{\text{carrier}}$ or otherwise are recovered, i.e.~fully cleared of
+pathogen.
 
 
-\section{Chronic recovery}
+\section{Carrier recovery}
 
-The duration of the chronic-carrier state was taken to be an
-exponential random variable with mean
-$\mu_{\text{chronic recovery}}$.
+The duration of the carrier state was taken to be an exponential
+random variable with mean $\mu_{\text{carrier recovery}}$.
 
 
 \begin{figure}
@@ -660,10 +659,10 @@ these were changed to the infectious immune state.
     parameters were fixed at their baseline values. The top and middle
     rows of graphs show the distribution of FMDV extinction times for
     the model with only acute transmission and the model with both
-    acute and chronic transmission, respectively. The bottom row shows
+    acute and carrier transmission, respectively. The bottom row shows
     the proportion of simulations where FMDV persisted in the buffalo
     population for the whole simulated 10-year period with both acute
-    and chronic transmission.}
+    and carrier transmission.}
   \label{fig:start_time}
 \end{figure}
 
@@ -690,21 +689,21 @@ remaining time $a - a'$:
   \me^{- h_{\text{infection}} (a - a')} \md a',
 \end{equation}
 where $p_{\text{waning}}(a')$ is the probability density function for
-waning. To be in the chronic state at age $a$, a buffalo must have
-been infected at some age $a'$, become chronic with probability
-$p_{\text{chronic}}$, and not yet undergone chronic recovery in the
+waning. To be in the carrier state at age $a$, a buffalo must have
+been infected at some age $a'$, become carrier with probability
+$p_{\text{carrier}}$, and not yet undergone carrier recovery in the
 remaining time $a - a'$:
 \begin{equation}
   \label{eq:P_C}
   P_{\mathrm{C}}(a) =
   \int_0^a h_{\text{infection}} P_{\mathrm{S}}(a')
-  p_{\text{chronic}}
-  S_{\text{chronic recovery}}(a - a') \md a',
+  p_{\text{carrier}}
+  S_{\text{carrier recovery}}(a - a') \md a',
 \end{equation}
 where the probability of being infected at age $a'$ is the product of
 $P_{\mathrm{S}}(a')$, the probability of being susceptible at age
 $a'$, and the hazard of infection, $h_{\text{infection}}$.
-(For the model with only acute transmission, $p_{\text{chronic}} = 0$
+(For the model with only acute transmission, $p_{\text{carrier}} = 0$
 so that $P_{\mathrm{C}}(a) = 0$ for all $a$.)
 To be in the recovered state at age $a$, a buffalo must not be in any
 of the other states:
@@ -722,7 +721,7 @@ numerically using Gaussian quadrature.
   \caption{Diagram of the simplified model used in finding initial
     conditions for the full model. The dashed box and arrows show the
     state and transitions present in the model with both acute and
-    chronic transmission that are not present in the model with only
+    carrier transmission that are not present in the model with only
     acute transmission.}
   \label{fig:diagram_initial_conditions}
 \end{figure}
@@ -732,7 +731,7 @@ antibodies to FMDV from \citeauthor{hedger_1972} \autocite{hedger_1972}
 (\autoref{tab:hedger_data}). One of us, Dr.~Jolles, reviewed this
 survey data and, for each SAT, classified each buffalo into the immune
 states present in our simplified model, both with and without the
-chronic state. The counts by immune state and age were then pooled
+carrier state. The counts by immune state and age were then pooled
 across the SATs.
 
 \begin{table}
@@ -754,10 +753,10 @@ across the SATs.
     & Susceptible & 1 & 6 & 4 & 2 & 3 & 3 \\
     & Recovered & 0 & 18 & 23 & 22 & 30 & 54 \\
     \hline
-    \multirow{4}{*}{Chronic}
+    \multirow{4}{*}{Carrier}
     & Maternal immunity & 17 & 0 & 0 & 0 & 0 & 0 \\
     & Susceptible & 1 & 2 & 4 & 2 & 3 & 3 \\
-    & Chronic & 0 & 8 & 12 & 8 & 6 & 8 \\
+    & Carrier & 0 & 8 & 12 & 8 & 6 & 8 \\
     & Recovered & 0 & 14 & 11 & 14 & 24 & 46 \\
     \hline
   \end{tabular}
@@ -766,8 +765,8 @@ across the SATs.
     buffalo were classified by expert opinion into the immune states
     present in our simplified model with only acute transmission
     (\enquote{Acute}) and to those present in our simplified model
-    with both acute and chronic transmission
-    (\enquote{Chronic}). These counts were then pooled across
+    with both acute and carrier transmission
+    (\enquote{Carrier}). These counts were then pooled across
     SATs. See \autoref{initial_conditions} for more information.}
   \label{tab:hedger_data}
 \end{table}
@@ -842,11 +841,11 @@ randomly assigned to one of corresponding immune states.
     The other parameters were fixed at their baseline values.
     The top and middle rows of graphs show the distribution of
     FMDV extinction times for the model with only acute transmission
-    and the model with both acute and chronic transmission,
+    and the model with both acute and carrier transmission,
     respectively.
     The bottom row shows the proportion of simulations where FMDV
     persisted in the buffalo population for the whole simulated
-    10-year period for the model with both acute and chronic
+    10-year period for the model with both acute and carrier
     transmission.}
 \end{figure}
 
@@ -862,11 +861,11 @@ randomly assigned to one of corresponding immune states.
     The other parameters were fixed at their baseline values.
     The top and middle rows of graphs show the distribution of
     FMDV extinction times for the model with only acute transmission
-    and the model with both acute and chronic transmission,
+    and the model with both acute and carrier transmission,
     respectively.
     The bottom row shows the proportion of simulations where FMDV
     persisted in the buffalo population for the whole simulated
-    10-year period with both acute and chronic transmission.}
+    10-year period with both acute and carrier transmission.}
 \end{figure}
 
 

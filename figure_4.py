@@ -123,7 +123,7 @@ def plot_sensitivity_samples(axes):
         ax.set_ylim(- 0.5, len(rho) - 0.5)
         ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         ax.yaxis.set_tick_params(which='both', left=False, right=False,
-                                 pad=22)
+                                 pad=25)
         if ax.is_first_col():
             ax.set_yticks(y)
             ax.set_yticklabels(ylabels, horizontalalignment='left')
@@ -170,8 +170,8 @@ def plot():
                          fontweight='bold',
                          horizontalalignment='left',
                          verticalalignment='top')
-        fig.text(label_x, 1, '(a)', **label_kws)
-        fig.text(label_x, 0.535, '(b)', **label_kws)
+        fig.text(label_x, 1, 'a', **label_kws)
+        fig.text(label_x, 0.535, 'b', **label_kws)
         fig.savefig('figure_4.pdf')
         fig.savefig('figure_4.png', dpi=300)
     return fig
