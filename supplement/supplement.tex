@@ -23,21 +23,27 @@
 \newcommand{\md}{\mathrm{d}}
 \newcommand{\me}{\mathrm{e}}
 
-% Setup section etc numbering.
-% This is appendix #3. The figures that follow are #4, #5, ...
-\newcounter{chapter} \setcounter{chapter}{3}
+% Setup section etc numbering
+% relative to the other supporting info.
+\setcounter{section}{5}
+\setcounter{equation}{13}
+\setcounter{table}{8}
+\setcounter{figure}{3}
+% Shift the reference numbers.
+\newcounter{reference} \setcounter{reference}{16}
+\DeclareFieldFormat{labelnumber}{\number\numexpr#1+\value{reference}\relax}
+
 % Nature: Prepend 'S' to the appendix number.
 \newcommand{\appendixprefix}{S}
-\renewcommand{\thechapter}{\appendixprefix\arabic{chapter}}
-\renewcommand{\thesection}{\thechapter.\arabic{section}}
-\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
-\renewcommand{\thetable}{\thechapter.\arabic{table}}
-\renewcommand{\theequation}{\thechapter.\arabic{equation}}
+\renewcommand{\thesection}{\appendixprefix\arabic{section}}
+\renewcommand{\thefigure}{\appendixprefix\arabic{figure}}
+\renewcommand{\thetable}{\appendixprefix\arabic{table}}
+\renewcommand{\theequation}{\appendixprefix.\arabic{equation}}
 
 
 \title{\emph{Endemic dynamics of foot-and-mouth disease viruses in
     their reservoir, African buffalo}\\
-  Appendix \thechapter: Model development and analysis}
+  Appendix: Model development and analysis}
 
 \author{Anna Jolles \and Erin Gorsich \and Simon Gubbins
   \and Brianna Beechler \and Peter Buss \and Nick Juleff
@@ -48,8 +54,7 @@
 
 \begin{document}
 
-\maketitle
-
+\section{Development and analysis of transmission models}
 
 We built a stochastic individual-based model to capture the dynamics
 of FMDV in African buffalo.  The software we wrote to simulate and
@@ -126,7 +131,7 @@ simulations.
 In the following, the variables $t$ and $a$ denote time and age,
 respectively.
 
-\section{Death}
+\subsection{Death}
 
 We took the annual survival to be
 \begin{equation}
@@ -170,7 +175,7 @@ and the survival
 \end{equation}
 with years of age $a_{\mathrm{y}} = \frac{a}{\unit[1]{y}}$.
 
-\section{Birth}
+\subsection{Birth}
 
 We assumed that females reach reproductive maturity at age $\unit[4]{y}$
 and that the birth hazard varies at a periodic, triangular-shaped rate in
@@ -358,14 +363,14 @@ carrier immune states and otherwise the newborn has the susceptible
 immune state.
 
 
-\section{Waning}
+\subsection{Waning}
 
 The duration of maternal immunity was taken to be a standard gamma
 random variable with shape $k_{\text{waning}}$
 and mean $\mu_{\text{waning}}$.
 
 
-\section{Infection}
+\subsection{Infection}
 
 The infection hazard was taken to be
 \begin{equation}
@@ -378,14 +383,14 @@ are constant, the hazard is constant, which gives an exponential
 random variable.
 
 
-\section{Progression}
+\subsection{Progression}
 
 The duration of the latent period was taken to be a standard gamma
 random variable with shape $k_{\text{progression}}$
 and mean $\mu_{\text{progression}}$.
 
 
-\section{Recovery}
+\subsection{Recovery}
 
 The duration of infection was taken to be a standard gamma random
 variable with shape $k_{\text{recovery}}$ and mean
@@ -396,7 +401,7 @@ $p_{\text{carrier}}$ or otherwise are recovered, i.e.~fully cleared of
 pathogen.
 
 
-\section{Carrier recovery}
+\subsection{Carrier recovery}
 
 The duration of the carrier state was taken to be an exponential
 random variable with mean $\mu_{\text{carrier recovery}}$.
@@ -412,7 +417,7 @@ random variable with mean $\mu_{\text{carrier recovery}}$.
 \end{figure}
 
 
-\section{Stable age distribution}
+\subsection{Stable age distribution}
 \label{stable_age_distribution}
 
 Because there is no additional mortality due to the pathogen, the mean
@@ -629,7 +634,7 @@ with probabilities given by the dominant eigenvector $\vec{w}_0$ of
 the monodromy matrix.
 
 
-\section{Initial conditions}
+\subsection{Initial conditions}
 \label{initial_conditions}
 
 The stochastic model was initiated on
@@ -817,16 +822,8 @@ randomly assigned to one of corresponding immune states.
 \printbibliography
 
 
-\newpage
-\appendix
-\section*{Supplemental Results Figures}
-% These figure numbers will start after the previous appendix.
-% I.e. if the previous was Appendix S3, these will be Figure S4,
-% Figure S5, ...
-\setcounter{figure}{\value{chapter}}
-\renewcommand{\thefigure}{\appendixprefix\arabic{figure}}
- % Fix some warnings from hyperref.
-\renewcommand{\HyperDestNameFilter}[1]{chapter-#1}
+% Supplemental results figures, not referenced in the text above.
+\clearpage
 
 
 \begin{figure}
@@ -877,7 +874,7 @@ randomly assigned to one of corresponding immune states.
     The sensitivity is measured by the partial rank correlation
     coefficient (PRCC). The model was simulated with each of 20,000
     samples from the posterior distributions of the parameters
-    (Fig.~2; Tables S2, S3).}
+    (Fig.~2; Tables S1, S3, S5, S7).}
 \end{figure}
 
 
