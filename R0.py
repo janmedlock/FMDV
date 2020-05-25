@@ -15,7 +15,9 @@ def calculate(model, SAT, alpha=0.05):
     s = herd.samples.load(model=model, SAT=SAT)
     R0 = s.recovery_mean * s.transmission_rate
     if model == 'chronic':
-        R0 += s.probability_chronic * s.chronic_recovery_mean
+        R0 += (s.probability_chronic
+               * s.chronic_recovery_mean
+               * s.chronic_transmission_rate)
     R0 = R0.quantile([0.5, alpha / 2, 1 - alpha / 2])
     return R0
 
