@@ -1,4 +1,4 @@
-\documentclass[12pt, UKenglish]{article}  % Nature: UK variant of English.
+\documentclass[12pt, USenglish]{article}  % Science: US variant of English.
 
 \usepackage{babel}
 \usepackage[babel=true]{microtype}
@@ -9,11 +9,13 @@
 \usepackage{tikz}
 \usepackage{sansmath}  % Nature: sans serif in math in figures.
 
-% Nature.
-\addto\captionsUKenglish{\renewcommand{\figurename}{Extended Data Figure}}
-
 % Setup figure numbering.
 \setcounter{figure}{0}
+
+% Nature: Prepend 'S' to the appendix number.
+\newcommand{\appendixprefix}{S}
+\renewcommand{\thefigure}{\appendixprefix\arabic{figure}}
+
 
 \pagestyle{empty}
 
