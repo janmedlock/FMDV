@@ -9,11 +9,10 @@
 \usepackage{tikz}
 \usepackage{multirow}
 \usepackage{sansmath}  % Nature: sans serif in math in figures.
-\usepackage{isodate} % Science: US-style dates.
-% Nature: Careful with the Harris, Kot, and Hedger citations if the
-%         style is changed.
-\usepackage[style=nature, autocite=superscript, sortcites=true]{biblatex}
-
+\usepackage{isodate}  % Science: US-style dates.
+% Science: Careful with the Harris, Kot, and Hedger citations if the
+%          style is changed.
+\usepackage[style=science]{biblatex}
 \addbibresource{supplement.bib}
 
 % Math macros.
@@ -29,11 +28,16 @@
 \setcounter{equation}{13}
 \setcounter{table}{3}
 \setcounter{figure}{4}
-% Shift the reference numbers.
-% \newcounter{reference} \setcounter{reference}{16}
-% \DeclareFieldFormat{labelnumber}{\number\numexpr#1+\value{reference}\relax}
+% Science: Shift the reference numbers.
+\newcounter{reference} \setcounter{reference}{67}
+% Science: Italics numbers in the citations.
+\DeclareFieldFormat{labelnumber}{%
+  \mkbibemph{\number\numexpr#1+\value{reference}}}
+% Science: Upright numbers in the references.
+\AtBeginBibliography{\DeclareFieldFormat{labelnumber}{%
+  \number\numexpr#1+\value{reference}}}
 
-% Nature: Prepend 'S' to the appendix number.
+% Science: Prepend 'S' to the appendix number.
 \newcommand{\appendixprefix}{S}
 \renewcommand{\thesection}{\appendixprefix\arabic{section}}
 \renewcommand{\thefigure}{\appendixprefix\arabic{figure}}
@@ -441,7 +445,8 @@ Foerster partial differential equation (PDE)
 where $n_0(a)$ is the initial density
 % \autocites[Chapter VI, Section 29 on pp.~159--161]{harris_1963}%
 % [Chapter 20 on pp.~353--364]{kot_01}.
-\autocite{harris_1963, kot_01}.
+\AtNextCite{\renewcommand{\multicitedelim}{\addsemicolon\space}}%
+\autocites[pp.~159--161]{harris_1963}[pp.~353--364]{kot_01}.
 
 Because the birth hazard, $h_{\text{birth}}(t, a)$,
 is periodic with period $T = \unit[1]{y}$,
