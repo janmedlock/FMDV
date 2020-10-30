@@ -22,9 +22,7 @@ def check_parameters(solver):
     assert numpy.isclose(b[n, 0],
                          1 - solver.params.newborn_proportion_immune)
     assert numpy.allclose(A[n + 1, n + 1],
-                          (1 + ((solver.params.hazard.mortality[0]
-                                 + solver.params.hazard.infection)
-                                * solver.step / 2)))
+                          1 + solver.params.hazard.infection * solver.step / 2)
 
 
 def plot_blocks(solver):
@@ -67,6 +65,7 @@ def plot_solution(P):
 if __name__ == '__main__':
     parameters = Parameters(SAT=1)
     solver = initial_conditions.immune_status.Solver(parameters)
+    check_parameters(solver)
     newborn_proportion_immune = 0.6
     hazard_infection = 2
     P = solver.solve_step(solver.transform((hazard_infection,

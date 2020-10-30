@@ -12,15 +12,9 @@ class gen:
     def __init__(self, parameters):
         self.parameters = parameters
         # Reuse these in case we call pdf() or rvs() repeatedly.
-        self.immune_status_pdf = (
+        self.immune_status_conditional_pdf = (
             immune_status.probability_interpolant(self.parameters))
         self.ages = age_structure.gen(self.parameters)
-
-    def immune_status_conditional_pdf(self, ages):
-        '''The probability of being in each immune state vs. `ages`,
-        conditioned on being alive.'''
-        p = self.immune_status_pdf(ages)
-        return p.divide(p.sum(axis='columns'), axis='index')
 
     def pdf(self, age):
         return self.immune_status_conditional_pdf(age).multiply(

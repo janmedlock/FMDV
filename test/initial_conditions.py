@@ -11,20 +11,11 @@ from herd import initial_conditions, Parameters, utility
 sys.path.pop()
 
 
-def plot_probability_constant_birth(ICs, ages, ax):
-    '''With the assumption of constant-time birth hazard,
-    plot probability of being in each class vs. age,
-    *not* conditioned on being alive.'''
-    p = ICs.immune_status_pdf(ages)
-    ax.stackplot(ages, p.T, labels=p.columns)
-    ax.set_ylabel('constant-birth\ndensity')
-
-
 def plot_conditional_probability(ICs, ages, ax):
     '''Plot probability of being in each class vs. age,
     conditioned on being alive.'''
     p = ICs.immune_status_conditional_pdf(ages)
-    ax.stackplot(ages, p.T)
+    ax.stackplot(ages, p.T, labels=p.columns)
     ax.set_ylabel('probability\ngiven alive')
 
 
@@ -60,9 +51,8 @@ def plot_ICs(SAT):
     parameters = Parameters(SAT=SAT)
     ICs = initial_conditions.gen(parameters)
     ages = utility.arange(0, 20, 0.1, endpoint=True)
-    (fig, axes) = pyplot.subplots(4, 1, sharex=True)
-    plot_fcns = (plot_probability_constant_birth,
-                 plot_conditional_probability,
+    (fig, axes) = pyplot.subplots(3, 1, sharex=True)
+    plot_fcns = (plot_conditional_probability,
                  plot_probability,
                  plot_samples)
     for (ax, plot_fcn) in zip(axes, plot_fcns):

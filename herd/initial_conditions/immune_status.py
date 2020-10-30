@@ -7,10 +7,9 @@ import numpy.lib.recfunctions
 import pandas
 from scipy import integrate, optimize, sparse, special
 
-from herd import (antibody_gain, antibody_loss, birth, buffalo,
-                  chronic_recovery, maternal_immunity_waning,
-                  mortality, parameters, progression, recovery,
-                  utility)
+from herd import (age_structure, antibody_gain, antibody_loss, birth,
+                  buffalo, chronic_recovery, maternal_immunity_waning,
+                  mortality, parameters, progression, recovery, utility)
 
 
 class Block:
@@ -55,8 +54,7 @@ class BlockODE(Block):
 
     def _get_A_XX(self, hazard_out):
         '''Get the diagonal block `A_XX` that maps state X to itself.'''
-        d_X = ((hazard_out + self.params.hazard.mortality)
-               * self.params.step / 2)
+        d_X = hazard_out * self.params.step / 2
         diags = ((numpy.hstack([1, 1 + d_X]), 0),  # The diagonal
                  (- 1 + d_X, -1))  # The subdiagonal
         # Ensure that the off-diagonal entries are non-positive.
@@ -82,10 +80,7 @@ class BlockODE(Block):
         A_XY = sparse.lil_matrix((len(self), self.params.length_PDE))
         for i in range(1, len(self)):
             j = numpy.arange(i + 1)
-            A_XY[i, j] = - (pdf_in[i - j]
-                            * self.params.survival.mortality[i]
-                            / self.params.survival.mortality[j]
-                            * self.params.step ** 2)
+            A_XY[i, j] = - pdf_in[i - j] * self.params.step ** 2
         return A_XY
 
 
@@ -114,10 +109,7 @@ class BlockPDE(Block):
         A_XY = sparse.lil_matrix((len(self), self.params.length_PDE))
         for i in range(1, len(self)):
             j = numpy.arange(i + 1)
-            A_XY[i, j] = - (pdf_in[i - j]
-                            * self.params.survival.mortality[i]
-                            / self.params.survival.mortality[j]
-                            * self.params.step)
+            A_XY[i, j] = - pdf_in[i - j] * self.params.step
         return A_XY
 
     def set_b_X(self):
@@ -127,11 +119,7 @@ class BlockPDE(Block):
         P_X = numpy.empty(self.params.length_ODE)
         for i in range(self.params.length_ODE):
             j = numpy.arange(i + 1)
-            P_X[i] = (numpy.dot(survival_out[j],
-                                (self.params.survival.mortality[i]
-                                 / self.params.survival.mortality[i - j]
-                                 * p_X[i - j]))
-                      * self.params.step)
+            P_X[i] = numpy.dot(survival_out[j], p_X[i - j]) * self.params.step
         return P_X
 
 
@@ -345,9 +333,15 @@ class Solver:
         survival = {k: RV.sf(self.ages)
                     for (k, RV) in RVs_survival.items()}
         self.params.survival = self.rec_fromkwds(**survival)
+        # Also get the pdf for these RVs.
+        RVs.update({
+            'age_structure': age_structure.gen(params),
+        })
+        pdf = {k: RV.pdf(self.ages)
+               for (k, RV) in RVs.items()}
+        self.params.pdf = self.rec_fromkwds(**pdf)
         # Get the hazard for these RVs.
         RVs_hazard = {
-            'mortality': RVs_survival['mortality'],
             'maternal_immunity_waning': maternal_immunity_waning.gen(params),
             'antibody_loss': antibody_loss.gen(params),
         }
@@ -465,8 +459,8 @@ class Solver:
         '''Compute the hazard of infection from the solution `P`.'''
         # The probability of being in each immune status integrated
         # over age.
-        P_total = P.apply(integrate.trapz,
-                          args=(self.ages, ))
+        P_notconditional = P.mul(self.params.pdf.age_structure, axis='index')
+        P_total = P_notconditional.apply(integrate.trapz, args=(self.ages, ))
         # Compute the hazard of infection from the solution.
         return (self.params.transmission_rate * P_total['infectious']
                 + self.params.chronic_transmission_rate * P_total['chronic'])
@@ -475,7 +469,8 @@ class Solver:
         '''Compute the proportions of newborns who have maternal immunity from
         the solution `P`.'''
         # The birth rate from moms in each immune status and age.
-        births = P.mul(self.params.hazard_birth,
+        births = P.mul(self.params.pdf.age_structure
+                       * self.params.hazard_birth,
                        axis='index')
         # The birth rate from moms in each immune status.
         births_total = births.apply(integrate.trapz,
