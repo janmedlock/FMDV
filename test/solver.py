@@ -65,6 +65,7 @@ def plot_solution(P):
 if __name__ == '__main__':
     parameters = Parameters(SAT=1)
     solver = initial_conditions.immune_status.Solver(parameters)
+    check_parameters(solver)
     newborn_proportion_immune = 0.6
     hazard_infection = 2
     P = solver.solve_step(solver.transform((hazard_infection,
