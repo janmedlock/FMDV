@@ -337,7 +337,7 @@ class Solver:
         RVs.update({
             'age_structure': age_structure.gen(params),
         })
-        pdf = {k: RV.pdf(self.ages)
+        pdf = {k: self.get_pdf(RV, self.ages)
                for (k, RV) in RVs.items()}
         self.params.pdf = self.rec_fromkwds(**pdf)
         # Get the hazard for these RVs.
