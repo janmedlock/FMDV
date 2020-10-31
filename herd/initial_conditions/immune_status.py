@@ -55,7 +55,8 @@ class BlockODE(Block):
 
     def _get_A_XX(self, hazard_out):
         '''Get the diagonal block `A_XX` that maps state X to itself.'''
-        d_X = hazard_out * self.params.step / 2
+        d_X = (hazard_out
+               * self.params.step / 2)
         diags = ((numpy.hstack([1, 1 + d_X]), 0),  # The diagonal
                  (- 1 + d_X, -1))  # The subdiagonal
         # Ensure that the off-diagonal entries are non-positive.
@@ -81,7 +82,8 @@ class BlockODE(Block):
         A_XY = sparse.lil_matrix((len(self), self.params.length_PDE))
         for i in range(1, len(self)):
             j = numpy.arange(i + 1)
-            A_XY[i, j] = - pdf_in[i - j] * self.params.step ** 2
+            A_XY[i, j] = - (pdf_in[i - j]
+                            * self.params.step ** 2)
         return A_XY
 
 
@@ -110,7 +112,8 @@ class BlockPDE(Block):
         A_XY = sparse.lil_matrix((len(self), self.params.length_PDE))
         for i in range(1, len(self)):
             j = numpy.arange(i + 1)
-            A_XY[i, j] = - pdf_in[i - j] * self.params.step
+            A_XY[i, j] = - (pdf_in[i - j]
+                            * self.params.step)
         return A_XY
 
     def set_b_X(self):
@@ -120,7 +123,9 @@ class BlockPDE(Block):
         P_X = numpy.empty(self.params.length_ODE)
         for i in range(self.params.length_ODE):
             j = numpy.arange(i + 1)
-            P_X[i] = numpy.dot(survival_out[j], p_X[i - j]) * self.params.step
+            P_X[i] = (numpy.dot(survival_out[j],
+                                p_X[i - j])
+                      * self.params.step)
         return P_X
 
 
