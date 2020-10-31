@@ -166,7 +166,7 @@ The infection hazard is
     \beta_{\text{infectious}} P_{\mathrm{I}}(a)
     + \beta_{\text{chronic}} P_{\mathrm{C}}(a)
   \right]
-  d(a) \md a
+  S_{\text{death}}(a) \md a
 \end{equation}
 and the proportion of births that have maternal immunity is
 \begin{equation}
@@ -174,12 +174,11 @@ and the proportion of births that have maternal immunity is
   = \frac{
     \int_0^{+\infty} h_{\text{birth}}(a)
     \left[P_{\mathrm{C}}(a) + P_{\mathrm{R}}(a)\right]
-    d(a) \md a
+    S_{\text{death}}(a) \md a
   }{
-    \int_0^{+\infty} h_{\text{birth}}(a) d(a) \md a
-  },
+    \int_0^{+\infty} h_{\text{birth}}(a) S_{\text{death}}(a) \md a
+  }.
 \end{equation}
-where $d(a)$ is the density of age $a$ buffalo in the population.
 
 
 \subsection{Analysis}
@@ -472,7 +471,7 @@ The infection hazard is
     \beta_{\text{infectious}} P_{\mathrm{I}}^i
     + \beta_{\text{chronic}} P_{\mathrm{C}}^i
   \right)
-  d(a^i)
+  S_{\text{death}}(a^i)
   \Delta a,
 \end{equation}
 and the proportion of births that have maternal immunity is
@@ -483,9 +482,9 @@ and the proportion of births that have maternal immunity is
     h_{\text{birth}}(a^i) \left(
       P_{\mathrm{M}}^i + P_{\mathrm{C}}^i + P_{\mathrm{R}}^i
     \right)
-    d(a^i) \Delta a
+    S_{\text{death}}(a^i) \Delta a
   }{
-    \sum_{i = 0}^{I - 1} h_{\text{birth}}(a^i) d(a^i) \Delta a
+    \sum_{i = 0}^{I - 1} h_{\text{birth}}(a^i) S_{\text{death}}(a^i) \Delta a
   }.
 \end{equation}
 

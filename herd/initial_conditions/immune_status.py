@@ -7,9 +7,10 @@ import numpy.lib.recfunctions
 import pandas
 from scipy import integrate, optimize, sparse, special
 
-from herd import (age_structure, antibody_gain, antibody_loss, birth,
-                  buffalo, chronic_recovery, maternal_immunity_waning,
-                  mortality, parameters, progression, recovery, utility)
+from herd import (antibody_gain, antibody_loss, birth, buffalo,
+                  chronic_recovery, maternal_immunity_waning,
+                  mortality, parameters, progression, recovery,
+                  utility)
 
 
 class Block:
@@ -333,13 +334,6 @@ class Solver:
         survival = {k: RV.sf(self.ages)
                     for (k, RV) in RVs_survival.items()}
         self.params.survival = self.rec_fromkwds(**survival)
-        # Also get the pdf for these RVs.
-        RVs.update({
-            'age_structure': age_structure.gen(params),
-        })
-        pdf = {k: self.get_pdf(RV, self.ages)
-               for (k, RV) in RVs.items()}
-        self.params.pdf = self.rec_fromkwds(**pdf)
         # Get the hazard for these RVs.
         RVs_hazard = {
             'maternal_immunity_waning': maternal_immunity_waning.gen(params),
@@ -455,12 +449,19 @@ class Solver:
         P.clip(lower=0, inplace=True)
         return P
 
+    def get_unconditional(self, P):
+        '''Get the probability of being in each immune state vs. age,
+        *not* conditioned on being alive.'''
+        return P.mul(self.params.survival.mortality,
+                     axis='index')
+
     def get_hazard_infection(self, P):
         '''Compute the hazard of infection from the solution `P`.'''
+        P_unconditional = self.get_unconditional(P)
         # The probability of being in each immune status integrated
         # over age.
-        P_notconditional = P.mul(self.params.pdf.age_structure, axis='index')
-        P_total = P_notconditional.apply(integrate.trapz, args=(self.ages, ))
+        P_total = P_unconditional.apply(integrate.trapz,
+                                        args=(self.ages, ))
         # Compute the hazard of infection from the solution.
         return (self.params.transmission_rate * P_total['infectious']
                 + self.params.chronic_transmission_rate * P_total['chronic'])
@@ -468,10 +469,10 @@ class Solver:
     def get_newborn_proportion_immune(self, P):
         '''Compute the proportions of newborns who have maternal immunity from
         the solution `P`.'''
+        P_unconditional = self.get_unconditional(P)
         # The birth rate from moms in each immune status and age.
-        births = P.mul(self.params.pdf.age_structure
-                       * self.params.hazard_birth,
-                       axis='index')
+        births = P_unconditional.mul(self.params.hazard_birth,
+                                     axis='index')
         # The birth rate from moms in each immune status.
         births_total = births.apply(integrate.trapz,
                                     args=(self.ages, ))
