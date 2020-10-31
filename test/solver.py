@@ -22,7 +22,8 @@ def check_parameters(solver):
     assert numpy.isclose(b[n, 0],
                          1 - solver.params.newborn_proportion_immune)
     assert numpy.allclose(A[n + 1, n + 1],
-                          1 + solver.params.hazard.infection * solver.step / 2)
+                          1 + (solver.params.hazard.infection
+                               * solver.step / 2))
 
 
 def plot_blocks(solver):
