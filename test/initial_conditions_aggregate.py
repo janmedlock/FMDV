@@ -20,10 +20,12 @@ def get_params():
 
 def get_solutions(params):
     ages = utility.arange(0, 20, 0.005, endpoint=True)
+    survival = mortality.from_param_values().sf(ages)
     p = {}
     for (SAT, params_SAT) in params.items():
         ICs = initial_conditions.gen(params_SAT)
-        p[SAT] = ICs.immune_status_pdf(ages)
+        p[SAT] = ICs.immune_status_conditional_pdf(ages).multiply(survival,
+                                                                  axis='index')
     return pandas.concat(p, axis='columns')
 
 
