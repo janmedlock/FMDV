@@ -7,7 +7,7 @@ import h5
 sys.path.pop()
 
 
-filename = '../run_population_sizes.h5'
+filename = '../population_size.h5'
 by = ['model', 'SAT', 'population_size', 'run']
 columns = ['exposed', 'infectious', 'chronic']
 where = dict(model='acute', SAT=1)
