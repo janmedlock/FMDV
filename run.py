@@ -62,7 +62,7 @@ if __name__ == '__main__':
     tmax = 10
 
     filename = 'run.h5'
-    with h5.HDFStore(_filename) as store:
+    with h5.HDFStore(filename) as store:
         for model in ('acute', 'chronic'):
             for SAT in (1, 2, 3):
                 run(model, SAT, tmax, nruns, store)
