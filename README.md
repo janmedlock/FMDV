@@ -4,7 +4,7 @@
 
 **[Jan Medlock](http://people.oregonstate.edu/~medlockj/)
 [\<jan.medlock@oregonstate.edu\>](mailto:jan.medlock@oregonstate.edu),
-Anna Jolles, Erin Gorisch, Simon Gubbins, Brianna Beechler,
+Erin Gorisch, Anna Jolles, Simon Gubbins, Brianna Beechler,
 Peter Buss, Nick Juleff, Lin-Mari de Klerk-Lorist, Francois Maree,
 Eva Perez-Martin, OL van Schalkwyk, Katherine Scott, Fuquan Zhang,
 Bryan Charleston.**
@@ -13,7 +13,7 @@ Bryan Charleston.**
 Released under the [GNU AGPL 3](LICENSE).**
 
 This repository contains Python code and data used to simulate and
-analyze FMDV transmission in African buffalo.
+analyze FMDV transmission in African buffalo for our paper
 > Jolles A, Gorsich E, Gubbins S, Beechler B, Buss P, Juleff N,
 > deKlerk-Lorist L-M, Maree F, Perez-Martin E, van Schalkwyk OL,
 > Scott K, Zhang F, Medlock J, Charleston B.
