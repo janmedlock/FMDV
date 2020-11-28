@@ -1,3 +1,6 @@
+'''The transmission rate for chronic buffalo.'''
+
+
 def gen(parameters):
     '''Scales with population size so that R_0 is constant as population
     size changes.'''

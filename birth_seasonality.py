@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''Analyze and plot the results of varying the level of birth
+seasonality. This requires the file `birth_seasonality.h5`, which is
+built by `birth_seasonality_run.py`.'''
+
 
 from matplotlib import colors, pyplot, ticker
 import numpy

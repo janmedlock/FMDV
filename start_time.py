@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''Analyze and plot the results of varying the time of year to start
+the simluations. This requires the file `start_time.h5`, which is
+built by `start_time_run.py`.'''
+
 
 from matplotlib import colors, pyplot, ticker
 import numpy

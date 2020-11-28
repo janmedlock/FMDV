@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+'''Plot the stable age distribution.'''
+
+
 import sys
 
 from matplotlib import pyplot, ticker

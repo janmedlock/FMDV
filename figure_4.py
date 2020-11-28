@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''Build Figure 4 from our paper. The requires the files
+`population_size.h5`, which is built by `population_size_run.py`, and
+`samples.h5`, which is built by `samples_run.py`.'''
+
 
 from matplotlib import colors, pyplot, ticker
 import numpy
@@ -9,7 +13,7 @@ import samples
 import stats
 
 
-# Nature
+# Science
 rc = plot_common.rc.copy()
 width = 183 / 25.4  # convert mm to in
 height = 6

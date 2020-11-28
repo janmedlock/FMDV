@@ -1,4 +1,6 @@
 '''Events that can happen to a buffalo.'''
+
+
 from abc import ABC, abstractmethod
 
 import numpy
@@ -7,6 +9,7 @@ from scipy import stats
 
 class Event(ABC):
     '''Parent class for events that happen to a buffalo.'''
+
     @abstractmethod
     def is_valid(self):
         '''Check whether the buffalo is valid to have the event.
@@ -54,6 +57,7 @@ def get_all_valid_events(buffalo):
 
 def Sex(buffalo):
     '''A buffalo having its sex determined.'''
+
     # This is intentionally not an `Event()`,
     # because it doesn't have a sample time, etc.
     if buffalo.herd.rvs.female.rvs() == 1:
@@ -64,6 +68,7 @@ def Sex(buffalo):
 
 class Mortality(Event):
     '''A buffalo dying.'''
+
     def is_valid(self):
         return True  # All buffalo can die.
 
@@ -81,6 +86,7 @@ class Mortality(Event):
 
 class Birth(Event):
     '''A buffalo giving birth.'''
+
     def is_valid(self):
         return self.buffalo.sex == 'female'
 
@@ -98,6 +104,7 @@ class Birth(Event):
 
 class MaternalImmunityWaning(Event):
     '''A buffalo losing maternal immunity.'''
+
     def is_valid(self):
         return self.buffalo.immune_status == 'maternal immunity'
 
@@ -116,6 +123,7 @@ class MaternalImmunityWaning(Event):
 
 class Infection(Event):
     '''A buffalo becoming infected.'''
+
     def is_valid(self):
         return self.buffalo.immune_status == 'susceptible'
 
@@ -140,6 +148,7 @@ class Infection(Event):
 
 class Progression(Event):
     '''A buffalo becoming infectious.'''
+
     def is_valid(self):
         return self.buffalo.immune_status == 'exposed'
 
@@ -154,6 +163,7 @@ class Progression(Event):
 
 class Recovery(Event):
     '''A buffalo recovering from acute infection.'''
+
     def is_valid(self):
         return self.buffalo.immune_status == 'infectious'
 
@@ -178,6 +188,7 @@ class Recovery(Event):
 
 class ChronicRecovery(Event):
     '''A buffalo recovering from chronically infected.'''
+
     def is_valid(self):
         return self.buffalo.immune_status == 'chronic'
 
@@ -192,6 +203,7 @@ class ChronicRecovery(Event):
 
 class ImmunityWaning(Event):
     '''A buffalo losing its acquired immunity.'''
+
     def is_valid(self):
         return self.buffalo.immune_status == 'recovered'
 

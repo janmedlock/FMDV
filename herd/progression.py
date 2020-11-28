@@ -1,3 +1,6 @@
+'''The waiting time until progression from exposed to acute infection.'''
+
+
 from scipy.stats import gamma
 
 from herd.rv import RV
@@ -6,6 +9,7 @@ from herd.rv import RV
 class gen(RV):
     '''Gamma-distributed progression period with rate
     progression_mean and shape progression_shape.'''
+
     def __init__(self, parameters, *args, **kwargs):
         self.progression_mean = parameters.progression_mean
         self.progression_shape = parameters.progression_shape

@@ -1,3 +1,6 @@
+'''Efficiently find the dominant eigenvalue of a matrix.'''
+
+
 import numpy
 from scipy.sparse.linalg import eigs
 

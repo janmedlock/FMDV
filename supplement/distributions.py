@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+'''Plot the waiting-time distributions and hazards.'''
+
+
 import sys
 
 import numpy

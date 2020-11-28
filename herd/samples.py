@@ -1,3 +1,7 @@
+'''The parameter posterior distributions from the statistical analysis
+of our experimental data.'''
+
+
 import os.path
 
 import numpy

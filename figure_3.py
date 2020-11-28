@@ -1,8 +1,11 @@
 #!/usr/bin/python3
-'''This script builds 'figure_3.pdf' and 'figure_3.png' by plotting
- simulation data into 'figure_3_nodiagram.pdf' with `plot()`, then
- combining that with 'diagram/diagram.tex' through 'figure_3.tex'
-in `build()`.'''
+'''Build Figure 3 from our paper. This requires the file `run.h5`,
+which is built by `run.py`.
+
+This script builds 'figure_3.pdf' and 'figure_3.png' by plotting
+simulation data into 'figure_3_nodiagram.pdf' with `plot()`, then
+combining that with 'diagram/diagram.tex' through 'figure_3.tex' in
+`build()`.'''
 
 
 import subprocess
@@ -15,8 +18,7 @@ import statsmodels.nonparametric.api
 import plot_common
 
 
-
-# Nature.
+# Science
 rc = plot_common.rc.copy()
 total_width = 183 / 25.4  # inches
 # 184.983 pts is from `pdfinfo diagram/diagram_standalone.pdf'.

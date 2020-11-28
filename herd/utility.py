@@ -1,3 +1,6 @@
+'''Miscellaneous functions.'''
+
+
 import numpy
 
 

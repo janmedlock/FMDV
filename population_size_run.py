@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+'''For each of the acute and chronic models, for each of the 3 SATs,
+and for 14 different population sizes, run 1,000 simulations using
+the baseline parameter values. This produces a file called
+`population_size.h5`.'''
+
 
 import numpy
 

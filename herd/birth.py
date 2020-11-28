@@ -1,3 +1,6 @@
+'''The waiting time for a female buffalo to her next birth.'''
+
+
 import numpy
 from scipy import optimize
 
@@ -180,6 +183,7 @@ class gen(RV):
 
 class _BirthParams:
     '''Dummy parameters for the birth random variable.'''
+
     def __init__(self, birth_peak_time_of_year,
                  birth_seasonal_coefficient_of_variation):
         self.birth_peak_time_of_year = birth_peak_time_of_year

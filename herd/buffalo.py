@@ -1,3 +1,6 @@
+'''Single buffaloes and the events that can occur to them.'''
+
+
 from herd import event
 from herd.events import BuffaloEvents
 

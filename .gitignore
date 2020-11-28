@@ -16,8 +16,10 @@
 *.h5
 __pycache__/
 _cache/
+/README.html
+/herd/data/hedger_1972.ods
 /herd/floquet/monodromy*.so
 /manuscript/
-/papers/
+/notes/
 /orphans/
-README.html
+/papers/

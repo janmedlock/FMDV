@@ -1,3 +1,6 @@
+'''Determine the sex of a newborn buffalo.'''
+
+
 from scipy.stats import bernoulli
 
 from herd.rv import RV

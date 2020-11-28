@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''Analyze and plot the results of the simulations over the posterior
+parameter sets. This requires the file `samples.h5`, which is built by
+`samples_run.py`.'''
+
 
 from matplotlib import pyplot, ticker
 from matplotlib.backends import backend_pdf

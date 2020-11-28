@@ -1,3 +1,6 @@
+'''Common plotting code.'''
+
+
 import os.path
 
 import matplotlib.collections
@@ -11,7 +14,7 @@ import h5
 import run
 
 
-# Nature.
+# Science
 rc = {}
 # Widths: 89mm, 183mm, 120mm, 136mm.
 # Sans-serif, preferably Helvetica or Arial.

@@ -1,3 +1,6 @@
+'''The waiting time until death.'''
+
+
 import numpy
 from pandas import Interval, Series
 

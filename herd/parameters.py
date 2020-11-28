@@ -1,3 +1,7 @@
+'''A data structure to hold the model parameters and the baseline
+values of those parameters.'''
+
+
 from numpy import inf
 
 

@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+'''Common code to work with simulation extinction times.'''
+
 
 import numpy
 import pandas

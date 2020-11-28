@@ -1,3 +1,6 @@
+'''The period of the model forcing.'''
+
+
 from herd import birth
 
 

@@ -1,12 +1,15 @@
 #!/usr/bin/python3
-#
-# Assumptions:
-# * Constant population size, particulraly no seasonal births.
-# * All susceptible, so drop M.
-# * Mortality is negligible, so S->E->I is equivalent to S->I,
-#   among other simplifications.
-# * Transmission rate for both acute and chronic scales so that R_0 is
-#   independent of population size.
+'''Compute the basic reproduction number, R_0, for each of the acute
+and chronic models and each of the 3 SATs.
+
+Assumptions:
+* Constant population size, particulraly no seasonal births.
+* All susceptible, so drop M.
+* Mortality is negligible, so S->E->I is equivalent to S->I,
+  among other simplifications.
+* Transmission rate for both acute and chronic scales so that R_0 is
+  independent of population size.'''
+
 
 import herd.samples
 

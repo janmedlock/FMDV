@@ -1,3 +1,6 @@
+'''A herd of buffalo. The core of the simulation is here.'''
+
+
 from itertools import count
 
 import numpy
@@ -16,6 +19,7 @@ statuses = ('maternal immunity', 'susceptible', 'exposed',
 class Herd(set):
     '''A herd of buffaloes, the things that can happen to them, and code to
     simulate.'''
+
     def __init__(self, params=None, debug=False, run_number=None, seed=None,
                  logging_prefix=''):
         if params is None:

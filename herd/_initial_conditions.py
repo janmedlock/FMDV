@@ -1,5 +1,6 @@
 '''Estimate the infection hazard from the Hedger 1972 data.'''
 
+
 from functools import partial
 import os.path
 import re

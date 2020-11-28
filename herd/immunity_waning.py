@@ -1,3 +1,7 @@
+'''The waiting time until the loss of immunity from the recovered
+class.'''
+
+
 from scipy.stats import expon
 
 from herd.rv import RV
@@ -6,6 +10,7 @@ from herd.rv import RV
 class gen(RV):
     '''Exponential waiting time until loss of immunity from
     recovered to susceptible.'''
+
     def __init__(self, parameters, *args, **kwargs):
         self.immunity_waning_duration = parameters.immunity_waning_duration
         distn = expon(scale = self.immunity_waning_duration)

@@ -1,3 +1,6 @@
+'''A data structure to store all of the model random variables.'''
+
+
 from herd.parameters import Parameters
 from herd import (birth, chronic_recovery, chronic_transmission_rate, female,
                   immunity_waning, initial_conditions,

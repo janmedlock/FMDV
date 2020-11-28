@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''For each of the acute and chronic models, for each of the 3 SATs,
+and for each of 20,000 posterior parameter estimates, run 1
+simulation. This produces a file called `samples.h5`.'''
+
 
 import copy
 import itertools

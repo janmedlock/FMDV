@@ -1,6 +1,6 @@
-'''
-Calculate PRCCs, etc.
-'''
+'''Common code to calculate statistics like PRCCs, etc.'''
+
+
 import numpy
 import pandas
 import scipy.stats

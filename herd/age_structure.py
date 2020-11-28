@@ -1,3 +1,6 @@
+'''The stable age distribution.'''
+
+
 import numpy
 from scipy.stats import rv_discrete
 

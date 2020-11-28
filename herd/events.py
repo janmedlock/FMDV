@@ -1,4 +1,6 @@
 '''Data structures to manage events.'''
+
+
 from itertools import tee
 from operator import attrgetter
 
@@ -11,6 +13,7 @@ class BuffaloEvents(set):
     '''Container to hold all events that can happen to a buffalo.
     Actions on these are copied to `buffalo.herd.events`
     so the next herd event can be found efficiently.'''
+
     def __init__(self, buffalo):
         super().__init__()
         self.herd_events = buffalo.herd.events
@@ -40,6 +43,7 @@ class BuffaloEvents(set):
 
 class HerdEvents(SortedKeyList):
     '''Container to hold all events that can happen in the herd.'''
+
     # The `Event()`s are stored sorted by their time so that the
     # one with minimum time can be found efficiently.
     # `Infection()` events are stored in the `infections` attribute

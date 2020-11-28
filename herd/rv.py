@@ -1,8 +1,12 @@
+'''The base class for random variables.'''
+
+
 from numpy import exp
 
 
 class RV:
     '''A generic random variable.'''
+
     def _copyattrs(self, obj):
         for x in dir(obj):
             if not x.startswith('__') and not hasattr(self, x):

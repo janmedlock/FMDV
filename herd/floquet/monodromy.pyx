@@ -1,5 +1,4 @@
-#cython: boundscheck=False, wraparound=False
-
+#cython: language_level=3, boundscheck=False, wraparound=False
 '''The McKendrick–von Foerster age-structured PDE model
 for the density u(t, a) of buffalo of age a at time t is
 (d/dt + d/da) u(t, a) = - d(a) u(t, a),
@@ -26,6 +25,7 @@ So that the cache keys only depend on the relevant parts of
 >>> solver = monodromy.Solver(solver_parameters, agemax, agestep)
 >>> PhiT = solver.solve(birth_scaling)
 where `parameters` is a `herd.parameters.Parameters()` instance.'''
+
 
 cimport cython
 cimport numpy

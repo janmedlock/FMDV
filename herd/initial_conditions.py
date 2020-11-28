@@ -1,3 +1,7 @@
+'''The model initial conditions, which are with FMDV endemic in the
+population.'''
+
+
 import numpy
 import pandas
 from scipy.stats import multinomial
@@ -9,6 +13,7 @@ from herd import _initial_conditions
 class gen:
     '''This all assumes that progression (E -> I) and recovery (I -> C/R)
     are fast compared to the other processes.'''
+
     def __init__(self, parameters):
         self.parameters = parameters
         # Reuse these in case we call rvs() repeatedly.

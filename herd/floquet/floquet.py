@@ -1,3 +1,8 @@
+'''Use Floquet theory to find the stable age distribution and
+population growth rate for the McKendrick–von Foerster age-structured
+PDE model with periodic birth rate.'''
+
+
 import os.path
 
 from joblib import Memory

@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+'''Plot the seasonal birth hazard.'''
+
+
 import sys
 
 from matplotlib import lines, pyplot, ticker

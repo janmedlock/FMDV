@@ -21,7 +21,7 @@ analyze FMDV transmission in African buffalo.
 > reservoir, African buffalo. *In preparation*.
 <!-- *Science*. 2020. [doi:XXX](https://doi.org/XXX). -->
 
-The scripts and model code are entirely written in Python3, using many
+The scripts and model code are written in Python3, using many
 third-party libraries.  Most notably:
 [Python3](https://www.python.org/),
 [NumPy & SciPy](https://www.scipy.org/),
@@ -32,47 +32,71 @@ third-party libraries.  Most notably:
 [matplotlib](https://matplotlib.org/),
 & [Seaborn](https://seaborn.pydata.org/).
 
-### Simulations
+### Main simulation code
 
-The module that simulates the model is in the Python module [herd](herd).
+The module that simulates the FMDV model is in the Python module
+[herd](herd).
+
+The submodule [herd.floquet](herd/floquet) contains the solver to find
+the population stable age distribution with birth seasonality. In the
+folder [herd/floquet](herd/floquet) is an optional faster
+implementation in [Cython](https://cython.org/) of
+`herd.floquet.monodromy` that can be built using the included
+[Makefile](herd/floquet/Makefile).
+
+The folder [herd/data](herd/data) contains the parameter
+posterior samples from the statistical analysis of our experimental
+data and a summary of the data from Hedger (1972) used to initialize
+our simulations.
+
+### Simulation scripts
 
 These scripts run the model simulations. **Each of these takes many
 cpu-days to run**.
 
-* [run.py](run.py), for each of the acute and chronic model and for
+* [run.py](run.py), for each of the acute and chronic models and for
   each of the 3 SATs, runs 1,000 simulations using the baseline
   parameter values. It produces a file called `run.h5`.
 
 * [samples_run.py](samples_run.py), for each of the acute and chronic
-  model, for each of the 3 SATs, and for 20,000 posterior parameter
-  estimates, runs 1 simulation. It produces a file called
+  models, for each of the 3 SATs, and for each of 20,000 parameter
+  posterior samples, runs 1 simulation. It produces a file called
   `samples.h5`.
 
 * [birth_seasonality_run.py](birth_seasonality_run.py), for each of
-  the acute and chronic model, for each of the 3 SATs, and for 5
+  the acute and chronic models, for each of the 3 SATs, and for 5
   different levels of birth seasonality, runs 1,000 simulations using
   the baseline parameter values. It produces a file called
   `birth_seasonality.h5`.
 
 * [population_size_run.py](population_size_run.py), for each of the
-  acute and chronic model, for each of the 3 SATs, and for 14
+  acute and chronic models, for each of the 3 SATs, and for 14
   different population sizes, runs 1,000 simulations using the
   baseline parameter values. It produces a file called
   `population_size.h5`.
 
 * [start_time_run.py](start_time_run.py), for each of the acute and
-  chronic model, for each of the 3 SATs, and for 12 different times of
-  year to start the simulations, runs 1,000 simulations using the
+  chronic models, for each of the 3 SATs, and for 12 different times
+  of year to start the simulations, runs 1,000 simulations using the
   baseline parameter values. It produces a file called
   `start_time.h5`.
 
-### Plotting
+### Analysis and plotting scripts
 
 These scripts analyze and plot the simulation results. They require
 having run the simulation scripts above.
 
+* [R0.py](R0.py) computes the basic reproduction number,
+  *R*<sub>0</sub>, for each of the acute and chronic models and each
+  of the 3 SATs.
+
+* [susceptible_recruitment.py](susceptible_recruitment.py) plots the
+  inflow of susceptibles vs. time of year that occurs in our model due
+  to the seasonality of births and subsequent waning of maternal
+  immunity.
+
 * [samples.py](samples.py) analyzes and plots the results of the
-  simulations over the posterior parameter sets. This requires the
+  simulations over the parameter posterior samples. This requires the
   file `samples.h5`, which is built by
   [samples_run.py](samples_run.py).
 
@@ -99,18 +123,7 @@ having run the simulation scripts above.
   [population_size_run.py](population_size_run.py), and `samples.h5`,
   which is built by [samples_run.py](samples_run.py).
 
-### Miscellany
-
-* [R0.py](R0.py) computes the basic reproduction number,
-  *R*<sub>0</sub>, for each of the acute and chronic model and each of
-  the 3 SATs.
-
-* [susceptible_recruitment.py](susceptible_recruitment.py) plots the
-  inflow of susceptibles vs. time of year that occurs in our model due
-  to the seasonality of births and subsequent waning of maternal
-  immunity.
-
-### Tests
+### Test scripts
 
 The [test](test) directory contains some scripts to test various parts
 of the model code.
@@ -138,13 +151,10 @@ of the model code.
 * [initial_conditions.py](test/initial_conditions.py) plots the model
   initial conditions.
 
-* [h5_test.py](test/h5_test.py) tests simulation output files for
+* [h5_test.py](test/h5_test.py) tests the simulation output files for
   consistency.
 
-* [search_parameters.py](test/search_parameters.py) runs simulations
-  for over 4 population sizes and 9 levels of birth seasonality, for
-  each of the 3 SATs. **This takes many cpu-days to run.**
+### Supplementary material
 
-* [search_parameters_crunch.py](test/search_parameters_crunch.py)
-  analyzes and plots the results of
-  [search_parameters.py](test/search_parameters.py).
+[supplement](supplement) contains files and scripts for building the
+modeling section of the supplementary material from our paper.

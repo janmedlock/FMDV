@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+'''Common code to work with HDF5 files.'''
+
 
 import itertools
 import os

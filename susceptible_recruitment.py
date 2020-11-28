@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''Plot the inflow of susceptibles vs. time of year that occurs in our
+model due to the seasonality of births and subsequent waning of
+maternal immunity.'''
+
 
 import joblib
 from matplotlib import dates, pyplot, ticker
@@ -18,6 +22,7 @@ import herd.rv
 
 class SusceptibleRecruitment(herd.rv.RV):
     '''The mixture of birth and maternal-immunity waning.'''
+
     def __init__(self, parameters, *args, **kwargs):
         self._age_structure = herd.age_structure.gen(parameters)
         self._birth = herd.birth.gen(parameters)
