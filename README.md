@@ -4,9 +4,9 @@
 
 **[Jan Medlock](http://people.oregonstate.edu/~medlockj/)
 [\<jan.medlock@oregonstate.edu\>](mailto:jan.medlock@oregonstate.edu),
-Erin Gorisch, Anna Jolles, Simon Gubbins, Brianna Beechler,
-Peter Buss, Nick Juleff, Lin-Mari deKlerk-Lorist, Francois Maree,
-Eva Perez-Martin, OL van Schalkwyk, Katherine Scott,
+Anna Jolles, Erin Gorisch, Simon Gubbins, Brianna Beechler,
+Peter Buss, Nick Juleff, Lin-Mari de Klerk-Lorist, Francois Maree,
+Eva Perez-Martin, OL van Schalkwyk, Katherine Scott, Fuquan Zhang,
 Bryan Charleston.**
 
 **Copyright 2014–2020, Jan Medlock et al.  All rights reserved.
@@ -16,7 +16,7 @@ This repository contains Python code and data used to simulate and
 analyze FMDV transmission in African buffalo.
 > Jolles A, Gorsich E, Gubbins S, Beechler B, Buss P, Juleff N,
 > deKlerk-Lorist L-M, Maree F, Perez-Martin E, van Schalkwyk OL,
-> Scott K, Medlock J, Charleston B.
+> Scott K, Zhang F, Medlock J, Charleston B.
 > Endemic dynamics of foot-and-mouth disease viruses in their
 > reservoir, African buffalo. *In preparation*.
 <!-- *Science*. 2020. [doi:XXX](https://doi.org/XXX). -->
