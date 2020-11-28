@@ -52,7 +52,7 @@ our simulations.
 ### Simulation scripts
 
 These scripts run the model simulations. **Each of these takes many
-cpu-days to run**.
+cpu-days to run.**
 
 * [run.py](run.py), for each of the acute and chronic models and for
   each of the 3 SATs, runs 1,000 simulations using the baseline
@@ -83,8 +83,8 @@ cpu-days to run**.
 
 ### Analysis and plotting scripts
 
-These scripts analyze and plot the simulation results. They require
-having run the simulation scripts above.
+These scripts analyze and plot the simulation results. Most of them
+require having run the simulation scripts above.
 
 * [R0.py](R0.py) computes the basic reproduction number,
   *R*<sub>0</sub>, for each of the acute and chronic models and each
