@@ -6,9 +6,10 @@ import os
 import subprocess
 import warnings
 
-import numpy
 import pandas
 import tables
+
+import h5_tables_monkeypatch
 
 
 def repack(path):
