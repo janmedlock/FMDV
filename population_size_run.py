@@ -25,7 +25,7 @@ def _copy_run(model, SAT, population_size, nruns, hdfstore_out):
 
 def run_population_size(model, SAT, population_size, tmax, nruns, hdfstore):
     if population_size == 1000:
-        _copy_run_SATs(model, SAT, population_size, nruns, hdfstore)
+        _copy_run(model, SAT, population_size, nruns, hdfstore)
     else:
         p = herd.Parameters(model=model, SAT=SAT)
         p.population_size = population_size

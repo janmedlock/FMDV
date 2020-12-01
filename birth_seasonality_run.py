@@ -30,7 +30,7 @@ def run_birth_seasonality(model, SAT, birth_seasonality_scaling, tmax, nruns,
     p.birth_seasonal_coefficient_of_variation *= birth_seasonality_scaling
     bscov = p.birth_seasonal_coefficient_of_variation
     if birth_seasonality_scaling == 1:
-        _copy_run_SATs(model, SAT, bscov, nruns, hdfstore)
+        _copy_run(model, SAT, bscov, nruns, hdfstore)
     else:
         logging_prefix = (
             ', '.join((

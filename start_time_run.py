@@ -25,7 +25,7 @@ def _copy_run(model, SAT, start_time, nruns, hdfstore_out):
 
 def run_start_time(model, SAT, start_time, tmax, nruns, hdfstore):
     if start_time == 0.5:
-        _copy_run_SATs(model, SAT, start_time, nruns, hdfstore)
+        _copy_run(model, SAT, start_time, nruns, hdfstore)
     else:
         p = herd.Parameters(model=model, SAT=SAT)
         p.start_time = start_time
