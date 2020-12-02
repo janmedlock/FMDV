@@ -110,7 +110,7 @@ class HDFStore(pandas.HDFStore):
 
     def groupby(self, by, *args, key=None, debug=True, **kwargs):
         # `self.select(iterator=True)` has a chunk size that generally
-        # doesn't not align with groups defined by `.groupby(by)`, so
+        # does not align with groups defined by `.groupby(by)`, so
         # we carry the last group from one chunk over to beginning of
         # the next chunk.
         chunk_iterator = iter(self.select(*args, key=key,
