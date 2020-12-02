@@ -15,7 +15,10 @@ class gen:
     are fast compared to the other processes.'''
 
     def __init__(self, parameters):
-        self.parameters = parameters
+        try:
+            self.parameters = parameters.initial_conditions
+        except AttributeError:
+            self.parameters = parameters
         # Reuse these in case we call rvs() repeatedly.
         self.age_structureRV = age_structure.gen(self.parameters)
         self.maternal_immunity_waningRV = maternal_immunity_waning.gen(

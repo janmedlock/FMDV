@@ -6,7 +6,8 @@ from numpy import inf
 
 
 class Parameters:
-    def __init__(self, model='acute', SAT=1, _set_defaults=True):
+    def __init__(self, model='acute', SAT=1, _set_defaults=True,
+                 _initial_conditions=None):
         'Initialize with default values.'
         self.SAT = SAT
         self.model = model
@@ -65,6 +66,13 @@ class Parameters:
                 self.chronic_transmission_rate = 0.012 * 365
             else:
                 raise ValueError("Unknown SAT '{}'!".format(self.SAT))
+            if _initial_conditions is not None:
+                # Use the initial conditions for the SAT in
+                # `_initial_conditions` to build the initial
+                # conditions for a simulation of SAT `SAT`.
+                self.initial_conditions = self.__class__(
+                    model=model, SAT=_initial_conditions,
+                    _set_defaults=_set_defaults)
 
     def __repr__(self):
         'Make instances print nicely.'
