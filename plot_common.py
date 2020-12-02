@@ -33,7 +33,7 @@ filename = os.path.join(_path, 'run.h5')
 t_name = 'time (y)'
 
 
-def _build_downsample_group(group, t, by):
+def _build_downsampled_group(group, t, by):
     # Only keep time index.
     group = group.reset_index(by, drop=True)
     # Only interpolate between start and extinction.
@@ -42,7 +42,7 @@ def _build_downsample_group(group, t, by):
     return group.reindex(t[mask], method='ffill')
 
 
-def build_downsample(filename_in, t_min=0, t_max=10, t_step=1/365):
+def build_downsampled(filename_in, t_min=0, t_max=10, t_step=1/365):
     t = numpy.arange(t_min, t_max, t_step)
     base, ext = os.path.splitext(filename_in)
     filename_out = base + '_downsampled' + ext
@@ -50,11 +50,11 @@ def build_downsample(filename_in, t_min=0, t_max=10, t_step=1/365):
          h5.HDFStore(filename_out, mode='w') as store_out:
         by = [n for n in store_in.get_index_names() if n != t_name]
         for (ix, group) in store_in.groupby(by):
-            downsample = _build_downsample_group(group, t, by)
+            downsampled = _build_downsampled_group(group, t, by)
             # Append `ix` to the index levels.
-            downsample = pandas.concat({ix: downsample},
-                                       names=by, copy=False)
-            store_out.put(downsample, dropna=True, index=False,
+            downsampled = pandas.concat({ix: downsampled},
+                                        names=by, copy=False)
+            store_out.put(downsampled, dropna=True, index=False,
                           min_itemsize=run._min_itemsize)
         store_out.create_table_index()
         store_out.repack()
