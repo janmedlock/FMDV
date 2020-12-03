@@ -54,7 +54,7 @@ def build_downsampled(filename_in, t_min=0, t_max=10, t_step=1/365):
             # Append `ix` to the index levels.
             downsampled = pandas.concat({ix: downsampled},
                                         names=by, copy=False)
-            store_out.put(downsampled, dropna=True, index=False,
+            store_out.put(downsampled.dropna(), index=False,
                           min_itemsize=run._min_itemsize)
         store_out.create_table_index()
         store_out.repack()
