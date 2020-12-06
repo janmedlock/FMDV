@@ -9,6 +9,7 @@ import numpy
 
 import h5
 import herd
+from herd.utility import arange
 import run
 
 
@@ -40,14 +41,9 @@ def run_population_size(model, SAT, population_size, tmax, nruns, hdfstore):
         hdfstore.put(df, min_itemsize=run._min_itemsize)
 
 
-def arange(start, stop, step):
-    '''Like `numpy.arange()`, but with `stop` in the range.'''
-    return numpy.arange(start, stop + step, step)
-
-
 if __name__ == '__main__':
-    population_sizes = numpy.hstack((arange(100, 900, 100),
-                                     arange(1000, 5000, 1000)))
+    population_sizes = numpy.hstack((arange(100, 900, 100, endpoint=True),
+                                     arange(1000, 5000, 1000, endpoint=True)))
     nruns = 1000
     tmax = 10
 
