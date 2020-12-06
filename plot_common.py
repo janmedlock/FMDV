@@ -11,6 +11,7 @@ import pandas
 import statsmodels.nonparametric.api
 
 import h5
+from herd.utility import arange
 import run
 
 
@@ -37,13 +38,14 @@ def _build_downsampled_group(group, t, by):
     # Only keep time index.
     group = group.reset_index(by, drop=True)
     # Only interpolate between start and extinction.
-    mask = ((t >= group.index.min()) & (t <= group.index.max()))
+    mask = ((t >= group.index.min())
+            & (t <= numpy.ceil(group.index.max())))
     # Interpolate from the closest point <= t.
     return group.reindex(t[mask], method='ffill')
 
 
 def build_downsampled(filename_in, t_min=0, t_max=10, t_step=1/365):
-    t = numpy.arange(t_min, t_max, t_step)
+    t = arange(t_min, t_max, t_step, endpoint=True)
     base, ext = os.path.splitext(filename_in)
     filename_out = base + '_downsampled' + ext
     with h5.HDFStore(filename_in, mode='r') as store_in, \
