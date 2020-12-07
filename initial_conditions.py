@@ -170,6 +170,7 @@ def plot(infected, extinction_time, draft=False):
                 row_e = 2 * i + 1
                 fig.align_ylabels(axes[[row_i, row_e], 0])
             fig.savefig(f'initial_conditions_{model}.pdf')
+            fig.savefig(f'initial_conditions_{model}.png', dpi=300)
 
 
 if __name__ == '__main__':
