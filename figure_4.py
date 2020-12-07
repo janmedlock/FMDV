@@ -26,7 +26,7 @@ rc['xtick.labelsize'] = rc['ytick.labelsize'] = 5
 
 
 def load_population_size():
-    df = population_size.load_extinction_time()
+    df = population_size.load()
     return df.loc['chronic']
 
 
@@ -94,7 +94,7 @@ def plot_sensitivity_population_sizes(axes):
 
 
 def load_samples():
-    df = samples.load_extinction_time()
+    df = samples.load()
     return df.loc['chronic']
 
 
@@ -105,8 +105,8 @@ def _get_prcc(df, params, outcome):
 
 def plot_sensitivity_samples(axes):
     df = load_samples()
-    outcome = 'extinction_time'
-    params = df.columns.drop([outcome, 'extinction_observed'])
+    outcome = 'time'
+    params = df.columns.drop([outcome, 'observed'])
     colors_ = [f'C{j}' for j in range(len(params))][::-1]
     rho = df.groupby('SAT').apply(_get_prcc, params, outcome).T
     rho.dropna(axis='index', how='all', inplace=True)

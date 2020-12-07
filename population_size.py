@@ -9,22 +9,13 @@ import numpy
 import seaborn
 import statsmodels.nonparametric.api
 
-import extinction_time
-import h5
 import plot_common
 import stats
 
 
-def load_extinction_time():
-    filename = 'population_size_extinction_time.h5'
-    try:
-        df = h5.load(filename)
-    except OSError:
-        df = extinction_time.load_extinction_time(
-            'population_size.h5',
-             ['model', 'SAT', 'population_size', 'run'])
-        h5.dump(df, filename)
-    return df
+def load():
+    filename = 'population_size.h5'
+    return plot_common.get_extinction_time(filename)
 
 
 def plot_median(df, CI=0.5):
@@ -222,7 +213,7 @@ def plot_kde_2d(df):
 
 
 if __name__ == '__main__':
-    df = load_extinction_time()
+    df = load()
     # plot_median(df)
     # plot_survival(df)
     # plot_kde(df)

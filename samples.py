@@ -10,51 +10,20 @@ import numpy
 import pandas
 import seaborn
 
-import h5
-import herd
 import herd.samples
+import plot_common
 import stats
 
 
-def _get_extinction(infected):
-    t = infected.index.get_level_values('time (y)')
-    time = t.max() - t.min()
-    observed = (infected.iloc[-1] == 0)
-    return {'extinction_time': time,
-            'extinction_observed': observed}
-
-
-def _load_extinction_time():
-    with h5.HDFStore('samples.h5', mode='r') as store:
-        df = []
-        for model in ('acute', 'chronic'):
-            for SAT in (1, 2, 3):
-                by = ['model', 'SAT', 'sample']
-                columns=['exposed', 'infectious', 'chronic']
-                where = f'model={model} & SAT={SAT}'
-                print(where)
-                extinction = {}
-                for (ix, group) in store.groupby(by, where=where,
-                                                 columns=columns):
-                    infected = group.sum(axis='columns')
-                    extinction[ix] = _get_extinction(infected)
-                extinction = pandas.DataFrame.from_dict(extinction,
-                                                        orient='index')
-                extinction.index.names = by
-                samples = herd.samples.load(model=model, SAT=SAT)
-                samples.index = extinction.index
-                df.append(pandas.concat([extinction, samples],
-                                        axis='columns', copy=False))
-        return pandas.concat(df, axis='index', copy=False)
-
-
-def load_extinction_time():
-    try:
-        df = h5.load('samples_extinction_time.h5')
-    except OSError:
-        df = _load_extinction_time()
-        h5.dump(df, 'samples_extinction_time.h5')
-    return df
+def load():
+    filename = 'samples.h5'
+    extinction_time = plot_common.get_extinction_time(filename)
+    by = ['model', 'SAT']
+    grouper = extinction_time.groupby(by)
+    samples = [herd.samples.load(model=model, SAT=SAT)
+               for (model, SAT) in grouper.groups.keys()]
+    samples = pandas.concat(samples, keys=grouper.groups.keys(), names=by)
+    return pandas.concat([samples, extinction_time], axis='columns')
 
 
 def _get_labels(name, rank):
@@ -80,9 +49,7 @@ def plot_times(df):
     with seaborn.color_palette(palette):
         fig, ax = pyplot.subplots()
         for ((SAT, model), group) in groups:
-            survival = stats.get_survival(group,
-                                          'extinction_time',
-                                          'extinction_observed')
+            survival = stats.get_survival(group, 'time', 'observed')
             ax.step(survival.index, survival, color=colors[(SAT, model)],
                     where='post', label=f'SAT {SAT}, {model} model')
         ax.set_xlabel('time (y)')
@@ -96,10 +63,10 @@ def plot_times(df):
 
 
 def plot_parameters(df, rank=True, marker='.', s=1, alpha=0.6):
-    outcome = 'extinction_time'
+    outcome = 'time'
     models = df.index.get_level_values('model').unique()
     SATs = df.index.get_level_values('SAT').unique()
-    params = df.columns.drop([outcome, 'extinction_observed'])
+    params = df.columns.drop([outcome, 'observed'])
     (ylabel, ylabel_resid) = _get_labels(outcome, rank)
     colors = seaborn.color_palette('tab20', 20)
     # Put dark colors first, then light.
@@ -175,13 +142,13 @@ param_transforms = {
 
 
 def plot_sensitivity(df, rank=True, errorbars=False):
-    outcome = 'extinction_time'
+    outcome = 'time'
     # models = df.index.get_level_values('model').unique()
     # Do chronic mdoel first to get the same colors as in Figure 4.
     models = ('chronic', 'acute')
     SATs = df.index.get_level_values('SAT').unique()
     samples = df.index.get_level_values('sample').unique()
-    params = df.columns.drop([outcome, 'extinction_observed'])
+    params = df.columns.drop([outcome, 'observed'])
     n_samples = len(samples)
     colors = Colors()
     width = 390 / 72.27
@@ -227,7 +194,7 @@ def plot_sensitivity(df, rank=True, errorbars=False):
                                    .replace('_', ' ')
                    for p in rho.index]
         ncols = len(SATs)
-        with pyplot.rc_context(rc_):
+        with pyplot.rc_context(rc):
             fig = pyplot.figure(constrained_layout=True)
             gs = fig.add_gridspec(1, ncols)
             axes = numpy.empty(ncols, dtype=object)
@@ -274,7 +241,7 @@ def plot_sensitivity(df, rank=True, errorbars=False):
 
 
 if __name__ == '__main__':
-    df = load_extinction_time()
+    df = load()
     # plot_times(df)
     # plot_parameters(df)
     plot_sensitivity(df)

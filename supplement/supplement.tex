@@ -10,10 +10,14 @@
 \usepackage{multirow}
 \usepackage{sansmath}  % Science: sans serif in math in figures.
 \usepackage{isodate}  % Science: US-style dates.
-% Science: Careful with the Harris, Kot, and Hedger citations if the
-%          style is changed.
+% Science: Take care with the Harris, Kot, Hedger, Blower, & Marino
+%          citations if the style is changed.
 \usepackage[style=science]{biblatex}
 \addbibresource{supplement.bib}
+% Science: Caption labels "Fig. X." and "Table X.".
+\usepackage{caption}
+\captionsetup{labelfont=bf, labelsep=period, figurename={Fig.}}
+\addto\extrasUSenglish{\renewcommand{\figureautorefname}{Fig.}}
 
 % Math macros.
 \DeclareMathOperator{\Prob}{Prob}
@@ -27,7 +31,7 @@
 \setcounter{section}{4}
 \setcounter{equation}{13}
 \setcounter{table}{3}
-\setcounter{figure}{4}
+\setcounter{figure}{6}
 % Science: Shift the reference numbers.
 \newcounter{reference} \setcounter{reference}{67}
 % Science: Italics numbers in the citations.
@@ -149,25 +153,36 @@ buffalo. For each model and SAT, we plotted the number of infected
 buffalo vs.~time for each simulation, its mean over the simulations,
 and the distribution of simulation FMDV extinction times.
 
-For the sensitivity analyses on herd size (Fig.~4a, Figure S1), birth
-seasonality (Figure S2), and model start time
+For the sensitivity analyses on population size (Fig.~4a, Fig.~S1),
+birth seasonality (Fig.~S2), and model start time
 (\autoref{fig:start_time}), we ran 1000 simulations for each model,
 SAT, and value of the focal parameter, using the posterior median
 values for the other parameters. We plotted the distribution of
 simulation FMDV extinction times as a function of the focal parameter
-and the proportion of simulations persisting $\unit[10]{y}$
-as a function of the focal parameter.
+and the proportion of simulations persisting $\unit[10]{y}$ as a
+function of the focal parameter.
 
-For the parameter sensitivity analysis (Fig.~4b, Figure S3), for each
+In the sensitivity analysis on initial conditions
+(Figs.~\ref{fig:initial_conditions_acute},
+\ref{fig:initial_conditions_chronic}), for each model and for the
+baseline parameters for each SAT, we ran 1000 simulations and using
+the initial conditions from each SAT. We plotted the number of
+infected buffalo vs.~time for each simulation, its mean over the
+simulations, and the distribution of simulation FMDV extinction times.
+
+For the parameter sensitivity analysis (Fig.~4b, Fig.~S3), for each
 model and SAT, we ran a simulation with each of 20,000 samples from
 the posterior distributions of the parameters. From each of these
 simulations, we recorded the FMDV extinction time, using
 $\unit[10]{y}$ if FMDV persisted over the whole simulation. We
-calculated the partial rank correlation coefficient (PRCC)
-\autocites{blower_1994}{marino_2008} of the FMDV extinction time to the
-model parameters. We used our own PRCC implementation in Python that
-uses standard numerical libraries for rank transforming, linear
-regression, and calculating the Pearson correlation coefficient.
+calculated the partial rank correlation coefficient
+% This looks like '(PRCC; 72, 74)'.
+% Take care if the citation style changes.
+\autocites(PRCC;)(){blower_1994}{marino_2008}
+of the FMDV extinction time to the model parameters. We used our own
+PRCC implementation in Python that uses standard numerical libraries
+for rank transforming, linear regression, and calculating the Pearson
+correlation coefficient.
 
 Below, we define survival and hazard functions for each event in
 sections \ref{death}–\ref{carrier_recovery}. Derivations for the
@@ -789,12 +804,15 @@ numerically using Gaussian quadrature.
 \end{figure}
 
 We estimated the hazard of infection using survey data of buffalo
-antibodies to FMDV from \citeauthor{hedger_1972} \autocite{hedger_1972}
-(\autoref{tab:hedger_data}). One of us, Dr.~Jolles, reviewed this
-survey data and, for each SAT, classified each buffalo into the immune
-states present in our simplified model, both with and without the
-carrier state. The counts by immune state and age were then pooled
-across the SATs.
+antibodies to FMDV from
+% This looks like 'Hedger (1972, Table S4)'.
+% Take care if the citation style changes.
+\citeauthor{hedger_1972}
+\autocite[\autoref{tab:hedger_data}]{hedger_1972}.
+One of us, Dr.~Jolles, reviewed this survey data and, for each SAT,
+classified each buffalo into the immune states present in our
+simplified model, both with and without the carrier state. The counts
+by immune state and age were then pooled across the SATs.
 
 \begin{table}
   \centering
@@ -873,9 +891,62 @@ the probabilities $P_{\mathrm{M}}(a)$, $P_{\mathrm{S}}(a)$,
 $P_{\mathrm{C}}(a)$, and $P_{\mathrm{R}}(a)$ of being in the immune
 states were computed using the maximum-likelihood value of
 $h_{\text{infection}}$. Using those probabilities, the buffalo was
-randomly assigned to one of corresponding immune states.
+randomly assigned to one of corresponding immune states. The simulated
+number infected vs.~time and FMDV extinction times were insensitive to
+differences in initial conditions between SATs
+(Figs.~\ref{fig:initial_conditions_acute},
+\ref{fig:initial_conditions_chronic}).
+
+\begin{figure}
+  \centering
+  \includegraphics{../initial_conditions_acute}
+  \caption{The sensitivity of extinction time to birth seasonality for
+    the model with acute transmission only.
+    For each SAT (rows of paired graphs of number infected and
+    extinction time), the model was simulated for 1000 runs using the
+    baseline initial conditions for each SAT (columns).
+    The other parameters were fixed at their baseline values.
+    E.g.~the model with the baseline parameter values for SAT 1 (top
+    row) was simulated with the baseline initial conditions for SATs
+    1, 2, and 3.
+    In the graphs of number infected, the thin colored curves show the
+    number infected vs. time for the individual simulations, while the
+    thick black curve is the mean over the simulations of the number
+    infected vs. time.
+    The graphs of FMDV extinction time show the distribution of
+    extinction times (when the number infected first becomes 0) over
+    the simulations.}
+  \label{fig:initial_conditions_acute}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics{../initial_conditions_chronic}
+  \caption{The sensitivity of extinction time to birth seasonality for
+    the model with transmission from acutely infected and carrier hosts.
+    For each SAT (rows of paired graphs of number infected and
+    extinction time), the model was simulated for 1000 runs using the
+    baseline initial conditions for each SAT (columns).
+    The other parameters were fixed at their baseline values.
+    E.g.~the model with the baseline parameter values for SAT 1 (top
+    row) was simulated with the baseline initial conditions for SATs
+    1, 2, and 3.
+    In the graphs of number infected, the thin colored curves show the
+    number infected vs. time for the individual simulations, while the
+    thick black curve is the mean over the simulations of the number
+    infected vs. time.
+    The graphs of FMDV extinction time show the distribution of
+    extinction times (when the number infected first becomes 0) over
+    the simulations, arrows show the
+    proportion of simulations that persisted longer than 10 years,
+    and the gray boxes show the longest persistence time for the
+    model with acute transmission only to highlight the difference in
+    scale.}
+  \label{fig:initial_conditions_chronic}
+\end{figure}
 
 
+\clearpage
 \printbibliography[title=\bibtitle]
 
 

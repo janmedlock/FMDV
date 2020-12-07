@@ -127,7 +127,7 @@ def get_susceptible_recruitment():
         t = (dt - dt[0]) / year
         v = susceptible_recruitment.pdf(t)
         ser = pandas.Series(v, index=dt)
-        ser.to_csv(filename)
+        ser.to_csv(filename, header=False)
     return ser
 
 

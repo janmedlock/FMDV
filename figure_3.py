@@ -13,7 +13,6 @@ import subprocess
 from matplotlib import pyplot, ticker
 import numpy
 import seaborn
-import statsmodels.nonparametric.api
 
 import plot_common
 
@@ -37,14 +36,9 @@ rc['xtick.labelsize'] = rc['ytick.labelsize'] = 5
 
 
 def load():
-    infected = plot_common.get_infected()
-    extinction_time = plot_common.get_extinction_time()
-    # Convert from years to days.
-    i = infected.index.names.index('time (y)')
-    times = infected.index.levels[i] * 365
-    infected.index.set_levels(times, level='time (y)', inplace=True)
-    infected.rename_axis(index={'time (y)': 'time (d)'}, inplace=True)
-    extinction_time *= 365
+    filename = 'run.h5'
+    infected = plot_common.get_infected(filename)
+    extinction_time = plot_common.get_extinction_time(filename)
     return (infected, extinction_time)
 
 
@@ -55,7 +49,7 @@ def plot_infected(ax, infected, model, SAT, draft=False):
         # Only plot the first 100 runs for speed.
         i = i.iloc[:, :100]
     # Start time at 0.
-    t = i.index - i.index.min()
+    t = 365 * (i.index - i.index.min())
     ax.plot(t, i, color=plot_common.SAT_colors[SAT],
             alpha=0.15, linewidth=0.5, drawstyle='steps-pre')
     # `i.fillna(0)` gives mean including those that
@@ -83,36 +77,20 @@ def plot_infected(ax, infected, model, SAT, draft=False):
         ax.set_title(f'{model_.capitalize()} model', loc='center')
 
 
-def kdeplot(endog, ax=None, shade=False, cut=0, **kwds):
-    if ax is None:
-        ax = pyplot.gca()
-    endog = endog.dropna()
-    if len(endog) > 0:
-        kde = statsmodels.nonparametric.api.KDEUnivariate(endog)
-        kde.fit(cut=cut)
-        x = numpy.linspace(kde.support.min(), kde.support.max(), 301)
-        y = kde.evaluate(x)
-        line, = ax.plot(x, y, **kwds)
-        if shade:
-            shade_kws = dict(
-                facecolor = kwds.get('facecolor', line.get_color()),
-                alpha=kwds.get('alpha', 0.25),
-                clip_on=kwds.get('clip_on', True),
-                zorder=kwds.get('zorder', 1))
-            ax.fill_between(x, 0, y, **shade_kws)
-    return ax
-
-
 def plot_extinction_time(ax, extinction_time, model, SAT):
-    e = extinction_time.loc[(model, SAT)]
+    et = extinction_time.loc[(model, SAT)]
+    e = et.time.copy()
+    e[~et.observed] = numpy.nan
     color = plot_common.SAT_colors[SAT]
-    kdeplot(e.dropna(), ax=ax, color=color, shade=True)
+    plot_common.kdeplot(365 * e.dropna(), ax=ax, color=color, shade=True)
     not_extinct = len(e[e.isnull()]) / len(e)
     arrow_loc = {'chronic': {1: (0.92, 0.65),
                              3: (0.96, 0.8)}}
     if not_extinct > 0:
-        # 0.6 -> 0.3, 1 -> 1.
-        pad = (1 - 0.3) / (1 - 0.6) * (not_extinct - 0.6) + 0.3
+        (ne_min, p_min) = (0.6, 0.3)
+        (ne_max, p_max) = (1, 1)
+        pad = ((p_max - p_min) / (ne_max - ne_min) * (not_extinct - ne_min)
+               + p_min)
         bbox = dict(boxstyle=f'rarrow, pad={pad}',
                     facecolor=color, linewidth=0)
         ax.annotate('{:g}%'.format(not_extinct * 100),
@@ -159,9 +137,9 @@ def plot(infected, extinction_time, draft=False):
                                                  sharex=sharex,
                                                  sharey=sharey)
         for (i, SAT) in enumerate(SATs):
+            row_i = 2 * i
+            row_e = 2 * i + 1
             for (col, model) in enumerate(models):
-                row_i = 2 * i
-                row_e = 2 * i + 1
                 plot_infected(axes[row_i, col], infected, model, SAT,
                               draft=draft)
                 plot_extinction_time(axes[row_e, col], extinction_time,
@@ -169,19 +147,19 @@ def plot(infected, extinction_time, draft=False):
         # Shade time region from acute-model column
         # in chronic-model column.
         col_chronic = numpy.where(models == 'chronic')[0][0]
-        e_acute = extinction_time.loc['acute']
+        e_acute = extinction_time.loc['acute'].time
         assert e_acute.notnull().all()
         e_acute_mask = e_acute.max(level='SAT')
         color = pyplot.rcParams['grid.color']
         for (i, SAT) in enumerate(SATs):
             for row in range(2 * i, 2 * i + 2):
                 ax = axes[row, col_chronic]
-                ax.axvspan(0, e_acute_mask[SAT],
+                ax.axvspan(0, 365 * e_acute_mask[SAT],
                            color=color, alpha=0.5, linewidth=0)
         # I get weird results if I set these limits individually.
         for (i, SAT) in enumerate(SATs):
-            for (col, model) in enumerate(models):
-                for row in (2 * i, 2 * i + 1):
+            for row in (2 * i, 2 * i + 1):
+                for (col, model) in enumerate(models):
                     ax = axes[row, col]
                     ax.set_xlim(left=0)
                     ax.set_ylim(bottom=0)
@@ -198,7 +176,7 @@ def plot(infected, extinction_time, draft=False):
 
 def build(draft=False):
     # Build PDF super-figure.
-    subprocess.check_call(['latexmk', '-pdf', 'figure_3'])
+    subprocess.check_call(['latexmk', '-pdf', '-silent', 'figure_3'])
     if not draft:
         # Clean up build files.
         subprocess.check_call(['latexmk', '-c', 'figure_3'])
@@ -212,5 +190,4 @@ if __name__ == '__main__':
     infected, extinction_time = load()
     plot(infected, extinction_time, draft=draft)
     build(draft=draft)
-    if not draft:
-        pyplot.show()
+    pyplot.show()

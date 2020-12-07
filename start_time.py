@@ -9,8 +9,6 @@ import numpy
 import seaborn
 import statsmodels.nonparametric.api
 
-import extinction_time
-import h5
 import plot_common
 import stats
 
@@ -33,15 +31,9 @@ def _make_periodic(df):
     return df
 
 
-def load_extinction_time():
-    filename = 'start_time_extinction_time.h5'
-    try:
-        df = h5.load(filename)
-    except OSError:
-        df = extinction_time.load_extinction_time(
-            'start_time.h5',
-            ['model', 'SAT', 'start_time', 'run'])
-        h5.dump(df, filename)
+def load():
+    filename = 'start_time.h5'
+    df = plot_common.get_extinction_time(filename)
     df = _make_periodic(df)
     return df
 
@@ -237,7 +229,7 @@ def plot_kde_2d(df):
 
 
 if __name__ == '__main__':
-    df = load_extinction_time()
+    df = load()
     # plot_median(df)
     # plot_survival(df)
     # plot_kde(df)
