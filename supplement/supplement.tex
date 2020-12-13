@@ -8,6 +8,7 @@
 \usepackage{units}
 \usepackage{tikz}
 \usepackage{multirow}
+\usepackage[raggedright]{titlesec}  % No hyphens in section titles.
 \usepackage{sansmath}  % Science: sans serif in math in figures.
 \usepackage{isodate}  % Science: US-style dates.
 % Science: Take care with the Harris, Kot, Hedger, Blower, & Marino
@@ -28,7 +29,7 @@
 
 % Setup section etc numbering
 % relative to the other supporting info.
-\setcounter{section}{6}
+\setcounter{section}{5}
 \setcounter{equation}{13}
 \setcounter{table}{6}
 \setcounter{figure}{4}
@@ -62,7 +63,7 @@
 
 \begin{document}
 
-\section{Modelling FMDVs in African buffalo\\ populations}
+\section{Modelling FMDVs in African buffalo populations}
 
 We built a stochastic individual-based model to capture the dynamics
 of FMDV in African buffalo.  The software we wrote to simulate and
@@ -143,8 +144,8 @@ a deterministic model that incorporates birth seasonality; (ii)
 selecting the sex of each animal randomly based on equal probabilities
 of males and females; and (iii) finding the probabilities of being
 susceptible, recovered, and carrier vs. age from a simplified model
-with constant infection hazard fitted to the antibody data presented
-by \citeauthor{hedger_1972} \autocite{hedger_1972}.
+with constant infection hazard fitted to a previous survey of FMDV
+antibodies \autocite{hedger_1972}.
 
 For the main results (Fig.~3), we ran 1000 simulations for each model
 and SAT, using the posterior median values of the parameters (Table
@@ -176,13 +177,11 @@ the posterior distributions of the parameters. From each of these
 simulations, we recorded the FMDV extinction time, using
 $\unit[10]{y}$ if FMDV persisted over the whole simulation. We
 calculated the partial rank correlation coefficient
-% This looks like '(PRCC; 72, 74)'.
-% Take care if the citation style changes.
-\autocites(PRCC;)(){blower_1994}{marino_2008}
-of the FMDV extinction time to the model parameters. We used our own
-PRCC implementation in Python that uses standard numerical libraries
-for rank transforming, linear regression, and calculating the Pearson
-correlation coefficient.
+\autocites(PRCC;)(){blower_1994}{marino_2008} of the FMDV extinction
+time to the model parameters. We used our own PRCC implementation in
+Python that uses standard numerical libraries for rank transforming,
+linear regression, and calculating the Pearson correlation
+coefficient.
 
 Below, we define survival and hazard functions for each event in
 sections \ref{death}–\ref{carrier_recovery}. Derivations for the
@@ -445,7 +444,7 @@ buffalo in the herd at time $t$.  Over periods where $I(t)$ and $C(t)$
 are constant, the hazard is constant, which gives an exponential
 random variable. The transmission parameters $\beta_{\text{acute}}$
 and $\beta_{\text{carrier}}$ were estimated from our transmission
-studies (sections S2, S3; Table S1; Fig.~2).
+studies (sections S2, S4; Table S1; Fig.~2).
 
 
 \subsection{Progression}
@@ -466,7 +465,7 @@ acute-transmission study (section S2, Table S1, Fig.~2).
 On recovery, buffalo become carriers with probability
 $p_{\text{carrier}}$ or otherwise are recovered, i.e.~fully cleared of
 pathogen, which was estimated from our acute-transmission study
-(section S4, Table S1, Fig.~2).
+(section S3, Table S1, Fig.~2).
 
 
 \subsection{Carrier recovery}
@@ -474,7 +473,7 @@ pathogen, which was estimated from our acute-transmission study
 
 The duration of the carrier state was taken to be an exponential
 random variable with mean $\mu_{\text{carrier recovery}}$,
-which was estimated with data from a previous study (section S4,
+which was estimated with data from a previous study (section S5,
 Table S1).
 
 
@@ -510,10 +509,10 @@ Foerster partial differential equation (PDE)
   \end{split}
 \end{equation}
 where $n_0(a)$ is the initial density
-% \autocites[Chapter VI, Section 29 on pp.~159--161]{harris_1963}%
-% [Chapter 20 on pp.~353--364]{kot_01}.
-\AtNextCite{\renewcommand{\multicitedelim}{\addsemicolon\space}}%
-\autocites[pp.~159--161]{harris_1963}[pp.~353--364]{kot_01}.
+\AtNextCite{\renewcommand{\multicitedelim}{\addsemicolon\space}}
+% \autocites[][Chapter VI, Section 29 on pp.~159--161]{harris_1963}%
+% [][Chapter 20 on pp.~353--364]{kot_01}.
+\autocites[][pp.~159--161]{harris_1963}[][pp.~353--364]{kot_01}.
 
 Because the birth hazard, $h_{\text{birth}}(t, a)$,
 is periodic with period $T = \unit[1]{y}$,
@@ -804,11 +803,7 @@ numerically using Gaussian quadrature.
 \end{figure}
 
 We estimated the hazard of infection using survey data of buffalo
-antibodies to FMDV from
-% This looks like 'Hedger (1972, Table S4)'.
-% Take care if the citation style changes.
-\citeauthor{hedger_1972}
-\autocite[\autoref{tab:hedger_data}]{hedger_1972}.
+antibodies to FMDV \autocite[][\autoref{tab:hedger_data}]{hedger_1972}.
 One of us, Dr.~Jolles, reviewed this survey data and, for each SAT,
 classified each buffalo into the immune states present in our
 simplified model, both with and without the carrier state. The counts
@@ -946,7 +941,6 @@ differences in initial conditions between SATs
 \end{figure}
 
 
-\clearpage
 \printbibliography[title=\bibtitle]
 
 
