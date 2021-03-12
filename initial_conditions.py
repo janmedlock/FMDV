@@ -159,7 +159,7 @@ def plot(infected, extinction_time, draft=False):
                         if row == 2 * i:
                             ax.set_ylim(top=infected_max)
                             ax.yaxis.set_major_locator(
-                                ticker.MultipleLocator(50))
+                                ticker.MultipleLocator(100))
             seaborn.despine(fig=fig, top=True, right=True,
                             bottom=False, left=False)
             # For some reason, aligning the rows and columns works better

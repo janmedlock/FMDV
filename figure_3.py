@@ -1,14 +1,7 @@
 #!/usr/bin/python3
 '''Build Figure 3 from our paper. This requires the file `run.h5`,
-which is built by `run.py`.
+which is built by `run.py`.'''
 
-This script builds 'figure_3.pdf' and 'figure_3.png' by plotting
-simulation data into 'figure_3_nodiagram.pdf' with `plot()`, then
-combining that with 'diagram/diagram.tex' through 'figure_3.tex' in
-`build()`.'''
-
-
-import subprocess
 
 from matplotlib import pyplot, ticker
 import numpy
@@ -19,20 +12,14 @@ import plot_common
 
 # Science
 rc = plot_common.rc.copy()
-total_width = 183 / 25.4  # inches
-# 184.983 pts is from `pdfinfo diagram/diagram_standalone.pdf'.
-# 1.4 is the scaling in figure_3.tex.
-diagram_width = 184.983 * 1.4 / 72  # inches
-fig_width = total_width - diagram_width
-# There's whitespace left...
-fig_width *= 1.13
-fig_height = 6  # inches
-rc['figure.figsize'] = (fig_width, fig_height)
+width = 183 / 25.4  # convert mm to in
+height = 6  # in
+rc['figure.figsize'] = (width, height)
 # Between 5pt and 7pt.
 rc['font.size'] = 6
-rc['axes.titlesize'] = 7
-rc['axes.labelsize'] = 6
-rc['xtick.labelsize'] = rc['ytick.labelsize'] = 5
+rc['axes.titlesize'] = 9
+rc['axes.labelsize'] = 8
+rc['xtick.labelsize'] = rc['ytick.labelsize'] = 7
 
 
 def load():
@@ -65,7 +52,7 @@ def plot_infected(ax, infected, model, SAT, draft=False):
     # Shared y-axis between models.
     if ax.is_first_col():
         ax.set_ylabel('Number\ninfected')
-        ax.annotate(f'SAT{SAT}', (-0.35, 0.05),
+        ax.annotate(f'SAT{SAT}', (-0.25, 0.05),
                     xycoords='axes fraction',
                     rotation=90, fontsize=rc['axes.titlesize'])
     else:
@@ -84,8 +71,8 @@ def plot_extinction_time(ax, extinction_time, model, SAT):
     color = plot_common.SAT_colors[SAT]
     plot_common.kdeplot(365 * e.dropna(), ax=ax, color=color, shade=True)
     not_extinct = len(e[e.isnull()]) / len(e)
-    arrow_loc = {'chronic': {1: (0.92, 0.65),
-                             3: (0.96, 0.8)}}
+    arrow_loc = {'chronic': {1: (0.96, 0.65),
+                             3: (0.99, 0.8)}}
     if not_extinct > 0:
         (ne_min, p_min) = (0.6, 0.3)
         (ne_max, p_max) = (1, 1)
@@ -163,7 +150,12 @@ def plot(infected, extinction_time, draft=False):
                     ax = axes[row, col]
                     ax.set_xlim(left=0)
                     ax.set_ylim(bottom=0)
-        seaborn.despine(fig=fig, top=True, right=True, bottom=False, left=False)
+                    unit = {'acute': 50, 'chronic': 1000}[model]
+                    ax.xaxis.set_major_locator(ticker.MultipleLocator(unit))
+                    if row == 2 * i:
+                        ax.yaxis.set_major_locator(ticker.MultipleLocator(100))
+        seaborn.despine(fig=fig, top=True, right=True,
+                        bottom=False, left=False)
         # For some reason, aligning the rows and columns works better
         # than aligning all axes.
         fig.align_xlabels(axes[-1, :])
@@ -171,23 +163,21 @@ def plot(infected, extinction_time, draft=False):
             row_i = 2 * i
             row_e = 2 * i + 1
             fig.align_ylabels(axes[[row_i, row_e], 0])
-        fig.savefig('figure_3_no_diagram.pdf')
-
-
-def build(draft=False):
-    # Build PDF super-figure.
-    subprocess.check_call(['latexmk', '-pdf', '-silent', 'figure_3'])
-    if not draft:
-        # Clean up build files.
-        subprocess.check_call(['latexmk', '-c', 'figure_3'])
-        # Convert PDF to 300dpi PNG.
-        subprocess.check_call(['pdftocairo', '-png', '-r', '300',
-                               '-singlefile', 'figure_3.pdf'])
+        # Separate panels in multi-part figures should be labelled with 8
+        # pt bold, upright (not italic) a, b, c...
+        label_kws = dict(fontsize=8,
+                         fontweight='bold',
+                         horizontalalignment='left',
+                         verticalalignment='top')
+        label_y = 1
+        fig.text(0, label_y, 'a', **label_kws)
+        fig.text(0.555, label_y, 'b', **label_kws)
+        fig.savefig('figure_3.pdf')
+        fig.savefig('figure_3.png', dpi=300)
 
 
 if __name__ == '__main__':
     draft = False
     infected, extinction_time = load()
     plot(infected, extinction_time, draft=draft)
-    build(draft=draft)
     pyplot.show()
