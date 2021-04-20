@@ -2,6 +2,7 @@
 '''Build Figure 3 from our paper. This requires the file `run.h5`,
 which is built by `run.py`.'''
 
+import os.path
 
 from matplotlib import pyplot, ticker
 import numpy
@@ -23,7 +24,8 @@ rc['xtick.labelsize'] = rc['ytick.labelsize'] = 7
 
 
 def load():
-    filename = 'run.h5'
+    path = os.path.dirname(__file__)
+    filename = os.path.join(path, 'run.h5')
     infected = plot_common.get_infected(filename)
     extinction_time = plot_common.get_extinction_time(filename)
     return (infected, extinction_time)
