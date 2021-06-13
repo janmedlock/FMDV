@@ -76,7 +76,9 @@ def plot_sensitivity_population_sizes(axes):
                    clip_on=False, zorder=3)
         ax_po.set_xscale('log')
         ax_po.set_xlabel('Population size', labelpad=1.5)
-        ax_po.xaxis.set_major_formatter(ticker.LogFormatter())
+        ax_po.xaxis.set_major_locator(ticker.LogLocator(subs=(1, 2, 3, 5, 7)))
+        ax_po.xaxis.set_major_formatter(
+            ticker.LogFormatter(minor_thresholds=(numpy.inf, numpy.inf)))
         ax_po.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=1))
         ax_po.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
         if ax_po.is_first_col():
