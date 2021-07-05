@@ -13,7 +13,7 @@
 \usepackage{isodate}  % Science: US-style dates.
 % Science: Take care with the Harris, Kot, Hedger, Blower, & Marino
 %          citations if the style is changed.
-\usepackage[style=science]{biblatex}
+\usepackage[style=science, hyperref=false]{biblatex}
 \addbibresource{supplement.bib}
 % Science: Caption labels "Fig. X." and "Table X.".
 \usepackage{caption}
@@ -34,7 +34,8 @@
 \setcounter{table}{6}
 \setcounter{figure}{4}
 % Science: Shift the reference numbers.
-\newcounter{reference} \setcounter{reference}{71}
+\newcounter{reference} \setcounter{reference}{73}
+\newcommand{\citemedlockgithub}{\parentext{\textit{54}}}
 % Science: Italics numbers in the citations.
 \DeclareFieldFormat{labelnumber}{%
   \mkbibemph{\number\numexpr#1+\value{reference}}}
@@ -68,8 +69,10 @@
 We built a stochastic individual-based model to capture the dynamics
 of FMDV in African buffalo.  The software we wrote to simulate and
 analyze the model is available for free under an open-source license
-\autocite{medlock_2020}. This software was written in the Python
-programming language \autocite{python}.
+% \autocite{medlock_2020}.
+\citemedlockgithub.
+This software was written in the Python programming language
+\autocite{python}.
 
 In the model, the age and sex of each buffalo is tracked along with
 its immune state (\autoref{fig:diagram}): either immune due to
