@@ -1,4 +1,5 @@
 \documentclass[12pt, USenglish]{article}  % Science: US variant of English.
+\pagestyle{empty}
 
 \usepackage{babel}
 \usepackage[babel=true]{microtype}
@@ -29,10 +30,10 @@
 
 % Setup section etc numbering
 % relative to the other supporting info.
-\setcounter{section}{4}
+\setcounter{section}{5}
 \setcounter{equation}{13}
 \setcounter{table}{6}
-\setcounter{figure}{4}
+\setcounter{figure}{5}
 % Science: Shift the reference numbers.
 \newcounter{reference} \setcounter{reference}{73}
 \newcommand{\citemedlockgithub}{\parentext{\textit{54}}}
@@ -115,17 +116,7 @@ distributions, we used the SciPy library \autocite{scipy}.  For
 non-standard distributions, we used the inverse transform method
 \autocite{rubinstein_1981} for sampling.
 
-
-\begin{figure}
-  \centering
-  \textsf{\input{../diagram/diagram.tex}}
-  \caption{Model diagram. The dashed box and arrows show the
-    state and transitions present in the model with both acute and
-    carrier transmission that are not present in the model with only
-    acute transmission.}
-  \label{fig:diagram}
-\end{figure}
-
+% moved Figure S6 from here
 
 The model simulations follow a Gillespie algorithm
 \autocite{gillespie_1977}. For each buffalo, a list of events and the
@@ -297,14 +288,7 @@ hazard is $\tau$.  The annual mean $\mu$ was determined
 so that the population has asymptotic growth rate $r = 0$.  (See
 \autoref{stable_age_distribution}.)
 
-\begin{figure}
-  \centering
-  \begin{sansmath}
-    \input{birth_hazard.pgf}
-  \end{sansmath}
-  \caption{Model birth hazards for ages $\unit[4]{y}$ and older.}
-  \label{fig:birth_hazard}
-\end{figure}
+% Cut figure S7 here
 
 The cumulative hazard at time $t$ given age $a_0$ at the current
 time $t_0$ is
@@ -479,16 +463,7 @@ random variable with mean $\mu_{\text{carrier recovery}}$,
 which was estimated with data from a previous study (section S5,
 Table S1).
 
-
-\begin{figure}
-  \centering
-  \begin{sansmath}
-    \input{distributions.pgf}
-  \end{sansmath}
-  \caption{Hazards and survivals for the model events.}
-  \label{fig:distributions}
-\end{figure}
-
+% Cut Figure S8 here
 
 \subsection{Stable age distribution}
 \label{stable_age_distribution}
@@ -689,16 +664,7 @@ $\Delta t = \unit[0.005]{y}$ gave a relative error for $\mu$
 of $7 \times 10^{-4}$ and doubling the maximum age to $a_{\text{max}}
 = \unit[70]{y}$ gave a relative error of $5 \times 10^{-6}$.
 
-\begin{figure}
-  \centering
-  \begin{sansmath}
-    \input{stable_age_distribution.pgf}
-  \end{sansmath}
-  \caption{The stable age distribution of the buffalo population
-    on {\printyearoff\printdate{2020-07-16}}, $t_0 = \unit[0.5]{y}$
-    after the peak in the birth hazard.}
-  \label{fig:stable_age_distribution}
-\end{figure}
+% Cut Fig S9 here
 
 For the initial conditions of the stochastic model, samples from the
 stable age distribution at growth rate $r = \unit[0]{y}$ were used to
@@ -727,23 +693,7 @@ initial population was restarted. Otherwise, 2 buffalo were randomly
 chosen among the susceptible buffalo with equal probabilities and
 these were changed to the infectious immune state.
 
-\begin{figure}
-  \centering
-  \includegraphics{../start_time}
-  \caption{The sensitivity of extinction time to model start time.
-    For each model and each SAT, the model was simulated for
-    1000 runs starting $t_0 = \unit[i / 12]{y}$ after the peak in the
-    birth hazard, for $i = 0, 1, \dots, 11$. The baseline value is
-    $t_0 = \unit[0.5]{y}$ (dotted vertical lines). The other
-    parameters were fixed at their baseline values. The top and middle
-    rows of graphs show the distribution of FMDV extinction times for
-    the model with only acute transmission and the model with both
-    acute and carrier transmission, respectively. The bottom row shows
-    the proportion of simulations where FMDV persisted in the buffalo
-    population for the whole simulated 10-year period with both acute
-    and carrier transmission.}
-  \label{fig:start_time}
-\end{figure}
+%Cut Fig S10 here
 
 To determine the probabilities of being in each immune state as a
 function of age, conditioned on the buffalo being alive at that age, we
@@ -794,16 +744,7 @@ For a given hazard of infection, $h_{\text{infection}}$, the
 integrals in \eqref{eq:P_S} and \eqref{eq:P_C} were computed
 numerically using Gaussian quadrature.
 
-\begin{figure}
-  \centering
-  \textsf{\input{../diagram/diagram_initial_conditions.tex}}
-  \caption{Diagram of the simplified model used in finding initial
-    conditions for the full model. The dashed box and arrows show the
-    state and transitions present in the model with both acute and
-    carrier transmission that are not present in the model with only
-    acute transmission.}
-  \label{fig:diagram_initial_conditions}
-\end{figure}
+% Cut Fig S11 here
 
 We estimated the hazard of infection using survey data of buffalo
 antibodies to FMDV \autocite[][\autoref{tab:hedger_data}]{hedger_1972}.
@@ -812,42 +753,7 @@ classified each buffalo into the immune states present in our
 simplified model, both with and without the carrier state. The counts
 by immune state and age were then pooled across the SATs.
 
-\begin{table}
-  \centering
-  \begin{tabular}{|l|l|rrrrrr|}
-    \hline
-    \multicolumn{1}{|c}{\multirow{2}{*}{\textbf{Model}}}
-    & \multicolumn{1}{|c}{\multirow{2}{*}{\textbf{Immune state}}}
-    & \multicolumn{6}{|c|}{\textbf{Age (y)}} \\
-    & & \multicolumn{1}{|c}{\textbf{0--1}}
-    & \multicolumn{1}{c}{\textbf{1--2}}
-    & \multicolumn{1}{c}{\textbf{2--3}}
-    & \multicolumn{1}{c}{\textbf{3--4}}
-    & \multicolumn{1}{c}{\textbf{4--7}}
-    & \multicolumn{1}{c|}{\textbf{7--11}} \\
-    \hline
-    \multirow{3}{*}{Acute}
-    & Maternal immunity & 17 & 0 & 0 & 0 & 0 & 0 \\
-    & Susceptible & 1 & 6 & 4 & 2 & 3 & 3 \\
-    & Recovered & 0 & 18 & 23 & 22 & 30 & 54 \\
-    \hline
-    \multirow{4}{*}{Carrier}
-    & Maternal immunity & 17 & 0 & 0 & 0 & 0 & 0 \\
-    & Susceptible & 1 & 2 & 4 & 2 & 3 & 3 \\
-    & Carrier & 0 & 8 & 12 & 8 & 6 & 8 \\
-    & Recovered & 0 & 14 & 11 & 14 & 24 & 46 \\
-    \hline
-  \end{tabular}
-  \caption{Counts of buffalo by immune state and age, based on a
-    survey of FMDV antibodies \autocite{hedger_1972}.  The surveyed
-    buffalo were classified by expert opinion into the immune states
-    present in our simplified model with only acute transmission
-    (\enquote{Acute}) and to those present in our simplified model
-    with both acute and carrier transmission
-    (\enquote{Carrier}). These counts were then pooled across
-    SATs. See \autoref{initial_conditions} for more information.}
-  \label{tab:hedger_data}
-\end{table}
+% Cut Table S7 here
 
 For our simplified model with immune states $\mathcal{X} =
 \{\mathrm{M}, \mathrm{S}, \mathrm{C}, \mathrm{R}\}$
@@ -895,7 +801,131 @@ differences in initial conditions between SATs
 (Figs.~\ref{fig:initial_conditions_acute},
 \ref{fig:initial_conditions_chronic}).
 
-\begin{figure}
+% Cut Figures S12 & 13
+\pagebreak
+
+\section{Figures}
+
+\begin{figure}[h]
+  \centering
+  \textsf{\input{../diagram/diagram.tex}}
+  \caption{Model diagram. The dashed box and arrows show the
+   state and transitions present in the model with both acute and
+   carrier transmission that are not present in the model with only
+    acute transmission.}
+  \label{fig:diagram}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[h]
+  \centering
+  \begin{sansmath}
+    \input{birth_hazard.pgf}
+  \end{sansmath}
+  \caption{Model birth hazards for ages $\unit[4]{y}$ and older.}
+  \label{fig:birth_hazard}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[h]
+  \centering
+  \begin{sansmath}
+    \input{distributions.pgf}
+  \end{sansmath}
+  \caption{Hazards and survivals for the model events.}
+  \label{fig:distributions}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[h]
+  \centering
+  \begin{sansmath}
+    \input{stable_age_distribution.pgf}
+  \end{sansmath}
+  \caption{The stable age distribution of the buffalo population
+    on {\printyearoff\printdate{2020-07-16}}, $t_0 = \unit[0.5]{y}$
+    after the peak in the birth hazard.}
+  \label{fig:stable_age_distribution}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{../start_time}
+  \caption{The sensitivity of extinction time to model start time.
+    For each model and each SAT, the model was simulated for
+    1000 runs starting $t_0 = \unit[i / 12]{y}$ after the peak in the
+    birth hazard, for $i = 0, 1, \dots, 11$. The baseline value is
+    $t_0 = \unit[0.5]{y}$ (dotted vertical lines). The other
+    parameters were fixed at their baseline values. The top and middle
+    rows of graphs show the distribution of FMDV extinction times for
+    the model with only acute transmission and the model with both
+    acute and carrier transmission, respectively. The bottom row shows
+    the proportion of simulations where FMDV persisted in the buffalo
+    population for the whole simulated 10-year period with both acute
+    and carrier transmission.}
+  \label{fig:start_time}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[h]
+  \centering
+  \textsf{\input{../diagram/diagram_initial_conditions.tex}}
+  \caption{Diagram of the simplified model used in finding initial
+    conditions for the full model. The dashed box and arrows show the
+    state and transitions present in the model with both acute and
+    carrier transmission that are not present in the model with only
+    acute transmission.}
+  \label{fig:diagram_initial_conditions}
+\end{figure}
+
+\pagebreak
+
+\begin{table}
+  \centering
+  \begin{tabular}{|l|l|rrrrrr|}
+    \hline
+    \multicolumn{1}{|c}{\multirow{2}{*}{\textbf{Model}}}
+    & \multicolumn{1}{|c}{\multirow{2}{*}{\textbf{Immune state}}}
+    & \multicolumn{6}{|c|}{\textbf{Age (y)}} \\
+    & & \multicolumn{1}{|c}{\textbf{0--1}}
+    & \multicolumn{1}{c}{\textbf{1--2}}
+    & \multicolumn{1}{c}{\textbf{2--3}}
+    & \multicolumn{1}{c}{\textbf{3--4}}
+    & \multicolumn{1}{c}{\textbf{4--7}}
+    & \multicolumn{1}{c|}{\textbf{7--11}} \\
+    \hline
+    \multirow{3}{*}{Acute}
+    & Maternal immunity & 17 & 0 & 0 & 0 & 0 & 0 \\
+    & Susceptible & 1 & 6 & 4 & 2 & 3 & 3 \\
+    & Recovered & 0 & 18 & 23 & 22 & 30 & 54 \\
+    \hline
+    \multirow{4}{*}{Carrier}
+    & Maternal immunity & 17 & 0 & 0 & 0 & 0 & 0 \\
+    & Susceptible & 1 & 2 & 4 & 2 & 3 & 3 \\
+    & Carrier & 0 & 8 & 12 & 8 & 6 & 8 \\
+    & Recovered & 0 & 14 & 11 & 14 & 24 & 46 \\
+    \hline
+  \end{tabular}
+  \caption{Counts of buffalo by immune state and age, based on a
+    survey of FMDV antibodies \autocite{hedger_1972}.  The surveyed
+    buffalo were classified by expert opinion into the immune states
+    present in our simplified model with only acute transmission
+    (\enquote{Acute}) and to those present in our simplified model
+    with both acute and carrier transmission
+    (\enquote{Carrier}). These counts were then pooled across
+    SATs. See \autoref{initial_conditions} for more information.}
+  \label{tab:hedger_data}
+\end{table}
+
+\pagebreak
+
+\begin{figure}[h]
   \centering
   \includegraphics{../initial_conditions_acute}
   \caption{The sensitivity of extinction time to birth seasonality for
@@ -917,7 +947,9 @@ differences in initial conditions between SATs
   \label{fig:initial_conditions_acute}
 \end{figure}
 
-\begin{figure}
+\pagebreak
+
+\begin{figure}[h]
   \centering
   \includegraphics{../initial_conditions_chronic}
   \caption{The sensitivity of extinction time to birth seasonality for

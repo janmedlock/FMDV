@@ -10,6 +10,7 @@
 \usepackage{sansmath}  % Science: sans serif in math in figures.
 % Science: Caption labels are boldface "Fig. X." and "Table X.".
 \usepackage{caption}
+\usepackage{isodate} 
 \captionsetup{labelfont=bf, labelsep=period, figurename={Fig.}}
 \addto\extrasUSenglish{\renewcommand{\figureautorefname}{Fig.}}
 
@@ -26,7 +27,9 @@
 
 \begin{document}
 
-\begin{figure}
+\section*{Supplementary figures}
+
+\begin{figure}[h!]
   \centering
   \includegraphics{../population_size}
   \caption{The sensitivity of extinction time of FMDV to buffalo
@@ -77,16 +80,17 @@
     (Fig.~2, Table S1).}
 \end{figure}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{../FigS4_Experimental_Design_crop}
+  \caption{Experimental design: (A) FMDV transmission during acute infection. In separate corrals for each serotype (SAT1, SAT2, SAT3), four needle-infected animals were mixed with four naïve buffalo, two days after the initial infectious challenges (needle infections). Presence of virus and antibodies to FMDVs were tested in the recipient animals on days 2, 4, 6, 8, 11, 14 and 30 post exposure to the needle infected buffalo. (B) Transmission from FMDV carriers. FMDV carrier status is defined as retention of FMDV for more than 30 days after primary infection. In two separate corrals, two groups of six carrier animals, including two per serotype, were mixed with two groups naïve animals at day 45 post-infection. Buffalo were sampled to test for FMDV transmission after two weeks post-contact, and then monthly for six months.}
+\end{figure}
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{../transmission_experiment_table}
+  \includegraphics[width=\textwidth]{../sup_figure5.pdf}
   \caption{FMDV transmission events from carrier to naïve
-    buffalo. Carrier buffalo are shown in green (SAT1), orange (SAT2)
-    and yellow (SAT3). Lighter shades indicate loss of carrier status
-    in these individuals. Blue shading demarks new infections that
-    occurred during the experimental period. The numbers are the log10
-    titer of virus genome per \unit{µl} of sample using specific
+    buffalo. Carrier buffalo are shown in blue (SAT 1), red (SAT 2) and purple (SAT 3). Lighter shades indicate loss of carrier status in these individuals. Yellow shading demarks new infections that occurred during the experimental period. The numbers are the log10 titre of virus genome per \unit{µl} of sample using specific
     primers for each serotype (methods and results described in
     \textit{16}). Samples categorized as positive (pos) were RT PCR
     positive but the Ct value was above a cut off of 32
@@ -102,6 +106,115 @@
     transmission event from a SAT1 carrier had occurred in group
     2. Additional transmission events may have originated from
     carriers or may reflect secondary infections within each group.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \textsf{\input{../diagram/diagram.tex}}
+  \caption{Model diagram. The dashed box and arrows show the
+   state and transitions present in the model with both acute and
+   carrier transmission that are not present in the model with only
+    acute transmission.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{sansmath}
+    \input{birth_hazard.pgf}
+  \end{sansmath}
+  \caption{Model birth hazards for ages $\unit[4]{y}$ and older.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{sansmath}
+    \input{distributions.pgf}
+  \end{sansmath}
+  \caption{Hazards and survivals for the model events.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{sansmath}
+    \input{stable_age_distribution.pgf}
+  \end{sansmath}
+  \caption{The stable age distribution of the buffalo population
+    on {\printyearoff\printdate{2020-07-16}}, $t_0 = \unit[0.5]{y}$
+    after the peak in the birth hazard.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics{../start_time}
+  \caption{The sensitivity of extinction time to model start time.
+    For each model and each SAT, the model was simulated for
+    1000 runs starting $t_0 = \unit[i / 12]{y}$ after the peak in the
+    birth hazard, for $i = 0, 1, \dots, 11$. The baseline value is
+    $t_0 = \unit[0.5]{y}$ (dotted vertical lines). The other
+    parameters were fixed at their baseline values. The top and middle
+    rows of graphs show the distribution of FMDV extinction times for
+    the model with only acute transmission and the model with both
+    acute and carrier transmission, respectively. The bottom row shows
+    the proportion of simulations where FMDV persisted in the buffalo
+    population for the whole simulated 10-year period with both acute
+    and carrier transmission.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \textsf{\input{../diagram/diagram_initial_conditions.tex}}
+  \caption{Diagram of the simplified model used in finding initial
+    conditions for the full model. The dashed box and arrows show the
+    state and transitions present in the model with both acute and
+    carrier transmission that are not present in the model with only
+    acute transmission.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics{../initial_conditions_acute}
+  \caption{The sensitivity of extinction time to birth seasonality for
+    the model with acute transmission only.
+    For each SAT (rows of paired graphs of number infected and
+    extinction time), the model was simulated for 1000 runs using the
+    baseline initial conditions for each SAT (columns).
+    The other parameters were fixed at their baseline values.
+    E.g.~the model with the baseline parameter values for SAT 1 (top
+    row) was simulated with the baseline initial conditions for SATs
+    1, 2, and 3.
+    In the graphs of number infected, the thin colored curves show the
+    number infected vs. time for the individual simulations, while the
+    thick black curve is the mean over the simulations of the number
+    infected vs. time.
+    The graphs of FMDV extinction time show the distribution of
+    extinction times (when the number infected first becomes 0) over
+    the simulations.}
+  \label{fig:initial_conditions_acute}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics{../initial_conditions_chronic}
+  \caption{The sensitivity of extinction time to birth seasonality for
+    the model with transmission from acutely infected and carrier hosts.
+    For each SAT (rows of paired graphs of number infected and
+    extinction time), the model was simulated for 1000 runs using the
+    baseline initial conditions for each SAT (columns).
+    The other parameters were fixed at their baseline values.
+    E.g.~the model with the baseline parameter values for SAT 1 (top
+    row) was simulated with the baseline initial conditions for SATs
+    1, 2, and 3.
+    In the graphs of number infected, the thin colored curves show the
+    number infected vs. time for the individual simulations, while the
+    thick black curve is the mean over the simulations of the number
+    infected vs. time.
+    The graphs of FMDV extinction time show the distribution of
+    extinction times (when the number infected first becomes 0) over
+    the simulations, arrows show the
+    proportion of simulations that persisted longer than 10 years,
+    and the gray boxes show the longest persistence time for the
+    model with acute transmission only to highlight the difference in
+    scale.}
 \end{figure}
 
 

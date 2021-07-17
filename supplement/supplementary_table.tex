@@ -1,0 +1,78 @@
+\documentclass[12pt, USenglish]{article}  % Science: US variant of English.
+
+\usepackage{babel}
+\usepackage[babel=true]{microtype}
+\usepackage[breaklinks, pdfborder={0 0 0}]{hyperref}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{units}
+\usepackage{tikz}
+\usepackage{sansmath}  % Science: sans serif in math in figures.
+% Science: Caption labels are boldface "Fig. X." and "Table X.".
+\usepackage{caption}
+\usepackage{isodate} 
+\usepackage{multirow}
+\captionsetup{labelfont=bf, labelsep=period, figurename={Fig.}}
+\addto\extrasUSenglish{\renewcommand{\figureautorefname}{Fig.}}
+
+\usepackage[style=science, hyperref=false]{biblatex}
+\addbibresource{supplement.bib}
+\newcounter{reference} \setcounter{reference}{77}
+% Science: Italics numbers in the citations.
+\DeclareFieldFormat{labelnumber}{%
+  \mkbibemph{\number\numexpr#1+\value{reference}}}
+% Science: Upright numbers in the references.
+\AtBeginBibliography{\DeclareFieldFormat{labelnumber}{%
+  \number\numexpr#1+\value{reference}}}
+
+
+% Science: Prepend 'S' to the appendix number.
+\newcommand{\appendixprefix}{S}
+\renewcommand{\thetable}{\appendixprefix\arabic{table}}
+
+
+\pagestyle{empty}
+
+\setcounter{table}{6}
+
+\begin{document}
+
+\begin{table}
+  \centering
+  \begin{tabular}{|l|l|rrrrrr|}
+    \hline
+    \multicolumn{1}{|c}{\multirow{2}{*}{\textbf{Model}}}
+    & \multicolumn{1}{|c}{\multirow{2}{*}{\textbf{Immune state}}}
+    & \multicolumn{6}{|c|}{\textbf{Age (y)}} \\
+    & & \multicolumn{1}{|c}{\textbf{0--1}}
+    & \multicolumn{1}{c}{\textbf{1--2}}
+    & \multicolumn{1}{c}{\textbf{2--3}}
+    & \multicolumn{1}{c}{\textbf{3--4}}
+    & \multicolumn{1}{c}{\textbf{4--7}}
+    & \multicolumn{1}{c|}{\textbf{7--11}} \\
+    \hline
+    \multirow{3}{*}{Acute}
+    & Maternal immunity & 17 & 0 & 0 & 0 & 0 & 0 \\
+    & Susceptible & 1 & 6 & 4 & 2 & 3 & 3 \\
+    & Recovered & 0 & 18 & 23 & 22 & 30 & 54 \\
+    \hline
+    \multirow{4}{*}{Carrier}
+    & Maternal immunity & 17 & 0 & 0 & 0 & 0 & 0 \\
+    & Susceptible & 1 & 2 & 4 & 2 & 3 & 3 \\
+    & Carrier & 0 & 8 & 12 & 8 & 6 & 8 \\
+    & Recovered & 0 & 14 & 11 & 14 & 24 & 46 \\
+    \hline
+  \end{tabular}
+  \caption{Counts of buffalo by immune state and age, based on a
+    survey of FMDV antibodies \autocite{hedger_1972}.  The surveyed
+    buffalo were classified by expert opinion into the immune states
+    present in our simplified model with only acute transmission
+    (\enquote{Acute}) and to those present in our simplified model
+    with both acute and carrier transmission
+    (\enquote{Carrier}). These counts were then pooled across
+    SATs. See section S6.9 for more information.}
+  \label{tab:hedger_data}
+\end{table}
+
+
+\end{document}
