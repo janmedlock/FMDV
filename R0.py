@@ -3,7 +3,7 @@
 and chronic models and each of the 3 SATs.
 
 Assumptions:
-* Constant population size, particulraly no seasonal births.
+* Constant population size, particularly no seasonal births.
 * All susceptible, so drop M.
 * Mortality is negligible, so S->E->I is equivalent to S->I,
   among other simplifications.
