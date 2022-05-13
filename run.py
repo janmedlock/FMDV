@@ -50,7 +50,7 @@ def run_many(parameters, tmax, nruns, *args, **kwargs):
                          copy=False)
 
 
-def run(model, SAT, tmax, nruns, store):
+def run(model, SAT, tmax, nruns, hdfstore):
     p = herd.Parameters(model=model, SAT=SAT)
     logging_prefix = (', '.join((f'model {model}',
                                  f'SAT {SAT}'))
