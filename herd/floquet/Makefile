@@ -5,7 +5,7 @@ SO := $(shell python3-config --extension-suffix)
 MODULE := $(NAME)$(SO)
 
 CFLAGS := $(shell python3-config --cflags)
-CFLAGS += -fPIC
+CFLAGS += -I/usr/lib/python3/dist-packages/numpy/core/include -fPIC
 
 LDFLAGS := $(shell python3-config --ldflags)
 LDFLAGS += -shared

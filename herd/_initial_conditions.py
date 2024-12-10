@@ -60,7 +60,7 @@ def _load_data(params):
 
 
 def _S_logprob_integrand(b, hazard_infection, maternal_immunity_waningRV):
-    '''The integrand is
+    r'''The integrand is
     Prob{Transitioning from M to S at age b}
       * exp(hazard_infection * b)
     = exp(\log Prob{Transitioning from M to S at age b}
@@ -86,7 +86,7 @@ def _S_logprob_integral(age, hazard_infection, params):
 
 
 def S_logprob(age, hazard_infection, params):
-    '''The logarithm of the probability of being susceptible at age `a`.
+    r'''The logarithm of the probability of being susceptible at age `a`.
     This is
     \log \int_0^a Prob{Transitioning from M to S at age b}
                   * exp(- hazard_infection * (a - b)) db
@@ -122,7 +122,7 @@ def _C_logprob_integral(age, hazard_infection, params):
 
 
 def C_logprob(age, hazard_infection, params):
-    '''The logarithm of the probability of being chronically infected
+    r'''The logarithm of the probability of being chronically infected
     at age `a`.  This is
     \log \int_0^a Prob{Infection at age b}
                   * probabilty_chronic
