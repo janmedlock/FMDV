@@ -8,7 +8,7 @@ import re
 from joblib import Memory
 import numpy
 import pandas
-from scipy.integrate import quadrature
+from scipy.integrate import quad
 from scipy.optimize import minimize
 
 from herd import chronic_recovery, maternal_immunity_waning, parameters
@@ -18,7 +18,10 @@ _filename = 'data/Hedger_1972_survey_data.xlsx'
 # It is relative to directory as this source file.
 _filename = os.path.join(os.path.dirname(__file__), _filename)
 
-_quadrature_options = dict(tol=1e-6, rtol=1e-6, maxiter=2000)
+_quad_options = {
+    'epsabs': 1e-6,
+    'epsrel': 1e-6,
+}
 
 
 def _load_data(params):
@@ -79,9 +82,9 @@ def _vectorize(**kwds):
 @_vectorize(otypes=[float])
 def _S_logprob_integral(age, hazard_infection, params):
     maternal_immunity_waningRV = maternal_immunity_waning.gen(params)
-    val, _ = quadrature(_S_logprob_integrand, 0, age,
-                        args=(hazard_infection, maternal_immunity_waningRV),
-                        **_quadrature_options)
+    val, _ = quad(_S_logprob_integrand, 0, age,
+                  args=(hazard_infection, maternal_immunity_waningRV),
+                  **_quad_options)
     return val
 
 
@@ -110,14 +113,14 @@ def _C_logprob_integrand(b, a, hazard_infection, params, chronic_recoveryRV):
     return numpy.exp(S_logprob(b, hazard_infection, params)
                      + chronic_recoveryRV.logsf(a - b))
 
+
 # Make the function able to handle vector-valued `age`.
 @_vectorize(otypes=[float])
 def _C_logprob_integral(age, hazard_infection, params):
     chronic_recoveryRV = chronic_recovery.gen(params)
-    val, _ = quadrature(_C_logprob_integrand, 0, age,
-                        args=(age, hazard_infection, params,
-                              chronic_recoveryRV),
-                        **_quadrature_options)
+    val, _ = quad(_C_logprob_integrand, 0, age,
+                  args=(age, hazard_infection, params, chronic_recoveryRV),
+                  **_quad_options)
     return val
 
 
@@ -189,13 +192,15 @@ def minus_loglikelihood(hazard_infection, params, data):
     return -l
 
 
+_cachedir = os.path.join(os.path.dirname(__file__), '_cache')
+_cache = Memory(_cachedir, verbose=0)
+
+
 # The function is very slow because of the call to
 # `scipy.optimize.minimize()`, so the values are cached to disk with
 # `joblib.Memory()` so that they are only computed once.
 # Set up the cache in a subdirectory of the directory that this source
 # file is in.
-_cachedir = os.path.join(os.path.dirname(__file__), '_cache')
-_cache = Memory(_cachedir, verbose=0)
 @_cache.cache
 def _find_hazard_infection(params):
     '''Find the MLE for the infection hazard.'''
