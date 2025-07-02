@@ -102,7 +102,7 @@ class SusceptibleRecruitment(herd.rv.RV):
         # Sum over years.
         v = v.reshape((n, -1)).sum(axis=0)
         # Scale to sum to 1.
-        v /= integrate.trapz(v, t)
+        v /= integrate.trapezoid(v, t)
         return v
 
 
