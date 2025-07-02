@@ -14,7 +14,7 @@ Released under the [GNU AGPL 3](LICENSE).**
 This repository contains Python code and data used to simulate and
 analyze FMDV transmission in African buffalo for our paper
 > Jolles A, Gorsich E, Gubbins S, Beechler B, Buss P, Juleff N,
-> deKlerk-Lorist L-M, Maree F, Perez-Martin E, van Schalkwyk OL,
+> de Klerk-Lorist L-M, Maree F, Perez-Martin E, van Schalkwyk OL,
 > Scott K, Zhang F, Medlock J, Charleston B.
 > Endemic persistence of a highly contagious pathogen:
 > Foot-and-mouth disease in its wildlife host.
