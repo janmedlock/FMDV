@@ -2,8 +2,7 @@
 
 ## A transmission model of foot-and-model-disease viruses in African buffalo
 
-**[Jan Medlock](http://people.oregonstate.edu/~medlockj/)
-[\<jan.medlock@oregonstate.edu\>](mailto:jan.medlock@oregonstate.edu),
+**Jan Medlock [\<medlockj@oregonstate.edu\>](mailto:medlockj@oregonstate.edu),
 Erin Gorisch, Anna Jolles, Simon Gubbins, Brianna Beechler,
 Peter Buss, Nick Juleff, Lin-Mari de Klerk-Lorist, Francois Maree,
 Eva Perez-Martin, OL van Schalkwyk, Katherine Scott, Fuquan Zhang,
