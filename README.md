@@ -9,7 +9,7 @@ Peter Buss, Nick Juleff, Lin-Mari de Klerk-Lorist, Francois Maree,
 Eva Perez-Martin, OL van Schalkwyk, Katherine Scott, Fuquan Zhang,
 Bryan Charleston.**
 
-**Copyright 2014–2020, Jan Medlock et al.  All rights reserved.
+**Copyright 2014–2025, Jan Medlock et al.  All rights reserved.
 Released under the [GNU AGPL 3](LICENSE).**
 
 This repository contains Python code and data used to simulate and
@@ -17,9 +17,10 @@ analyze FMDV transmission in African buffalo for our paper
 > Jolles A, Gorsich E, Gubbins S, Beechler B, Buss P, Juleff N,
 > deKlerk-Lorist L-M, Maree F, Perez-Martin E, van Schalkwyk OL,
 > Scott K, Zhang F, Medlock J, Charleston B.
-> Endemic dynamics of foot-and-mouth disease viruses in their
-> reservoir, African buffalo. *In preparation*.
-<!-- *Science*. 2020. [doi:XXX](https://doi.org/XXX). -->
+> Endemic persistence of a highly contagious pathogen:
+> Foot-and-mouth disease in its wildlife host.
+> *Science*. 2021. 374(6563): 104–109.
+> [doi:10.1126/science.abd2475](https://doi.org/10.1126/science.abd2475).
 
 The scripts and model code are written in Python3, using many
 third-party libraries.  Most notably:
