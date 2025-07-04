@@ -1,36 +1,31 @@
 #!/usr/bin/python3
-import sys
+'''Plot the stable age distribution.'''
 
-from joblib import delayed, Parallel
 import numpy
 from matplotlib import pyplot
 
-sys.path.append('..')
-from herd import Parameters
+from context import herd
 import herd.age_structure
-sys.path.pop()
+import age_structure
 
 
 start_times = numpy.linspace(0, 1, 12 + 1, endpoint=True)
 ages = numpy.linspace(0, 20, 301, endpoint=True)
 
-def get_age_structure(ages, start_time):
-    parameters = Parameters()
-    parameters.start_time = start_time
-    return herd.age_structure.gen(parameters).pdf(ages)
 
-# This seems to be faster sequentially...
-with Parallel(n_jobs=1) as parallel:
-    age_structures = parallel(delayed(get_age_structure)(ages, start_time)
-                              for start_time in start_times)
+def plot_age_structures_3d(age_structures, show=True):
+    (fig, ax) = pyplot.subplots()
+    pcm = ax.pcolormesh(ages, start_times, age_structures,
+                        cmap='viridis', shading='gouraud')
+    ax.set_xlabel('age (y)')
+    ax.set_ylabel('start time (y)')
+    fig.colorbar(pcm, label='density (y$^{-1}$)')
+    fig.tight_layout()
+    if show:
+        pyplot.show()
+    return ax
 
-fig, ax = pyplot.subplots()
-im = ax.imshow(age_structures,
-               extent=(ages[0], ages[-1], start_times[0], start_times[-1]),
-               cmap='viridis', interpolation='bilinear',
-               origin='lower', aspect='auto')
-ax.set_xlabel('age (y)')
-ax.set_ylabel('start time (y)')
-fig.colorbar(im, label='density (y$^{-1}$)')
-fig.tight_layout()
-pyplot.show()
+
+if __name__ == '__main__':
+    age_structures = age_structure.get_age_structures(ages, start_times)
+    plot_age_structures_3d(age_structures)

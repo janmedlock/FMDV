@@ -1,18 +1,16 @@
 #!/usr/bin/python3
-import sys
+'''Plot the model initial condititions.'''
 
 from matplotlib import pyplot
 import numpy
 
-sys.path.append('..')
-from herd import Parameters, RandomVariables
-sys.path.pop()
+from context import herd
 
 
 model = 'chronic'
 
-parameters = Parameters(model=model)
-RVs = RandomVariables(parameters)
+parameters = herd.Parameters(model=model)
+RVs = herd.RandomVariables(parameters)
 ICs = RVs.initial_conditions
 
 age_max = 10

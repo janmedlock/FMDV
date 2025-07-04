@@ -1,40 +1,39 @@
 #!/usr/bin/python3
+'''Run one simulation.'''
 
-import sys
 import time
 
 from matplotlib import pyplot
-import seaborn
 
-sys.path.append('..')
-import herd
-import run
-sys.path.pop()
+from context import herd
+from context import run
 
 
 def make_plot(data, show=True):
-    (fig, ax) = pyplot.subplots()
-    seaborn.set_palette(seaborn.color_palette('deep', 6))
-    for (k, x) in data.items():
-        ax.step(365 * x.index, x, where='post', label=k)
-    ax.set_xlabel(data.index.name)
-    ax.set_ylabel('number')
-    ax.legend()
+    (fig, axes) = pyplot.subplots()
+    for (name, ser) in data.items():
+        axes.plot(ser, label=name,
+                  drawstyle='steps-pre',
+                  alpha=0.9, linewidth=1)
+    axes.set_xlabel(data.index.name)
+    axes.set_ylabel('number')
+    axes.legend(loc='center right')
     if show:
         pyplot.show()
+    return fig
 
 
 if __name__ == '__main__':
     SAT = 1
-    model = 'chronic'
-    seed = 1
-    tmax = 10
-    debug = False
+    MODEL = 'chronic'
+    SEED = 1
+    TMAX = 10
+    DEBUG = False
 
-    p = herd.Parameters(model=model, SAT=SAT)
+    p = herd.Parameters(model=MODEL, SAT=SAT)
     t0 = time.time()
-    data = run.run_one(p, tmax, seed, debug=debug)
-    t1 = time.time()
-    print('Run time: {} seconds.'.format(t1 - t0))
+    data = run.run_one(p, TMAX, SEED, debug=DEBUG)
+    t = time.time() - t0
+    print(f'Run time: {t} seconds.')
 
     make_plot(data)

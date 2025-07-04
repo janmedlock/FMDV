@@ -1,44 +1,54 @@
 #!/usr/bin/python3
-import sys
+'''Plot the stable age distribution.'''
 
 from joblib import delayed, Parallel
 from matplotlib import pyplot
 import numpy
 from scipy.integrate import quad
 
-sys.path.append('..')
-from herd import Parameters
+from context import herd
 import herd.age_structure
 import herd.mortality
-from herd.utility import arange
-sys.path.pop()
+import herd.utility
 
 
 start_times = numpy.linspace(0, 1, 4, endpoint=False)
-ages = arange(0, 25, 0.01, endpoint=True)
+ages = herd.utility.arange(0, 25, 0.01, endpoint=True)
+N_JOBS = 1  # This seems to be faster sequentially.
+
 
 def get_age_structure(ages, start_time):
-    parameters = Parameters()
+    parameters = herd.Parameters()
     parameters.start_time = start_time
     return herd.age_structure.gen(parameters).pdf(ages)
 
-# This seems to be faster sequentially...
-with Parallel(n_jobs=1) as parallel:
-    age_structures = parallel(delayed(get_age_structure)(ages, start_time)
-                              for start_time in start_times)
 
-mortality_sf = herd.mortality.from_param_values().sf
-mortality_sf_scale, _ = quad(mortality_sf, ages[0], ages[-1])
+def get_age_structures(ages, start_times):
+    with Parallel(n_jobs=N_JOBS) as parallel:
+        return parallel(delayed(get_age_structure)(ages, start_time)
+                        for start_time in start_times)
 
-fig, ax = pyplot.subplots()
-for (start_time, age_structure) in zip(start_times, age_structures):
-    ax.plot(ages, age_structure, label='{:g} months'.format(12 * start_time),
-            alpha=0.7)
-ax.plot(ages, mortality_sf(ages) / mortality_sf_scale,
-        label='scaled mortality survival',
-        color='black', linestyle='dotted')
-ax.set_xlabel('age (y)')
-ax.set_ylabel('density (y$^{-1}$)')
-ax.legend(title='start time')
-fig.tight_layout()
-pyplot.show()
+
+def plot_age_structures(age_structures, show=True):
+    mortality_sf = herd.mortality.from_param_values().sf
+    mortality_sf_scale, _ = quad(mortality_sf, ages[0], ages[-1])
+    (fig, ax) = pyplot.subplots()
+    for (start_time, age_structure) in zip(start_times, age_structures):
+        ax.plot(ages, age_structure,
+                label='{:g} months'.format(12 * start_time),
+                alpha=0.7)
+    ax.plot(ages, mortality_sf(ages) / mortality_sf_scale,
+            label='scaled mortality survival',
+            color='black', linestyle='dotted')
+    ax.set_xlabel('age (y)')
+    ax.set_ylabel('density (y$^{-1}$)')
+    ax.legend(title='start time')
+    fig.tight_layout()
+    if show:
+        pyplot.show()
+    return ax
+
+
+if __name__ == '__main__':
+    age_structures = get_age_structures(ages, start_times)
+    plot_age_structures(age_structures)

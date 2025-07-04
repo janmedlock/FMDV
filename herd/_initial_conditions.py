@@ -52,7 +52,8 @@ def _load_data(params):
     data.columns = pandas.MultiIndex.from_tuples(tuples,
                                                  names=['SAT', 'status'])
     # Add SATs together into pooled data.
-    data = data.sum(axis='columns', level='status')
+    grouper = data.T.groupby(level='status')
+    data = grouper.sum().T
     # The algorithm below only needs to know whether buffalo are
     # maternal immune (M), susceptible (S), or have been infected (R).
     # Add I and C to R and drop I and C.

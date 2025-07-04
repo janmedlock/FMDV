@@ -142,16 +142,16 @@ of the model code.
   [age_structure_3d.py](test/age_structure_3d.py) plot the stable age
   structure of the model buffalo population.
 
-* [benchmark.py](test/benchmark.py) times the Floquet solver in
-  [herd.floquet](herd/floquet) for the stable age structure.
+* [floquet_benchmark.py](test/benchmark.py) times the Floquet solver
+  in [herd.floquet](herd/floquet) for the stable age structure.
 
-* [find_infection_hazard.py](test/find_infection_hazard.py) finds the
-  best-fit infection hazard.
+* [infection_hazard.py](test/find_infection_hazard.py) finds the
+  best-fit infection hazard and plots.
 
 * [initial_conditions.py](test/initial_conditions.py) plots the model
   initial conditions.
 
-* [h5_test.py](test/h5_test.py) tests the simulation output files for
+* [h5_check.py](test/h5_check.py) checks the simulation output files for
   consistency.
 
 ### Supplementary material
